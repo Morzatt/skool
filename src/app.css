@@ -1,0 +1,36 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "Poppins";
+    src: url("./lib/fonts/poppins/Poppins-Regular.ttf");
+}
+
+body, main {
+    overflow-x: hidden;
+    scroll-behavior: smooth; 
+    font-family: "Poppins";
+}
+
+[data-theme="dark"] .btn {
+  @apply bg-red-500;
+}
+
+@layer components {
+    .bb {
+        @apply border border-black;
+    }
+
+    .icon {
+        @apply filter dark:invert;
+    }
+    
+    .red-filter {
+        filter: brightness(0) saturate(100%) invert(38%) sepia(93%) saturate(2710%) hue-rotate(339deg) brightness(102%) contrast(86%);
+    }
+}
