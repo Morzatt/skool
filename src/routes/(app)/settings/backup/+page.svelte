@@ -50,7 +50,7 @@
 
 <div class="flex w-full flex-col lg:flex-row rounded-md border border-base-content/30 p-4">
 
-  <div class="card bg-base-200 rounded-box grid flex-grow place-items-start p-3 w-2/4">
+  <div class="card bg-base-200 rounded-box grid flex-grow place-items-start p-3 w-full lg:w-2/4">
         <form class="w-full" method="get" action="?/generate" use:enhance>
         <h2>Crear Copia de Seguridad</h2>
         <p class="mt-2">Realice un respaldo de toda la información almacenada en la aplicación. Esto incluye: usuarios, registros y configuraciones.</p>
@@ -60,7 +60,7 @@
 
   <div class="divider lg:divider-horizontal">O</div>
 
-  <div class="card bg-base-200 rounded-box grid flex-grow place-items-start p-3 w-2/4">
+  <div class="card bg-base-200 rounded-box grid flex-grow place-items-start p-3 w-full lg:w-2/4">
         <form class="w-full" method="get" action="?/upload" enctype="multipart/form-data" use:enhance>
         <div>
             <h2>Restaurar Copia de Seguridad</h2>
@@ -71,7 +71,7 @@
             <p>Se recomienda realizar una copia de seguridad de los datos actuales para evitar perdidas permanentes de informacion.</p>
         </div>
 
-        <div class="w-3/4 mt-8">
+        <div class="w-full lg:w-3/4 mt-8">
             <label for="fileInput">
                 <img class="size-16" src="{copy_icon}" alt="">
                 <h3 class=" font-bold">Haga click y seleccione el archivo de respaldo correspondiente.</h3>

@@ -23,7 +23,7 @@ export const actions = {
 
         // let usuarioFromDB = await async(usuarioRepository.getByUsername(usuario), log)
         await async(usuarioRepository.update({ ...form }, usuario), log)
-        log.info(form)
+        return response.success("Acción realizada correctamente! Los cambios serán reflejados en la próxima sesión")
     },
 
     editPregSeg: async ({request, url, locals}) => {
@@ -41,5 +41,15 @@ export const actions = {
         } satisfies UpdatePregSeg | InsertPregSeg 
 
         await async(pregSegRepository.update({ ...form }, usuario), log)
+        return response.success("Preguntas de seguridad actualizadas correctamente.")
+    },
+
+    delete: async ({request, locals}) => {
+        let { log, response } = locals
+        let data = await request.formData()
+        let usuario = data.get("usuario") as string
+        await async(usuarioRepository.delete(usuario), log)
+
+        log.info({msg: `Usuario Eliminado`, deleted: usuario})
     }
 } satisfies Actions

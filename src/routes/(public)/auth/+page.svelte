@@ -13,7 +13,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import Captcha from "$lib/components/Captcha/Captcha.svelte";
 
-    import bg_1 from "$lib/images/bg-3.gif"
+    import bg_1 from "$lib/images/bg-5.gif"
     import school_logo from "$lib/images/logo.png"
     import question_icon from "$lib/images/icons/question_icon.svg"
     import login_icon from "$lib/images/icons/login.svg"
@@ -267,32 +267,40 @@
 				<input name="res_2" type="text" placeholder="Respuesta" class="input bg-transparent input-bordered w-full max-w-xs" />
 			</label>
 
-			<label class="w-full my-3 input input-bordered flex items-center gap-2 bg-transparent focus:outline-0">
-				<input id="recoveryPwd" type="password" class="grow bg-transparent focus:outline-0" name="contraseña"/>
-				<button type="button" onclick={() => {showPwd("recoveryPwd")}} data-tip="Mostrar Contraseña" aria-label="show"
-					class="md:tooltip size-7 rounded-lg hover:bg-slate-300 transition-all ease-linear duration-100 flex items-center justify-center">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        class="size-6 opacity-70">
-                        <path
-                        fill-rule="evenodd"
-                        d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                        clip-rule="evenodd" />
-                    </svg>
-				</button>
+			<label class="form-control w-full max-w-xs focus:outline-0 bg-transparent mt-2">
+				<div class="label">
+					<span class="label-text">Nueva Contraseña</span>
+				</div>
+
+                <div class="w-full input input-bordered flex items-center gap-2 bg-transparent focus:outline-0">
+                    <input id="recoveryPwd" type="password" class="grow bg-transparent focus:outline-0" name="contraseña"/>
+                    <button type="button" onclick={() => {showPwd("recoveryPwd")}} data-tip="Mostrar Contraseña" aria-label="show"
+                        class="md:tooltip size-7 rounded-lg hover:bg-slate-300 transition-all ease-linear duration-100 flex items-center justify-center">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            class="size-6 opacity-70">
+                            <path
+                            fill-rule="evenodd"
+                            d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                            clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
 			</label>
 		{/if}
-		<button type="submit" class="btn btn-wide bg-green-800 text-white hover:bg-green-700 active:bg-green-500">Cambiar</button>
+
+		<button type="submit" class="mt-4 btn btn-wide bg-green-800 text-white hover:bg-green-700 active:bg-green-500">Cambiar</button>
 	</form>
 {/snippet}
 
 {#snippet pwd()}
 	<div id="pwd" class="w-full h-fit border border-base-content/30 p-3" transition:animation.fly={{duration:200, x: 200, y:0,  opacity: 0.8 }}>
-		<h1 class="text-center text-xl font-semibold mt-4">Recuperar Contraseña</h1>
+		<h1 class="text-center text-xl font-semibold">Recuperar Contraseña</h1>
+        <p class="text-xs text-center mt-1">Recupere su contraseña de ingreso mediante la validación de sus preguntas de segurida asociadas.</p>
 
-		<div class="w-full flex items-center justify-center mt-12">
+		<div class="w-full flex items-center justify-center mt-4">
 			{#if !form?.pregseg}
 			<!-- CHECK IF USER EXISTS AND RETURN PREGSEG -->
 				<form class="w-5/6 *:my-2 flex flex-col justify-center items-center"
@@ -394,11 +402,11 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
             border-0 border-base-content/30 rounded-sm
             p-2 bg-white shadow-xl
             grid 
-            grid-cols-1 min-[730px]:grid-cols-[0.5fr_4fr_2.5fr] 
-            grid-rows-[0.5fr_4fr_4fr] min-[730px]:grid-rows-1
+            grid-cols-1 lg:grid-cols-[0.5fr_4fr_2.5fr] 
+            grid-rows-[0.5fr_4fr_4fr] lg:grid-rows-1
             gap-1">
 
-            <div class="join md:join-vertical flex items-center justify-start mb-4 gap-2">
+            <div class="join rounded-none lg:join-vertical flex items-center justify-start mb-4 gap-2">
                 <img src="{school_logo}" alt="" class="join-item max-w-14 max-h-14 p-0 "/>
 
                 <button class="join-item nav-icon {formContent === "login" ? "nav-icon-active" : ""}" 
@@ -428,15 +436,14 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
                  translate-x-[-50%] translate-y-[-50%]">
 
                  <div class="absolute 
-                 left-0 bottom-0 md:bottom-[-3rem]
+                 left-0 bottom-0 lg:bottom-[-3rem]
                   bg-black/50 text-white p-1 px-4 m-2 rounded-md">
                     <h3 class="text-xl italic font-bold">"Moral y Luces son nuestras Primeras Necesidades"</h3>    
-                    <p class="text-xs">"Educar para la vida"</p>               
-                    <p>Simón Bolívar</p>
+                    <p class="text-sm">Simón Bolívar</p>
                  </div>
             </div>
 
-            <div class="md:overflow-hidden w-full max-md:min-h-[30rem] *:min-h-[97%] *:border-0 max-md:mt-4">
+            <div class="lg:overflow-hidden w-full max-lg:min-h-[30rem] *:min-h-[97%] *:border-0 max-lg:mt-4">
                 {#if formContent === "register"}
                     {@render registerForm()} 
                 {:else if formContent === "pregseg"}
@@ -474,7 +481,7 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
          transition-all duration-100 ease-in-out 
          border-[4px] border-transparent
          max-lg:text-sm
-         flex flex-col md:flex-row items-center justify-center gap-2;
+         flex flex-col lg:flex-row items-center justify-center gap-2;
     }
 
     .nav-icon-active {

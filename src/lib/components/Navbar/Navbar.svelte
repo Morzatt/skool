@@ -107,14 +107,15 @@
             lg:overflow-y-scroll 
             px-2 
             flex items-start justify-center
-            shadow-sm border-b lg:border-r border-base-content/20 bg-accent/10">
+            shadow-sm border-b lg:border-r border-base-content/20 bg-base-300">
 
     <div class="w-full h-full lg:h-screen flex lg:flex-col p-1 lg:pb-4">
             <!-- US -->
         <div class="w-full
             flex items-center justify-between 
-            lg:mt-6 p-1 px-2
+            lg:mt-5 p-1 px-2
             bg-base-300/40 border border-base-content/40 rounded-md">
+
             <div class="text-sm flex items-center justify-around">
                 <div class="flex items-center justify-between gap-3 p-1">
                     <img src="{usuario.role === "Administrador" ? admin_icon : user_icon}" alt="" class="size-10">

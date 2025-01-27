@@ -17,11 +17,19 @@ body, main {
     font-family: "Poppins";
 }
 
+html:has(.drawer-toggle:checked) {
+    overflow-y: hidden;
+    scrollbar-gutter:unset;
+}
+
 [data-theme="dark"] .btn {
   @apply bg-red-500;
 }
 
 @layer components {
+    .btn-hover {
+        @apply hover:bg-base-content text-white;
+    }
     .bb {
         @apply border border-black;
     }

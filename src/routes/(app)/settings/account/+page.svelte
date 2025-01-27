@@ -1,125 +1,199 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+    import type { PageData, ActionData } from './$types';
+    import * as animations from "svelte/transition"
     import usuarioImage from "$lib/images/icons/username_icon.svg"
     import camera_icon from "$lib/images/icons/camara_icon.svg"
+    import delete_icon from "$lib/images/icons/borrar_icon.svg"
+    import editar_icon from "$lib/images/icons/write_icon.svg"
+    import chevron from "$lib/images/icons/chevron_right.svg"
     import { enhance } from '$app/forms';
+    import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
+    import Alert from "$lib/components/Messages/Alert.svelte"
 
-    let { data }: { data: PageData } = $props();
+    let { data, form }: { data: PageData, form: ActionData } = $props();
     let { usuario } = data
+
+    let confirmation = $state(false)
+    let userEdit = $state(false)
 </script>
 
-<div class="size-full flex flex-col items-center justify-between gap-2">
+{#snippet deleteConfirmation()}
+    <form action="?/delete" method="post" use:enhance class="lg:p-4 p-2 bg-base-100 border border-base-content/60 
+            w-full lg:w-[26rem] z-[1] 
+            flex flex-col items-center justify-center
+            absolute
+            top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
 
-    <div class="w-full h-full p-2
-                flex items-center justify-start
-                bg-base-200/50 border border-base-content/30 rounded-md">
+        <input type="hidden" value="{usuario.usuario}" name="usuario">
 
-        <div class="w-full flex items-center justify-center flex-col">
-            <div class="size-fit relative">
-                <img src="{usuarioImage}" alt="" class="size-36">
-                <button type="button" class="absolute bottom-1 right-1 size-7 flex items-center justify-center p-0.5
-                hover:bg-base-content/20 active:bg-base-content/10 rounded-md transition-all duration-200">
-                    <img src="{camera_icon}" alt="" class="size-full">
-                </button>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-16 shrink-0 stroke-current red-filter"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <h3 class="text-lg mt-3 text-center">¿Esta seguro de querer eliminar su usuario?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center  mt-1">Esta acción es irreversible; sera bloqueado su acceso, y sus tramites en curso serán cancelados inmediatamente.</p>
+        <p class="text-xs text-base-content/70 text-wrap text-center ">No se eliminarán los datos de ninguna de sus acciones realizadas dentro de la app.</p>
+
+        <div class="w-fit gap-3 mt-4">
+            <button type="button" onclick={() => {confirmation = false}} class="btn btn-sm">Volver</button>
+            <button onclick="{() => {setTimeout(()=>{confirmation = false}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+        </div>
+    </form>
+{/snippet}
+
+<div class="relative h-screen">
+    {#if confirmation}
+        {@render deleteConfirmation()}       
+    {/if}
+
+    <div class="relative size-full flex flex-col items-center justify-between gap-2 {confirmation ? "blur-md" : ""} transition-all ">
+        <Alert form={form} styles="absolute right-4 top-4 max-w-sm"/>
+
+        <div class="w-full mb-4"><h3 class="text-3xl font-bold">Mi Perfil</h3></div>
+        <div class="w-full h-full p-2
+                    flex items-center justify-between
+                    bg-base-200/50 border border-base-content/30 rounded-md">
+
+            <div class="lg:w-[85%] flex items-center justify-start gap-2">
+                <div class="h-full relative ">
+                    <img src="{usuarioImage}" alt="" class="size-36">
+                    <button type="button" class="absolute bottom-1 right-1 size-7 flex items-center justify-center p-0.5
+                    hover:bg-base-content/20 active:bg-base-content/10 rounded-md transition-all duration-200">
+                        <img src="{camera_icon}" alt="" class="size-full">
+                    </button>
+                </div>
+
+                <div class="h-full flex flex-col lg:flex-row items-center justify-start">
+                    <div>
+                        <h2 class="text-lg">{usuario.nombre} {usuario.apellido}</h2>
+                        <h3 class="text-base-content/50 text-sm">{capitalizeFirstLetter(usuario.role)}</h3>
+                        <h3 class="text-sm">Creado el {new Date(usuario.created_at).toLocaleDateString()}</h3>
+                    </div>
+
+                    {#if userEdit}
+                        <form action="?/editUser" method="post" use:enhance class="ml-8 flex edit"
+                            transition:animations.slide={{duration:300}}>
+                            <input type="hidden" value={usuario.usuario} name="usuario">
+
+                            <label class="flex items-center justify-start gap-2">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 16 16"
+                                    fill="currentColor"
+                                    class="h-4 w-4 opacity-70">
+                                    <path
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                                </svg>
+                                <input type="text" name="nombre" placeholder="Nombre">
+                            </label>
+
+                            <label class="flex items-center justify-start gap-2">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 16 16"
+                                    fill="currentColor"
+                                    class="h-4 w-4 opacity-70">
+                                    <path
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                                </svg>
+                                <input type="text" name="apellido" placeholder="Apellido">
+                            </label>
+
+                            <button type="submit" class="btn btn-sm btn-outline btn-success">Guardar</button>
+                        </form>                       
+                    {/if}
+                </div>
             </div>
-            <h2 class="text-lg">{usuario.nombre} {usuario.apellido}</h2>
-            <h3 class="text-base-content/50 text-sm">{usuario.role}</h3>
+
+            <div class="h-full lg:w-[15%] flex items-start justify-end">
+                <button class="border border-base-content/30 rounded-md px-4 py-1
+                            w-fit  flex items-center justify-between" onclick="{() => { userEdit = !userEdit }}">
+                    <img src="{editar_icon}" alt="">
+                    <p>Editar</p>
+                </button> 
+            </div>
         </div>
 
-        <div class="p-3 mt-8 w-full border-t border-base-content/30 font-bold flex items-center justify-between">
-            <h1>Estadistica #1: </h1>
-            <p class="text-accent">0</p>
-        </div>           
-        <div class="p-3 w-full border-t border-base-content/30 font-bold flex items-center justify-between">
-            <h1>Estadistica #2: </h1>
-            <p class="text-info">0</p>
-        </div>           
-        <div class="p-3 w-full border-y border-base-content/30 font-bold flex items-center justify-between">
-            <h1>Estadistica #3: </h1>
-            <p class="text-warning">0</p>
-        </div>           
-    </div>
+        <div class="w-full h-full bg-base-200/50 rounded-md border border-base-content/30 p-6">
+            <h3 class="text-xl font-bold">Configurar Perfil</h3>
 
-    <div class="w-full h-full bg-base-200/50 rounded-md border border-base-content/30 p-6">
-        <h3 class="text-2xl font-bold">Configurar Perfil</h3>
-
-        <form action="?/editUser" method="POST" use:enhance class="w-full px-3 mt-4">
-            <h4>Configurar Nombre y Apellido</h4>
-            <div class="flex items-center justify-between w-full gap-4">
-                <input type="hidden" name="usuario" value="{usuario.usuario}">
-                <label class="form-control w-full">
-                    <div class="label">
-                        <span class="label-text">Nombre</span>
-                    </div>
-                    <input name="nombre" type="text" placeholder="{usuario.nombre}" class="input input-bordered w-full" />
-                </label>       
-
-                <label class="form-control w-full">
-                    <div class="label">
-                        <span class="label-text">Apellido</span>
-                    </div>
-                    <input name="apellido" type="text" placeholder="{usuario.apellido}" class="input input-bordered w-full" />
-                </label>       
-            </div>
-
-            <div class="flex justify-end w-full">
-                <button class="btn btn-primary btn-wide mt-6 btn-sm" type="submit">Aceptar</button>
-            </div>
-        </form>
-
-        <form action="?/editPregSeg" method="POST" use:enhance class="w-full px-3">
-            <h4>Configurar Preguntas de Seguridad</h4>
-            <div class="flex items-center justify-between w-full gap-4 ">
-                <input type="hidden" name="usuario" value="{usuario.usuario}">
-                <div class="w-2/4">
-                    <label class="form-control w-full ">
-                        <div class="label">
-                            <span class="label-text">Pregunta de Seguridad 1</span>
-                        </div>
-                        <select class="select select-bordered">
-                            <option disabled selected>Pick one</option>
-                            <option>Star Wars</option>
-                            <option>Harry Potter</option>
-                            <option>Lord of the Rings</option>
-                            <option>Planet of the Apes</option>
-                            <option>Star Trek</option>
-                        </select>
-                    </label>
+            <!-- <form action="?/editUser" method="POST" use:enhance class="w-full px-3 mt-4">
+                <h4>Configurar Nombre y Apellido</h4>
+                <div class="flex items-center justify-between w-full gap-4">
+                    <input type="hidden" name="usuario" value="{usuario.usuario}">
                     <label class="form-control w-full">
                         <div class="label">
-                            <span class="label-text">Respuesta</span>
+                            <span class="label-text">Nombre</span>
                         </div>
-                        <input name="apellido" type="text" placeholder="{usuario.apellido}" class="input input-bordered w-full " />
-                    </label>     
-                </div>
+                        <input name="nombre" type="text" placeholder="{usuario.nombre}" class="input input-bordered w-full" />
+                    </label>       
 
-                <div class="w-2/4">
-                    <label class="form-control w-full ">
-                        <div class="label">
-                            <span class="label-text">Pregunta de Seguridad 1</span>
-                        </div>
-                        <select class="select select-bordered">
-                            <option disabled selected>Pick one</option>
-                            <option>Star Wars</option>
-                            <option>Harry Potter</option>
-                            <option>Lord of the Rings</option>
-                            <option>Planet of the Apes</option>
-                            <option>Star Trek</option>
-                        </select>
-                    </label>
                     <label class="form-control w-full">
                         <div class="label">
-                            <span class="label-text">Respuesta</span>
+                            <span class="label-text">Apellido</span>
                         </div>
-                        <input name="apellido" type="text" placeholder="{usuario.apellido}" class="input input-bordered w-full " />
-                    </label>     
+                        <input name="apellido" type="text" placeholder="{usuario.apellido}" class="input input-bordered w-full" />
+                    </label>       
                 </div>
-            </div>
 
-            <div class="flex justify-end w-full">
-                <button class="btn btn-primary btn-wide mt-6 btn-sm" type="submit">Aceptar</button>
-            </div>
-        </form>
+                <div class="flex justify-end w-full">
+                    <button class="btn btn-primary btn-wide mt-6 btn-sm" type="submit">Aceptar</button>
+                </div>
+            </form> -->
+
+            <form action="?/editPregSeg" method="POST" use:enhance class="w-full px-3 mt-4
+            pb-6 border-b border-base-content/40">
+                <h4>Configurar Preguntas de Seguridad</h4>
+                <p class="text-sm">Configure o cambie sus preguntas de seguridad para recuperación de contraseña.</p>
+                <input type="hidden" name="usuario" value="{usuario.usuario}">
+
+                <div class="mt-3 min-h-12">
+                    <div class="preg">
+                        <select name="preg_1" class="w-[40%]">
+                            <option disabled selected>Seleccionar</option>
+                            <option>Nombre de su Abuela Materna</option>
+                            <option>Nombre de su Primera Mascota</option>
+                            <option>Titulo de su Libro Favorito</option>
+                            <option>Comida Favorita</option>
+                        </select>
+                        <img src="{chevron}" alt="" class="w-[20%] h-full">
+                        <input type="text" name="res_1" class="w-[40%]" placeholder="Respuesta">
+                    </div>
+                    <div class="preg">
+                        <select name="preg_2" class="w-[40%]">
+                            <option disabled selected>Seleccionar</option>
+                            <option>Pelicula Favorita</option>
+                            <option>Profesion de su Madre</option>
+                            <option>Color Favorito</option>
+                            <option>Canción Favorita</option>
+                        </select>
+                        <img src="{chevron}" alt="" class="w-[20%] h-full">
+                        <input type="text" name="res_2" class="w-[40%]" placeholder="Respuesta">
+                    </div>
+                </div>
+
+                <div class="flex justify-end w-full">
+                    <button class="btn btn-success btn-wide btn-outline mt-6 btn-sm" type="submit">Aceptar</button>
+                </div>
+            </form>
+
+            <button class="rounded-md
+                        px-4 py-1 mt-6 group
+                        btn btn-error btn-outline 
+                        w-fit 
+                        flex items-center justify-between" onclick="{() => { confirmation = true }}">
+                <img src="{delete_icon}" alt="" class="red-filter group-hover:invert">
+                <p class="group-hover:text-white">Eliminar Cuenta</p>
+            </button> 
+        </div>
     </div>
 </div>
 
@@ -130,5 +204,34 @@
 
     h4 {
         @apply font-semibold text-slate-700;
+    }
+
+    .preg {
+        @apply flex items-center justify-start lg:px-6 h-fit mt-6 w-full lg:w-4/5 ;
+    }
+
+    .preg select {
+        @apply w-[45%] py-1 px-4 border-base-content/60 rounded-md border bg-transparent;
+    }
+
+    .preg img {
+        @apply w-[10%] h-8;
+    }
+
+    .preg input  {
+        @apply w-[45%] py-1 px-4 bg-transparent border rounded-md border-base-content/50;
+    }
+
+    .edit {
+        @apply flex flex-col lg:flex-row mt-3 lg:mt-0
+        w-full lg:max-w-sm gap-3 p-3 border
+         border-base-content/40 rounded-md
+          origin-top transition-all duration-300;
+    }
+    .edit label {
+        @apply focus:outline-0 bg-transparent border-0 border-b border-base-content/50 lg:w-2/4 w-full;
+    }
+    .edit input {
+        @apply focus:outline-0 bg-transparent border-0 w-full;
     }
 </style>
