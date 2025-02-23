@@ -60,7 +60,7 @@
         <div class="w-full mb-4"><h3 class="text-3xl font-bold">Mi Perfil</h3></div>
         <div class="w-full h-full p-2
                     flex items-center justify-between
-                    bg-base-200/50 border border-base-content/30 rounded-md">
+                    bg-base-300 rounded-md">
 
             <div class="lg:w-[85%] flex items-center justify-start gap-2">
                 <div class="h-full relative ">
@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <div class="w-full h-full bg-base-200/50 rounded-md border border-base-content/30 p-6">
+        <div class="w-full h-full bg-base-300 rounded-md p-6">
             <h3 class="text-xl font-bold">Configurar Perfil</h3>
 
             <!-- <form action="?/editUser" method="POST" use:enhance class="w-full px-3 mt-4">

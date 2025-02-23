@@ -1,6 +1,7 @@
 <svelte:head>
     <title>Sistema de Gestión Empresarial para la Unidad Educativa Estadal Bolivariana "Andrés Bello"</title>
 </svelte:head>
+
 <script lang="ts">
     import "../../../app.css"
     import * as animation from "svelte/transition"
@@ -135,14 +136,7 @@
         <p class="text-xs text-center mb-3 mt-1">Ingrese sus datos de usuario para acceder.</p>
         <div class="w-full flex flex-col gap-3 mt-1">
             <label class="form-input rounded-none flex items-center gap-2">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    class="h-4 w-4 opacity-70">
-                    <path
-                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
+                <i class="fa-regular fa-circle-user"></i>
                 <input type="text" class="grow" placeholder="Usuario" name="usuario" />
             </label>
 
@@ -168,10 +162,6 @@
             <input type="hidden" name="captcha" value={captchaResult}>
         </div>
         <button class="btn btn-wide mt-4 btn-primary" type="submit">Acceder</button>
-        <!-- <div class="flex items-center justify-around text-xs mt-4">
-            <p>¿Ha olvidado su Contraseña?</p>
-            <button type="button" class="text-blue-400 ml-1" onclick="{() => {formContent = "pregseg"}}">Recuperar Contraseña</button>
-        </div> -->
     </form>
 {/snippet}
 
@@ -212,14 +202,7 @@
             </div>
 
             <label class="form-input input-md rounded-none flex items-center gap-2 w-full after:content-['Usuario']">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    class="h-4 w-4 opacity-70">
-                    <path
-                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
+                <i class="fa-regular fa-circle-user"></i>
                 <input type="text" class="w-full grow shrink" placeholder="Usuario" name="usuario" id="register_username"
                 oninput="{checkUsername}"/>
             </label>
@@ -388,7 +371,7 @@
 {/snippet}
 
 <main transition:animation.slide={{ duration: 200, easing: sineInOut, axis: "x" }}
-class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg-base-200">
+class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg-base-content">
 
     <Alert form={ form } styles="absolute left-10 top-6 max-w-[25rem]"/>
 
@@ -406,17 +389,18 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
             grid-rows-[0.5fr_4fr_4fr] lg:grid-rows-1
             gap-1">
 
-            <div class="join rounded-none lg:join-vertical flex items-center justify-start mb-4 gap-2">
+            <div class="join rounded-none lg:join-vertical flex items-center justify-start mb-4 gap-2 *:w-full">
                 <img src="{school_logo}" alt="" class="join-item max-w-14 max-h-14 p-0 "/>
 
                 <button class="join-item nav-icon {formContent === "login" ? "nav-icon-active" : ""}" 
                 onclick={() => formContent = "login"}>
-                    <img src="{login_icon}" alt="" class="size-5">
+                    <i class="fa-regular fa-id-card"></i>
                     <p>Acceder</p>
                 </button>
+
                 <button class="join-item nav-icon {formContent === "register" ? "nav-icon-active" : ""}" 
                 onclick={() => formContent = "register"}>
-                    <img src="{register_icon}" alt="" class="size-5">
+                    <i class="fa-solid fa-pen-to-square"></i>
                     <p>Registrarse</p>
                 </button>
 

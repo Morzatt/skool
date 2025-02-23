@@ -1,7 +1,7 @@
 import { loginSchema, newValidationFailObject, validateObject } from '$lib/utils/validators';
 import { usuarioRepository, type UsuarioRepositoryInterface } from '$lib/database/repositories/user.repository';
 import { sessionsRepository, type SessionsRepositoryInterface } from '$lib/database/repositories/sessions.repository';
-import type { Session } from '$lib/database/types';
+import type { Session, SessionInsertable } from '$lib/database/types';
 import { formatDateYYMMDDHHMMSS as formatDate } from '$lib';
 
 // Libraries Imports
@@ -47,22 +47,37 @@ export async function loginHandler(
     }
 
     Reflect.deleteProperty(dbuser, "contraseña")
-
+    
     let sessionArgs = {
         usuario: dbuser.usuario,
+        id: generateUUID(),
         expires_at: setExpiryDate(3, "hours"),
         data: JSON.stringify(dbuser)
-    }
-    let session = await async(sr.create(sessionArgs), log, sessionArgs)
+    } satisfies SessionInsertable
 
-    cookies.set("sessionId", session!.id, {
+    await async(sr.create(sessionArgs), log, sessionArgs)
+
+    cookies.set("sessionId", sessionArgs!.id, {
         path: "/",
         maxAge: 60 * 60 * 60 * 3,
     })
-    log.info({ msg: `SESION CREADA PARA EL USUARIO ${usuario.usuario}`, usuario: usuario.usuario, session: session?.id })
+    log.info({ msg: `SESION CREADA PARA EL USUARIO ${usuario.usuario}`, usuario: usuario.usuario, session: sessionArgs?.id })
 
     return response.success("Inicio de Sesión Exitoso.")
 }
+
+function generateUUID() {
+    // Generate random values for each section
+    const section1 = Math.floor(Math.random() * 0xFFFF);
+    const section2 = Math.floor(Math.random() * 0xFFFF);
+    const section3 = Math.floor(Math.random() * 0xFFFF);
+    const section4 = Math.floor(Math.random() * 0xFFFF);
+    
+    // Convert to hexadecimal and pad with zeros
+    return `${section1.toString(16).padStart(4, '0')}-${section2.toString(16).padStart(4, '0')}-${
+        section3.toString(16).padStart(4, '0')}-${section4.toString(16).padStart(4, '0')}`;
+}
+
 
 function setExpiryDate(time: number, type: "minutes" | "seconds" | "hours"): string {
     let date = new Date()

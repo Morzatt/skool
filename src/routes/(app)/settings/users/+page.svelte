@@ -61,7 +61,7 @@
         }
     }
 
-    let usuarioRange = asignRange(data.usuario.role)
+    let usuarioRange = asignRange(data.usuario.role.toLocaleLowerCase())
     let confirmation = $state(false)
     let usuarioDelete = $state("")
 </script>
@@ -124,7 +124,7 @@
                 {#if usuarios}
                     {#each usuarios as usuario}
                         {#if usuario.usuario !== data.usuario.usuario} <!-- if user is not the same -->
-                            {#if usuario.role !== "superadmin"} <!-- if user is not super admin-->
+                            {#if usuario.role.toLocaleLowerCase() !== "superadmin"} <!-- if user is not super admin-->
                                 {#if usuarioRange > usuario.range}
                                    <tr>
                                         <td>
@@ -144,7 +144,7 @@
                                                         <img src="{chevron}" alt="" class="rotate-[-90deg]">
                                                     </div>
                                                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                                        {#if data.usuario.role === "superadmin"}
+                                                        {#if data.usuario.role.toLocaleLowerCase().includes('superadmin')}
                                                             <li><input type="submit" name="role" value="Administrador"></li>                                                           
                                                         {/if}
                                                         <li><input type="submit" name="role" value="Editor"></li>

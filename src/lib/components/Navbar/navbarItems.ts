@@ -5,6 +5,9 @@ import administrar_usuario_icon from "$lib/images/icons/administrar_usuario_icon
 import trabajadores from "$lib/images/icons/trabajadores.svg"
 import horarios from "$lib/images/icons/horarios.svg"
 import constancias from "$lib/images/icons/historial_icon.svg"
+import administrar_asistencias_icon from "$lib/images/icons/administrar_asistencias_icon.svg"
+import administrar_departamentos_icon from "$lib/images/icons/departamentos_icon.svg"
+import administrar_justificaciones_icon from "$lib/images/icons/administrar_justificaciones_icon.svg"
 
 type RouteGroup = {
     name: string,
@@ -13,29 +16,51 @@ type RouteGroup = {
 
 type Route = {
     icon: string,
+    i?: string,
     href: string,
-    name: string
+    name: string,
 }
 
 export const routes: RouteGroup[] = [
     {
-        name: "Trabajadores",
+        name: "Empleados",
         routes: [
             {
                 icon: trabajadores,
                 href: "",
                 name: "Administrar Empleados"
             },
+
+            {
+                icon: administrar_justificaciones_icon,
+                href: "",
+                name: "Administrar Justificaciones"
+            },
+        ]
+    },
+    {
+        name: "Departamentos",
+        routes: [
+            {
+                icon: administrar_departamentos_icon,
+                href: "",
+                name: "Administrar Departamentos"
+            },
+        ]
+    },
+    {
+        name: "Asistencias",
+        routes: [
+            {
+                icon: administrar_asistencias_icon,
+                href: "",
+                name: "Registrar Asistencias"
+            },
             {
                 icon: horarios,
                 href: "",
-                name: "Administrar Horarios"
-            },
-            {
-                icon: constancias,
-                href: "",
-                name: "Administrar Constancias de Trabajo"
-            },
+                name: "Administrar Asistencias"
+            }
         ]
     },
     {
@@ -44,6 +69,7 @@ export const routes: RouteGroup[] = [
             {
                 icon: administrar_usuario_icon,
                 href: "settings/account",
+                i: "fa-regular fa-address-book",
                 name: "Mi Usuario"
             }
         ]
@@ -61,8 +87,9 @@ export const adminRoutes: RouteGroup[] = [
             },
             {
                 icon: backup_icon,
+                i: "fa-solid fa-database",
                 href: "settings/backup",
-                name: "Respaldos"
+                name: "Respaldos", 
             },
 
         ]

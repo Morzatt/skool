@@ -1,8 +1,9 @@
 import type { SessionInsertable, Session } from "../types";
 import { db } from "../";
+import { sql } from "kysely";
 
 export interface SessionsRepositoryInterface {
-    create(session: SessionInsertable): Promise<Session | undefined>
+    create(session: SessionInsertable): Promise<undefined>
     get(sessionId: string): Promise<Session | undefined>
     delete(sessionId: string): Promise<void | undefined>
 }
@@ -10,8 +11,9 @@ export interface SessionsRepositoryInterface {
 export let sessionsRepository: SessionsRepositoryInterface = {
     create: async (session) => {
         try {
-            let result = await db.insertInto("sessions").values(session).returningAll().execute()
-            return result ? result[0] : undefined;
+            let res = await db.transaction().execute(async (trx) => {
+                await trx.insertInto("sessions").values(session).execute()
+            })
         } catch (error) {
             throw error
         }

@@ -45,7 +45,7 @@ export type UpdatePregSeg = Updateable<PreguntasSeguridadTable>
 // Sessions 
 export type SessionsTable = {
     usuario: ColumnType<string, string, never>,
-    id: ColumnType<string, never, never>,
+    id: ColumnType<string, string | undefined, never>,
     created_at: ColumnType<Date, never, never>,
     expires_at: ColumnType<Date, string>,
     data: JSONColumnType<Usuario> | undefined

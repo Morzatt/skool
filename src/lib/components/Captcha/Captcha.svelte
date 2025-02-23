@@ -33,8 +33,11 @@
     })
 </script>
 
-<div class="w-full min-h-20 border border-base-content/20 flex flex-col">
-    <div class="border-b py-3 px-5 border-base-content/20 w-full flex justify-end items-center">
+<div class="w-full min-h-20 p-3
+            border border-base-content/20 rounded-xl
+            bg-base-content
+            flex flex-col gap-3">
+    <div class="bg-base-100 border-b rounded-md py-3 px-5 border-base-content/20 w-full flex justify-end items-center">
         <div id="image" class=" w-full text-3xl italic line-through select-none relative">
             {@html data}
         </div>
@@ -49,7 +52,7 @@
     </div>
 
     <input 
-        class="w-full h-full p-2 focus:border-transparent focus:outline-0 input-sm" 
+        class="w-full rounded-md h-full p-2 focus:border-transparent focus:outline-0 input-sm" 
         type="text" 
         id="submit" 
         placeholder="Código Captcha"

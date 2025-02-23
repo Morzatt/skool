@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 import type { Usuario } from '$lib/database/types';
 
 function asignRange(role: string) {
-    switch (role) {
+    switch (role.toLocaleLowerCase()) {
         case "admin":
             return 1
         case "administrador": 
@@ -28,6 +28,8 @@ export const load = (async ({ locals }) => {
             users.push({ ...i, range: asignRange(i.role) })
         }
     }
+
+    console.log(users)
 
     return { usuarios: users};
 }) satisfies PageServerLoad;

@@ -23,29 +23,42 @@
             onclick="{() => {document?.getElementById("side-drawer")?.click()}}">Inicio</a>
         </li>
 
-        <b class="w-full h-[1px] bg-base-content/30 mt-3"></b>
+        <b class="w-full h-[1px] bg-base-300 mt-3"></b>
 
         <!-- Routes -->
         {#each routes as group}
             <h3>{group.name}</h3>
 
-            {#each group.routes as route}
-                <li>
-                    <img src="{route.icon}" alt="" class="icon">
-                    <a href="{basePath}/{route.href}"
-                    onclick="{() => {document?.getElementById("side-drawer")?.click()}}">{route.name}</a>
-                </li>                   
-            {/each}
-            <b class="w-full h-[1px] bg-base-content/30 mt-3"></b>
+            <div class="join join-vertical">
+                {#each group.routes as route}
+                    <li class="join-ite my-1 transition-all duration-100 lg:bg-base-content">
+                        {#if route.i}
+                            <i class="{route.i}"></i>
+                        {:else}
+                            <img src="{route.icon}" alt="" class="icon">
+                        {/if}
+
+                        <a href="{basePath}/{route.href}"
+                        onclick="{() => {document?.getElementById("side-drawer")?.click()}}">{route.name}</a>
+                    </li>                   
+                {/each}
+            </div>
+
+            <b class="w-full h-[1px] bg-base-300 mt-3"></b>
         {/each}
 
         <!-- Admin Routes -->
-        {#if usuario.role.toLowerCase() === "administrador" || usuario.role.toLowerCase() === "admin" || usuario.role.toLocaleLowerCase() == "superadmin" || usuario.role.toLowerCase() === "superadministrador"}
+        {#if usuario.role.toLowerCase().includes("admin")}
             {#each adminRoutes as group}
                 <h3>{group.name}</h3>
                 {#each group.routes as route}
                     <li>
-                        <img src="{route.icon}" alt="" class="icon">
+                        {#if route.i}
+                            <i class="{route.i}"></i>
+                        {:else}
+                            <img src="{route.icon}" alt="" class="icon">
+                        {/if}
+
                         <a href="{basePath}/{route.href}"
                         onclick="{() => {document?.getElementById("side-drawer")?.click()}}">{route.name}</a>
                     </li>                   
@@ -54,7 +67,7 @@
         {/if}
 
         <li class="border-t border-base-content/30 mt-1.5 text-red-500">
-            <img src="{logout_icon}" alt="" class="red-filter">
+            <i class="fa-solid fa-door-open my-1"></i>
             <a href="{basePath}/logout" class="m-1.5"
             onclick="{() => {document?.getElementById("side-drawer")?.click()}}">Cerrar Sesión</a>
         </li>
@@ -69,14 +82,14 @@
             <!-- Page content here -->
             <label for="side-drawer" class="transition-all duration-200 ease-in-out 
                     p-1 rounded-lg group">
-                    <img src="{menu_icon}" alt="" class="filter group-active:invert">
+                    <img src="{menu_icon}" alt="" class="filter invert group-active:invert">
             </label>
         </div>
 
         <div class="drawer-side z-50">
             <label for="side-drawer" aria-label="close sidebar" class="drawer-overlay overflow-hidden"></label>
 
-            <div class="bg-base-100 min-h-full p-2">
+            <div class="bg-secondary-content min-h-full p-2 text-white [&_img]:invert">
                 {@render items()}
             </div>
         </div>
@@ -86,7 +99,7 @@
 {#snippet dropdown()}
 <div class="max-lg:hidden dropdown dropdown-end text-sm z-50">
     <div tabindex="0" role="button" class="transition-all duration-200 ease-in-out 
-        p-1 rounded-lg hover:bg-gray-200 active:bg-gray-900 group">
+        p-1 rounded-lg hover:bg-gray-200 active:bg-gray-900 group b">
         <img src="{menu_icon}" alt="" class="filter group-active:invert">
     </div>
 
@@ -106,19 +119,19 @@
              max-md:max-h-[5rem] lg:h-auto
             lg:overflow-y-scroll 
             px-2 
-            flex items-start justify-center
-            shadow-sm border-b lg:border-r border-base-content/20 bg-base-300">
+            flex items-start justify-center lg:text-white
+            shadow-sm border-b lg:border-r border-base-content/20 bg-secondary-content">
 
     <div class="w-full h-full lg:h-screen flex lg:flex-col p-1 lg:pb-4">
             <!-- US -->
         <div class="w-full
             flex items-center justify-between 
             lg:mt-5 p-1 px-2
-            bg-base-300/40 border border-base-content/40 rounded-md">
+            bg-transparent rounded-md">
 
             <div class="text-sm flex items-center justify-around">
-                <div class="flex items-center justify-between gap-3 p-1">
-                    <img src="{usuario.role === "Administrador" ? admin_icon : user_icon}" alt="" class="size-10">
+                <div class="flex items-center justify-between gap-3 p-1 text-base-100">
+                    <i class="fa-solid fa-address-card text-3xl"></i>
                     <div>
                         <p>{usuario.nombre} {usuario.apellido}</p>
                         <b>{capitalizeFirstLetter(usuario.role)}</b>
@@ -127,7 +140,7 @@
             </div>
 
             {@render drawer()}
-            {@render dropdown()}
+            <!-- {@render dropdown()} -->
         </div>
 
         <div class="size-full hidden lg:block">
@@ -141,19 +154,25 @@
         scrollbar-width: thin;
     }
     .items li {
-        @apply w-full flex items-center justify-start py-2 px-2 rounded-md text-sm gap-1;
+        @apply w-full flex items-center justify-start py-3 px-2 rounded-md text-sm gap-1;
+    }
+    .items li i {
+        @apply mx-1;
     }
     .items h3 {
         @apply mt-4 my-1;
     }
     .items li:hover {
-        @apply bg-base-300;
+        @apply bg-base-300 text-black;
+        img {
+            filter: none;
+        }
     }
     .items li:active {
-        @apply bg-base-200;
+        @apply bg-base-100;
     }
     .items li img {
-        @apply size-6 p-0.5;
+        @apply size-6 p-0.5 filter lg:invert;
     }
     .items li a {
         @apply size-full;
