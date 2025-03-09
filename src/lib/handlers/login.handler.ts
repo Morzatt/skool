@@ -60,6 +60,7 @@ export async function loginHandler(
     cookies.set("sessionId", sessionArgs!.id, {
         path: "/",
         maxAge: 60 * 60 * 60 * 3,
+        secure: false,
     })
     log.info({ msg: `SESION CREADA PARA EL USUARIO ${usuario.usuario}`, usuario: usuario.usuario, session: sessionArgs?.id })
 

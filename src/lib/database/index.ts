@@ -19,11 +19,11 @@ const postgres = new PostgresDialect({
 
 const mysql = new MysqlDialect({
   pool: createPool({
-    database: "escuelaDB",
-    host: "localhost",
-    user: "root",
-    password: "carlos2606",
-    port: 3306,
+    database: import.meta.env.VITE_MSDATABASE,
+    host: import.meta.env.VITE_MSHOST,
+    user: import.meta.env.VITE_MSUSER,
+    password: import.meta.env.VITE_MSPASSWORD,
+    port: import.meta.env.VITE_MSPORT || 3306,
     connectionLimit: 10
   })
 })

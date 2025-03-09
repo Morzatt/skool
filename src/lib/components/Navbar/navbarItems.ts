@@ -27,7 +27,7 @@ export const routes: RouteGroup[] = [
         routes: [
             {
                 icon: trabajadores,
-                href: "",
+                href: "empleados",
                 name: "Administrar Empleados"
             },
 
@@ -53,7 +53,7 @@ export const routes: RouteGroup[] = [
         routes: [
             {
                 icon: administrar_asistencias_icon,
-                href: "",
+                href: "asistencias",
                 name: "Registrar Asistencias"
             },
             {

@@ -81,7 +81,7 @@
     <Navbar usuario={ usuario }/>
     <div class="size-full overflow-hidden">
 
-        <div class="p-6 w-full h-full max-h-[calc(100%-3.5rem)] overflow-y-scroll overflow-x-hidden">
+        <div class="p-5 w-full h-full max-h-screen overflow-y-scroll overflow-x-hidden">
             {@render children()}
         </div>
     </div>

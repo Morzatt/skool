@@ -29,8 +29,6 @@ export const load = (async ({ locals }) => {
         }
     }
 
-    console.log(users)
-
     return { usuarios: users};
 }) satisfies PageServerLoad;
 

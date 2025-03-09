@@ -381,12 +381,11 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
             flex items-center justify-center">
 
         <div class="main-container 
-            w-full h-full lg:h-5/6
+            w-full lg:h-5/6
             border-0 border-base-content/30 rounded-sm
             p-2 bg-white shadow-xl
-            grid 
-            grid-cols-1 lg:grid-cols-[0.5fr_4fr_2.5fr] 
-            grid-rows-[0.5fr_4fr_4fr] lg:grid-rows-1
+            lg:grid 
+            grid-cols-[0.5fr_4fr_2.5fr] 
             gap-1">
 
             <div class="join rounded-none lg:join-vertical flex items-center justify-start mb-4 gap-2 *:w-full">
@@ -411,15 +410,15 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
                 </button>
             </div>
 
-            <div class="relative">
+            <div class="relative hidden lg:block">
                 <img src="{bg_1}" alt="" 
-                class="border-0 rounded-sm border-base-content/40
+                class="border rounded-sm border-base-content/40
                  w-full h-full lg:h-[120%] 
-                 absolute 
+                 absolute
                  top-[50%] left-[50%] 
                  translate-x-[-50%] translate-y-[-50%]">
 
-                 <div class="absolute 
+                 <div class="absolute
                  left-0 bottom-0 lg:bottom-[-3rem]
                   bg-black/50 text-white p-1 px-4 m-2 rounded-md">
                     <h3 class="text-xl italic font-bold">"Moral y Luces son nuestras Primeras Necesidades"</h3>    
@@ -427,7 +426,12 @@ class="max-h-screen w-full flex items-center justify-center overflow-y-hidden bg
                  </div>
             </div>
 
-            <div class="lg:overflow-hidden w-full max-lg:min-h-[30rem] *:min-h-[97%] *:border-0 max-lg:mt-4">
+            <div class="max-lg:p-4 
+            lg:overflow-hidden 
+            w-full
+            max-lg:min-h-[30rem] 
+            *:min-h-[97%] *:border-0
+            max-lg:mt-4 ">
                 {#if formContent === "register"}
                     {@render registerForm()} 
                 {:else if formContent === "pregseg"}

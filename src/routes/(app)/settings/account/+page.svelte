@@ -13,19 +13,12 @@
     let { data, form }: { data: PageData, form: ActionData } = $props();
     let { usuario } = data
 
-    let confirmation = $state(false)
     let userEdit = $state(false)
 </script>
 
-{#snippet deleteConfirmation()}
-    <form action="?/delete" method="post" use:enhance class="lg:p-4 p-2 bg-base-100 border border-base-content/60 
-            w-full lg:w-[26rem] z-[1] 
-            flex flex-col items-center justify-center
-            absolute
-            top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
-
-        <input type="hidden" value="{usuario.usuario}" name="usuario">
-
+<dialog id="delete_account_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-md overflow-hidden">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             class="size-16 shrink-0 stroke-current red-filter"
@@ -38,23 +31,25 @@
             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
 
-        <h3 class="text-lg mt-3 text-center">¿Esta seguro de querer eliminar su usuario?</h3>
-        <p class="text-sm text-base-content/70 text-wrap text-center  mt-1">Esta acción es irreversible; sera bloqueado su acceso, y sus tramites en curso serán cancelados inmediatamente.</p>
-        <p class="text-xs text-base-content/70 text-wrap text-center ">No se eliminarán los datos de ninguna de sus acciones realizadas dentro de la app.</p>
+        <h3 class="text-lg mt-3">¿Desea eliminar su Usuario?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center mt-1">Esta acción es irreversible; no se guardaran datos de los usuarios eliminados y sus tramites en curso serán cancelados inmediatamente.</p>
 
-        <div class="w-fit gap-3 mt-4">
-            <button type="button" onclick={() => {confirmation = false}} class="btn btn-sm">Volver</button>
-            <button onclick="{() => {setTimeout(()=>{confirmation = false}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+        <div class="w-fit gap-3 mt-4 flex">
+
+            <form method="dialog">
+                <button type="submit" class="btn btn-sm">Volver</button>
+            </form>
+            
+            <form action="?/delete" method="POST" use:enhance>
+                <input type="hidden" id="delete_account_close" name="usuario" value="{usuario.usuario}">
+                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+            </form>
         </div>
-    </form>
-{/snippet}
+    </div>
+</dialog>
 
 <div class="relative h-screen">
-    {#if confirmation}
-        {@render deleteConfirmation()}       
-    {/if}
-
-    <div class="relative size-full flex flex-col items-center justify-between gap-2 {confirmation ? "blur-md" : ""} transition-all ">
+    <div class="relative size-full flex flex-col items-center justify-between gap-2">
         <Alert form={form} styles="absolute right-4 top-4 max-w-sm"/>
 
         <div class="w-full mb-4"><h3 class="text-3xl font-bold">Mi Perfil</h3></div>
@@ -189,7 +184,7 @@
                         px-4 py-1 mt-6 group
                         btn btn-error btn-outline 
                         w-fit 
-                        flex items-center justify-between" onclick="{() => { confirmation = true }}">
+                        flex items-center justify-between" onclick="{() => { document.getElementById('delete_account_modal').showModal() }}">
                 <img src="{delete_icon}" alt="" class="red-filter group-hover:invert">
                 <p class="group-hover:text-white">Eliminar Cuenta</p>
             </button> 

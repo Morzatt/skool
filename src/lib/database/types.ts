@@ -10,6 +10,8 @@ export interface Database {
     usuarios: UsuariosTable,
     preguntas: PreguntasSeguridadTable,
     sessions: SessionsTable,
+    empleados: EmpleadosTable,
+    departamentos: DepartamentosTable,
 }
 
 type Roles = "superadmin" | "administrador" | "editor" | "usuario"
@@ -54,3 +56,36 @@ export type SessionsTable = {
 export type Session = Selectable<SessionsTable>
 export type SessionInsertable = Insertable<SessionsTable>
 export type SessionUpdateable = Updateable<SessionsTable>
+
+
+
+// Empleados
+export type EmpleadosTable = {
+    cedula: ColumnType<string, string, never>,
+    primer_nombre: string,
+    segundo_nombre: string,
+    primer_apellido: string,
+    segundo_apellido: string,
+    sexo: "Masculino" | "Femenino"
+    fecha_nacimiento: ColumnType<Date, string, never>,
+    departamento: string,
+    cargo: string,
+    turno: "Mañana" | "Tarde"
+    estado: 'Activo'| 'Reposo'| 'Inhabilitado'| 'Despedido'
+    created_at: ColumnType<Date, never>
+}
+
+export type Empleado = Selectable<EmpleadosTable>
+export type EmpleadoInsertable = Insertable<EmpleadosTable>
+export type EmpleadoUpdateable = Updateable<EmpleadosTable>
+
+
+// Departamentos
+export type DepartamentosTable = {
+    id_departamento: ColumnType<string, string, never>
+    nombre_departamento: string
+}
+
+export type Departamento = Selectable<DepartamentosTable>
+export type DepartamentoInsertable = Insertable<DepartamentosTable>
+export type DepartamentoUpdateable = Updateable<DepartamentosTable>

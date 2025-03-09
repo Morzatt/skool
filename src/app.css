@@ -26,6 +26,11 @@ html:has(.drawer-toggle:checked) {
   @apply bg-red-500;
 }
 
+:root:has(:is(.modal-open, .modal:target, .modal-toggle:checked + .modal, .modal[open])) {
+    overflow-y: hidden;
+    scrollbar-gutter: unset;
+}
+
 @layer components {
     .btn-hover {
         @apply hover:bg-base-content text-white;

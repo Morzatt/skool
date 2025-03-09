@@ -1,4 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
+
+import type { FormResponse } from "$lib/classes/responses.classes";
+
 // for information about these interfaces
 declare global {
 	namespace App {
@@ -6,7 +9,7 @@ declare global {
 		interface Locals {
 			usuario: Omit<Usuario, "contraseña">,
 			log: pino.Logger<never, boolean>,
-			response: FormResponse
+			response: FormResponse 
 		}
 		// interface PageData {}
 		// interface PageState {}
