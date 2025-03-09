@@ -6,7 +6,7 @@
     import FilterSelect from './FilterSelect.svelte';
 
     let { data }: { data: PageData } = $props();
-    let { empleados } = $derived(data)
+    let { empleados, records, total } = $derived(data)
 
     let index = $state(0)
     let filter = $state("")
@@ -15,18 +15,29 @@
     let turno = $state("")
     let departamento = $state('')
 
-    let url = $derived(`${basePath}/alumnos?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`) 
+    let cedula: 'asc'|'desc' = $state('asc')
+    let nombre: 'asc'|'desc' = $state('asc')
+    let apellido: 'asc'|'desc' = $state('asc')
+    let fecha: 'asc'|'desc' = $state('asc')
+    let edad: 'asc'|'desc' = $state('asc')
+
+    function changeOrder(variable: 'asc'| 'desc') {
+        variable = 'desc' //variable === "asc" ? "desc" : "asc"
+        return
+    }
+ 
+    let url = $derived(`${basePath}/empleados?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`) 
 
     let indexHandler = {
         incrementIndex: async () => {
-            if (empleados!.length <= 14) return;
-            index += 15
+            if (empleados && empleados.length <= 9) return;
+            index += 10
             handleSearch()
         },
 
         decrementIndex: async () => {
             if (index === 0) return;
-            index -= 15
+            index -= 10
             handleSearch()
         }
     }
@@ -39,7 +50,7 @@
     function asignColor(status: EstadosEmpleado): string {
         switch (status) {
             case "Activo": 
-                return "text-base-100 bg-success"
+                return "text-success-content bg-success"
             case "Inhabilitado":
                 return "text-base-200 bg-error"
             case "Despedido":
@@ -48,6 +59,24 @@
                 return "text-yellow-900 bg-warning"
         }
     }
+
+    function setIndex(i: number) {
+        if (i >= total || i <= empleados!.length) { return }
+        index = i;
+        handleSearch()
+    }
+
+    function clearAll() {
+        index = 0
+        filter = ''
+        search = ''
+        estado = ''
+        turno = ''
+        departamento = ''
+
+        handleSearch()
+    }
+
 </script>
 
 <div class="*: w-full min-h-full lg:h-full">
@@ -59,7 +88,7 @@
             <div class="join border border-base-content/60">
                 <label class="input join-item flex items-center justify-start gap-2 focus:outline-0 outline-0">
                     <i class="fa-solid fa-user-tie"></i>
-                    <input type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."/>
+                    <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."/>
 
                     <kbd class="kbd kbd-sm">ctrl</kbd>
                     <kbd class="kbd kbd-sm">K</kbd>
@@ -105,7 +134,7 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-start gap-2 flex-wrap">
+        <div class="flex items-end justify-start gap-2 flex-wrap">
             <div class="form-control">
                 <div class="label">
                     <b class="label-text">Estado</b>
@@ -148,40 +177,133 @@
                 <div class="label">
                     <b class="label-text">Departamentos</b>
                 </div>
-                <FilterSelect bind:value={departamento} name="Departamento" type="dropdown-bottom" styles="" icon="fa-solid fa-briefcase" options={[
-                    {
-                        name: "Docentes",
-                        value: "docentes"
-                    },
-                    {
-                        name: "Administrativos",
-                        value: "administrativos"
-                    },
-                    {
-                        name: "Obreros",
-                        value: "obreros"
-                    },
-                    {
-                        name: "Obreros",
-                        value: "obreros"
-                    },
-                ]}/>
+                <FilterSelect bind:value={departamento} name="Departamento" type="dropdown-bottom" styles="" icon="fa-solid fa-briefcase" 
+                options={
+                    data.departamentos !== undefined ? 
+                        data.departamentos.map((i) => {
+                            return {
+                                name: i.nombre_departamento,
+                                value: i.id_departamento
+                            }
+                        }) : 
+                [{ name: "No hay departamentos creados", value: "" }]}/>
             </div>
+
+            <button aria-label="clear-search" 
+            class="{index || filter || search || estado || turno || departamento ? "block" : "hidden"} 
+            hover:text-error 
+            transition-all duration-200 ease-in-out 
+            mb-0.5 mx-6 
+            origin-right 
+            tooltip tooltip-top"
+            data-tip="Limpiar Filtros"
+            onclick={clearAll}>
+                <i class="fa-solid fa-circle-xmark text-3xl"></i>
+            </button>
         </div>
     </div>
 
+    <div class="w-full h-max rounded-md px-4 flex items-end justify-end flex-wrap">
+        <div>{cedula}</div>
+
+        <div class="form-control">
+            <div class="label justify-end px-4">
+                <b class="label-text">Pág.</b>
+            </div>
+            <div class="join *:btn-sm *:border *:border-base-content">
+                <button onclick={indexHandler.decrementIndex} class="mx-2 btn rounded-md" aria-label="decrement-index">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <button onclick={() => { setIndex(index+10) }} class="join-item btn">{1}</button>
+                <button onclick={() => { setIndex(index+20) }} class="join-item btn">{2}</button>
+                <button onclick={() => { setIndex(index+30) }} class="join-item btn">{3}</button>
+                <button onclick={() => { setIndex(1) }} class="join-item btn-disabled">...</button>
+                <button onclick={() => { setIndex(total-10) }} class="join-item btn mr-2">{Math.floor(total/10)}</button>
+
+                <button onclick={indexHandler.incrementIndex} class="btn rounded-md" aria-label="increment-index">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
     <div class="w-full h-max mt-4 bg-base-300 rounded-md">
         <table class="table mt-2 text-center flex">
             <thead class="">
                 <tr class="bg-accent [&_span]:font-bold">
-                    <th class="rounded-l-lg" ><span class="text-sm font-medium text-base-content ext-base-100">#</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Cédula</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span></th>
-                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span></th>
+                    <th class="rounded-l-lg">
+                        <span class="text-sm font-medium text-base-content ext-base-100">#</span>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <div class="text-sm text-secondary-content ext-base-100">Cédula</div>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox" onclick={() => {changeOrder(cedula)}}/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span>
+                            <label class="swap swap-rotate">
+                                <input type="checkbox"/>
+                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                            </label>
+                        </div>
+                    </th>
                     <th class="rounded-r-lg"><span class="text-sm font-medium text-base-content ext-base-100">Administrar</span></th>
                 </tr>
             </thead>
@@ -200,7 +322,7 @@
                                 <span class=" px-4 rounded-md py-1 {asignColor(empleado.estado)}">{empleado.estado}</span>
                             </th>
                             <th>
-                                <a class="btn btn-sm btn-square" href="{basePath}/alumnos/{empleado.cedula}" aria-label="administrar">
+                                <a class="btn btn-sm btn-square" href="{basePath}/empleados/{empleado.cedula}" aria-label="administrar">
                                     <i class="fa-solid fa-screwdriver-wrench"></i>
                                 </a>
                             </th>

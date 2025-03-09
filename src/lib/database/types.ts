@@ -12,6 +12,7 @@ export interface Database {
     sessions: SessionsTable,
     empleados: EmpleadosTable,
     departamentos: DepartamentosTable,
+    asistencias: AsistenciasTable
 }
 
 type Roles = "superadmin" | "administrador" | "editor" | "usuario"
@@ -91,3 +92,18 @@ export type DepartamentosTable = {
 export type Departamento = Selectable<DepartamentosTable>
 export type DepartamentoInsertable = Insertable<DepartamentosTable>
 export type DepartamentoUpdateable = Updateable<DepartamentosTable>
+
+
+
+// Asistencias
+export type AsistenciasTable = {
+    empleado: ColumnType<string, string, never>,
+    fecha: ColumnType<string, string, never>,
+    hora_entrada: ColumnType<string, string, never>,
+    hora_salida: string | undefined,
+    encargado: ColumnType<string, string, never>,
+}
+
+export type Asistencia = Selectable<AsistenciasTable>
+export type AsistenciaInsertable = Insertable<AsistenciasTable>
+export type AsistenciaUpdateable = Updateable<AsistenciasTable>

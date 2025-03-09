@@ -31,9 +31,16 @@ export const actions = {
             turno:             data.get('turno') as "Mañana" | "Tarde",
         } satisfies Omit<Omit<EmpleadoInsertable, "edad">, "nacionalidad">
 
-        await async(empleadosRepository.create({
-            ...empleado,
-            edad: getAge(empleado.fecha_nacimiento)
-        }) ,log)
+        for (let i = 0; i < 100; i++) {
+            await async(empleadosRepository.create({
+                ...empleado,
+                cedula: (i+2039).toString(),
+                edad: getAge(empleado.fecha_nacimiento)
+            }) ,log)
+        }
+        // await async(empleadosRepository.create({
+        //     ...empleado,
+        //     edad: getAge(empleado.fecha_nacimiento)
+        // }) ,log)
     }
 } satisfies Actions 
