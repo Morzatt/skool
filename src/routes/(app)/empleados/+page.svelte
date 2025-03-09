@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath } from '$lib';
+    import type { EstadosEmpleado } from '$lib/database/types';
     import type { PageData } from './$types';
     import FilterSelect from './FilterSelect.svelte';
 
@@ -12,7 +13,7 @@
     let search = $state("")
     let estado = $state("")
     let turno = $state("")
-    let departamento = $state('departamentos')
+    let departamento = $state('')
 
     let url = $derived(`${basePath}/alumnos?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`) 
 
@@ -33,6 +34,19 @@
     async function handleSearch() {
         await invalidateAll()
         goto(url)
+    }
+
+    function asignColor(status: EstadosEmpleado): string {
+        switch (status) {
+            case "Activo": 
+                return "text-base-100 bg-success"
+            case "Inhabilitado":
+                return "text-base-200 bg-error"
+            case "Despedido":
+                return "text-red-900 bg-error"
+            default: 
+                return "text-yellow-900 bg-warning"
+        }
     }
 </script>
 
@@ -76,7 +90,7 @@
         </div>
     </div>
 
-    <div class="w-full h-max mt-4 bg-base-200 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
+    <div class="w-full h-max mt-4 bg-primary/20 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
         <div class="flex items-center justify-start w-max h-full">
             <div class="form-control">
                 <div class="label">
@@ -158,21 +172,21 @@
 
     <div class="w-full h-max mt-4 bg-base-300 rounded-md">
         <table class="table mt-2 text-center flex">
-            <thead>
-                <tr class="bg-secondary [&_span]:font-bold">
+            <thead class="">
+                <tr class="bg-accent [&_span]:font-bold">
                     <th class="rounded-l-lg" ><span class="text-sm font-medium text-base-content ext-base-100">#</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Cédula</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Nombre</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Apellido</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Sexo</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Fecha de Nacimiento</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Edad</span></th>
-                    <th><span class="text-sm font-medium text-base-content ext-base-100">Estado</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Cédula</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span></th>
+                    <th><span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span></th>
                     <th class="rounded-r-lg"><span class="text-sm font-medium text-base-content ext-base-100">Administrar</span></th>
                 </tr>
             </thead>
             <tbody>
-                {#if false}
+                {#if empleados}
                     {#each empleados as empleado , i(empleado)}
                         <tr class="border-0 border-base-content/30 shadow-sm">
                             <th>{(i+1)+index}</th>
@@ -182,10 +196,12 @@
                             <th>{empleado.sexo}</th>
                             <th>{new Date(empleado.fecha_nacimiento).toLocaleDateString()}</th>
                             <th>{empleado.edad}</th>
-                            <th>{empleado.estado}</th>
                             <th>
-                                <a class="btn btn-sm btn-square" href="{basePath}/alumnos/{empleado.cedula}">
-                                    <img src="{ver_icon}" alt="" class="icon">
+                                <span class=" px-4 rounded-md py-1 {asignColor(empleado.estado)}">{empleado.estado}</span>
+                            </th>
+                            <th>
+                                <a class="btn btn-sm btn-square" href="{basePath}/alumnos/{empleado.cedula}" aria-label="administrar">
+                                    <i class="fa-solid fa-screwdriver-wrench"></i>
                                 </a>
                             </th>
                         </tr>

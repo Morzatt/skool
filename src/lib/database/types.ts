@@ -58,7 +58,7 @@ export type SessionInsertable = Insertable<SessionsTable>
 export type SessionUpdateable = Updateable<SessionsTable>
 
 
-
+export type EstadosEmpleado ='Activo'| 'Reposo'| 'Inhabilitado'| 'Despedido' | "Por Asignar" 
 // Empleados
 export type EmpleadosTable = {
     cedula: ColumnType<string, string, never>,
@@ -66,12 +66,14 @@ export type EmpleadosTable = {
     segundo_nombre: string,
     primer_apellido: string,
     segundo_apellido: string,
-    sexo: "Masculino" | "Femenino"
+    sexo: "Masculino" | "Femenino",
+    edad: string
+    nacionalidad: "Extranjero" | "Venezolano"
     fecha_nacimiento: ColumnType<Date, string, never>,
     departamento: string,
     cargo: string,
     turno: "Mañana" | "Tarde"
-    estado: 'Activo'| 'Reposo'| 'Inhabilitado'| 'Despedido'
+    estado: ColumnType<EstadosEmpleado, never, EstadosEmpleado>,
     created_at: ColumnType<Date, never>
 }
 

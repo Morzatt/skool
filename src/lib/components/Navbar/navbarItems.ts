@@ -43,7 +43,7 @@ export const routes: RouteGroup[] = [
         routes: [
             {
                 icon: administrar_departamentos_icon,
-                href: "",
+                href: "departamentos",
                 name: "Administrar Departamentos"
             },
         ]

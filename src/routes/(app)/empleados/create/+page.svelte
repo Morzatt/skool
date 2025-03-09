@@ -9,37 +9,6 @@
     import Select from './Select.svelte';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-
-    let genForm = $derived.by(() => {
-        return form?.form === "delete" ? null : form;
-    })
-
-    let deleteForm = $derived.by(() => {
-        if (form?.form === "delete") {
-            if (form?.success) {
-                document.getElementById("eliminar_representante_close")!.click()
-                form = new FormResponse('').success('Representante Eliminado Correctamente')
-            }
-            return form
-        } else {
-            return null 
-        }
-    })
-
-    let telefonos: string[] = $state([""])
-
-    function addNumber() {
-        if (telefonos.length >= 2) {
-            form = new FormResponse('Validacion').error('Número de teléfonos máximo: 2')
-            return
-        }
-
-        telefonos.push("")
-    }
-
-    function deleteNumber(i: number) {
-        telefonos.pop()
-    }
 </script>
 
 <div class="lg:py-6 lg:px-[10rem] size-full relative">
@@ -48,7 +17,7 @@
         <img src="{chevron}" alt="">
     </a>
 
-    <Alert form={ genForm } styles="text-sm max-w-sm fixed lg:absolute top-16 left-4"/>
+    <Alert form={ form } styles="text-sm max-w-sm fixed lg:absolute top-16 left-4"/>
     <form action="?/create" method="POST" use:enhance class="w-full
                            bg-base-100 rounded-md shadow-md border border-base-300
                            p-4 ">
@@ -142,7 +111,7 @@
                         <div class="label">
                             <span class="label-text">Turno</span>
                         </div>
-                        <Select name="turno" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-cloud-sun" options={[
+                        <Select name="turno" placeholder="Elegir" type="dropdown-top" styles="rounded-md" icon="fa-solid fa-cloud-sun" options={[
                             {
                                 name: "Mañana",
                                 value: "Mañana"
@@ -159,8 +128,17 @@
                         <div class="label">
                             <span class="label-text">Departamento</span>
                         </div>
-                        <Select name="departamento" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-cloud-sun" 
-                        options={null}/>
+                        <Select name="departamento" placeholder="Elegir" type="dropdown-top" styles="rounded-md" icon="fa-solid fa-cloud-sun" 
+                        options={
+                            data.departamentos !== undefined ? 
+                                data.departamentos.map((i) => {
+                                    return {
+                                        name: i.nombre_departamento,
+                                        value: i.id_departamento
+                                    }
+                                }) : 
+                                [{ name: "No hay departamentos creados", value: "" }]}
+                        />
                     </label> 
 
                     <!-- SEXO -->
