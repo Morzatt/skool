@@ -12,7 +12,7 @@
 </script>
 
 <div class="lg:py-6 lg:px-[10rem] size-full relative">
-    <a href="{basePath}/empleados" class="mb-6 lg:absolute left-2 top-2 btn btn-sm btn-circle flex items-center justify-center tooltip tooltip-right"
+    <a href="{basePath}/empleados" class="mb-6 lg:absolute left-2 top-2 btn btn-accent btn-sm btn-circle flex items-center justify-center tooltip tooltip-right"
     data-tip="Administrar Empleados">
         <img src="{chevron}" alt="">
     </a>

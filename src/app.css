@@ -31,6 +31,19 @@ html:has(.drawer-toggle:checked) {
     scrollbar-gutter: unset;
 }
 
+@layer utilities {
+    .btn.bg-accent:hover, .btn.btn-accent:hover {
+        @apply bg-base-content text-base-100 border-0;
+        img {
+            @apply filter invert;
+        }
+    }
+
+    .btn:hover {
+        @apply text-base-content;
+    }
+}
+
 @layer components {
     .btn-hover {
         @apply hover:bg-base-content text-white;

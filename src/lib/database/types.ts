@@ -86,7 +86,9 @@ export type EmpleadoUpdateable = Updateable<EmpleadosTable>
 // Departamentos
 export type DepartamentosTable = {
     id_departamento: ColumnType<string, string, never>
-    nombre_departamento: string
+    nombre_departamento: string,
+    descripcion: string,
+    icon: string
 }
 
 export type Departamento = Selectable<DepartamentosTable>

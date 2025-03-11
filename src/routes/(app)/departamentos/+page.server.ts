@@ -13,13 +13,13 @@ export const load = (async ({ url, locals }) => {
         .leftJoin('empleados', "empleados.departamento", 'departamentos.id_departamento')
         .select((eb) => [
             'departamentos.nombre_departamento',
+            'departamentos.descripcion',
+            'departamentos.icon',
             eb.fn.count('empleados.cedula').as('empleados')
         ])
         .groupBy('departamentos.id_departamento')
         .execute()
     , log)
-
-    console.log(departamentos)
 
     return { departamentos };
 }) satisfies PageServerLoad;
@@ -27,12 +27,17 @@ export const load = (async ({ url, locals }) => {
 export const actions = {
     create: async ({ locals, request }) => {
         let { log, response } = locals
-        let nombre_departamento = (await request.formData()).get("nombre_departamento") as string
+        let data = await request.formData()
+        let nombre_departamento = data.get("nombre_departamento") as string
+        let descripcion = data.get('descripcion') as string
+        let icon = data.get('departamento_icon') as string
 
         await async(
             departamentosRepository.create({
                 nombre_departamento: nombre_departamento,
-                id_departamento: generateUUID()
+                id_departamento: generateUUID(),
+                descripcion: descripcion,
+                icon: icon
         }), log)
     }
 } satisfies Actions

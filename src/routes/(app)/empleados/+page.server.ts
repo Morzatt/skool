@@ -15,11 +15,28 @@ export const load = (async ({ url, locals }) => {
     let turno = capitalizeFirstLetter(url.searchParams.get('turno') as string) as 'Mañana' | 'Tarde';
     let departamento = url.searchParams.get('departamento') as string;
 
+
+    let cedula: 'asc' | 'desc' = url.searchParams.get('cOrder') as "asc" | 'desc';
+    let nombre: 'asc' | 'desc' = url.searchParams.get('nOrder') as "asc" | 'desc';
+    let apellido: 'asc' | 'desc' = url.searchParams.get('aOrder') as "asc" | 'desc';
+    let fecha: 'asc' | 'desc' = url.searchParams.get('fOrder') as "asc" | 'desc';
+
     let query = db
         .selectFrom('empleados')
         .limit(10)
         .offset(index ? index : 0)
         .orderBy("empleados.created_at desc")
+    
+    switch (true) {
+        case cedula !== "asc":
+            query = query.orderBy(`empleados.cedula ${cedula ? cedula : "desc"}`);
+        case nombre !== "asc":
+            query = query.orderBy(`empleados.primer_nombre ${nombre ? nombre : "asc"}`)
+        case apellido !== "asc":
+            query = query.orderBy(`empleados.primer_apellido ${apellido ? apellido : "desc"}`)
+        case fecha !== "asc":
+            query = query.orderBy(`empleados.fecha_nacimiento ${fecha ? fecha : "desc"}`)
+    }
 
     let empleados: Empleado[] | undefined;
     let records: number;

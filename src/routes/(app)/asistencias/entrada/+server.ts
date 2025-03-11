@@ -6,5 +6,5 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
     let data = await request.json()
     console.log(data)
 
-    return new Response(JSON.stringify(response.success('QR LEIDO CORRECTAMENTE')));
+    return new Response(JSON.stringify(response.success('Asistencia de Entrada Tomada correctamente.')));
 };

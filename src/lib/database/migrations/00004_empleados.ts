@@ -29,6 +29,8 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .createTable('departamentos')
     .addColumn('id_departamento', 'varchar(40)', (col) => col.notNull().primaryKey())
     .addColumn('nombre_departamento', 'varchar(50)', (col) => col.notNull())
+    .addColumn('icon', 'varchar(120)', (col) => col.notNull())
+    .addColumn('descripcion', 'text', (col) => col.notNull())
     .execute()
 }
 

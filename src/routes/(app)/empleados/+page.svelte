@@ -15,18 +15,12 @@
     let turno = $state("")
     let departamento = $state('')
 
-    let cedula: 'asc'|'desc' = $state('asc')
-    let nombre: 'asc'|'desc' = $state('asc')
-    let apellido: 'asc'|'desc' = $state('asc')
-    let fecha: 'asc'|'desc' = $state('asc')
-    let edad: 'asc'|'desc' = $state('asc')
+    let cedula: 'asc'|'desc' = $state('desc')
+    let nombre: 'asc'|'desc' = $state('desc')
+    let apellido: 'asc'|'desc' = $state('desc')
+    let fecha: 'asc'|'desc' = $state('desc')
 
-    function changeOrder(variable: 'asc'| 'desc') {
-        variable = 'desc' //variable === "asc" ? "desc" : "asc"
-        return
-    }
- 
-    let url = $derived(`${basePath}/empleados?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`) 
+    let url = $derived(`${basePath}/empleados?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -50,13 +44,13 @@
     function asignColor(status: EstadosEmpleado): string {
         switch (status) {
             case "Activo": 
-                return "text-success-content bg-success"
+                return "text-green-900 bg-success/50"
             case "Inhabilitado":
-                return "text-base-200 bg-error"
+                return "text-base-200 bg-error/50"
             case "Despedido":
-                return "text-red-900 bg-error"
+                return "text-red-900 bg-error/50"
             default: 
-                return "text-yellow-900 bg-warning"
+                return "text-yellow-900 bg-warning/50"
         }
     }
 
@@ -204,24 +198,18 @@
     </div>
 
     <div class="w-full h-max rounded-md px-4 flex items-end justify-end flex-wrap">
-        <div>{cedula}</div>
-
         <div class="form-control">
             <div class="label justify-end px-4">
-                <b class="label-text">Pág.</b>
+                <b class="label-text">Pág. {index/10 === 0 ? 1 : index/10} de {Math.round(total/10)}</b>
             </div>
             <div class="join *:btn-sm *:border *:border-base-content">
-                <button onclick={indexHandler.decrementIndex} class="mx-2 btn rounded-md" aria-label="decrement-index">
+                <button onclick={indexHandler.decrementIndex} class="join-item btn rounded-md" aria-label="decrement-index">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
 
-                <button onclick={() => { setIndex(index+10) }} class="join-item btn">{1}</button>
-                <button onclick={() => { setIndex(index+20) }} class="join-item btn">{2}</button>
-                <button onclick={() => { setIndex(index+30) }} class="join-item btn">{3}</button>
                 <button onclick={() => { setIndex(1) }} class="join-item btn-disabled">...</button>
-                <button onclick={() => { setIndex(total-10) }} class="join-item btn mr-2">{Math.floor(total/10)}</button>
 
-                <button onclick={indexHandler.incrementIndex} class="btn rounded-md" aria-label="increment-index">
+                <button onclick={indexHandler.incrementIndex} class="join-item btn rounded-md" aria-label="increment-index">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -238,7 +226,7 @@
                         <div class="flex items-center justify-center gap-2">
                             <div class="text-sm text-secondary-content ext-base-100">Cédula</div>
                             <label class="swap swap-rotate">
-                                <input type="checkbox" onclick={() => {changeOrder(cedula)}}/>
+                                <input type="checkbox" onclick={() => {cedula = cedula == "asc" ? "desc" : "asc"; handleSearch();}}/>
                                 <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
                                 <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
                             </label>
@@ -248,7 +236,7 @@
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span>
                             <label class="swap swap-rotate">
-                                <input type="checkbox"/>
+                                <input type="checkbox" onclick={() => { nombre= nombre == "asc" ? "desc" : "asc"; handleSearch(); }}/>
                                 <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
                                 <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
                             </label>
@@ -258,7 +246,7 @@
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span>
                             <label class="swap swap-rotate">
-                                <input type="checkbox"/>
+                                <input type="checkbox" onclick={() => { apellido = apellido == "asc" ? "desc" : "asc"; handleSearch(); }}/>
                                 <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
                                 <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
                             </label>
@@ -278,7 +266,7 @@
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
                             <label class="swap swap-rotate">
-                                <input type="checkbox"/>
+                                <input type="checkbox" onclick={() => { fecha = fecha == "asc" ? "desc" : "asc"; handleSearch(); }}/>
                                 <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
                                 <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
                             </label>
@@ -287,21 +275,11 @@
                     <th>
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox"/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
                         </div>
                     </th>
                     <th>
                         <div class="flex items-center justify-center gap-2">
                             <span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox"/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
                         </div>
                     </th>
                     <th class="rounded-r-lg"><span class="text-sm font-medium text-base-content ext-base-100">Administrar</span></th>
@@ -319,11 +297,11 @@
                             <th>{new Date(empleado.fecha_nacimiento).toLocaleDateString()}</th>
                             <th>{empleado.edad}</th>
                             <th>
-                                <span class=" px-4 rounded-md py-1 {asignColor(empleado.estado)}">{empleado.estado}</span>
+                                <span class=" px-4 rounded-md py-1 font-bold {asignColor(empleado.estado)}">{empleado.estado}</span>
                             </th>
                             <th>
-                                <a class="btn btn-sm btn-square" href="{basePath}/empleados/{empleado.cedula}" aria-label="administrar">
-                                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                                <a class="btn btn-sm rounded-md btn-square text-center" href="{basePath}/empleados/{empleado.cedula}" aria-label="administrar">
+                                    <i class="fa-solid fa-pen-to-square text-xl"></i>
                                 </a>
                             </th>
                         </tr>

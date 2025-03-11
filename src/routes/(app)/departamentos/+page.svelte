@@ -30,6 +30,24 @@
                 return "text-yellow-900 bg-warning"
         }
     }
+
+    let icons = [
+        'fa-solid fa-school',
+        'fa-solid fa-briefcase',
+        'fa-solid fa-building',
+        'fa-solid fa-user-nurse',
+        'fa-solid fa-dumbbell',
+        'fa-solid fa-vial-circle-check',
+        'fa-solid fa-user-doctor',
+        'fa-solid fa-brain',
+        'fa-solid fa-chalkboard',
+        'fa-solid fa-graduation-cap',
+        'fa-solid fa-book',
+        'fa-solid fa-scroll',
+        'fa-solid fa-microphone-lines',
+        'fa-solid fa-camera',
+        'fa-solid fa-truck',
+    ]
 </script>
 
 <div class="*: w-full min-h-full lg:h-full">
@@ -72,13 +90,39 @@
         </div>
     </div>
 
-    <div class="w-full h-max mt-4 p-4 bg-base-300 rounded-md grid grid-cols-3 gap-2">
+    <div class="w-full mt-4">
+        <h3 class="text-xl font-medium">Todos los Departamentos</h3>
+    </div>
+
+    <div class="w-full h-max mt-4 p-4 pb-8 bg-base-300 rounded-md grid grid-cols-3 items-start gap-2">
         {#if departamentos}
             {#each departamentos as departamento}
-                <div class="p-2 bg-base-100 rounded-md">
-                    <div>
-                        <span>{departamento.nombre_departamento}</span>
-                        <span>{departamento.empleados}</span>
+                <div class="stack h-full *:h-full">
+                    <div class="card shadow-md bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title"><i class="{departamento.icon}"></i>{departamento.nombre_departamento}</h2>
+                            <p>{departamento.descripcion}</p>
+                            <div class="w-full h-12 flex items-center justify-between">
+                                <div class="text-sm">
+                                    <span><b>Personal:</b> {departamento.empleados}</span>
+                                </div>
+                                <button class="btn bg-base-content text-base-100">
+                                    Administrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-md bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title">Notification 2</h2>
+                            <p>You have 3 unread messages. Tap here to see.</p>
+                        </div>
+                    </div>
+                    <div class="card shadow-md bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title">Notification 3</h2>
+                            <p>You have 3 unread messages. Tap here to see.</p>
+                        </div>
                     </div>
                 </div>
             {/each}           
@@ -86,9 +130,9 @@
     </div>
 </div>
 
-<dialog id="create_departamento_modal" class="modal modal- modal-bottom sm:modal-middle">
+<dialog id="create_departamento_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
-                sm:w-10/12 sm:max-w-md overflow-hidden">
+                sm:w-10/12 sm:max-w-md overflow-hidden ">
 
         <form method="dialog">
             <button type="submit" id="create_departamento_close" aria-label="close-modal" 
@@ -100,8 +144,8 @@
         <h3 class="text-lg mt-3">Crear Nuevo Departamento</h3>
         <p class="text-xs text-base-content/60">Introduzca el nombre del departamento a crear para comenzar a añadir empleados a ésta nueva área de trabajo</p>
 
-        <form action="?/create" method="post" use:enhance class="w-fit gap-3 mt-4 flex flex-col">
-            <div class="form-control">
+        <form action="?/create" method="post" use:enhance class="w-full gap-3 mt-4 flex flex-col items-center overflow-y-auto thin">
+            <div class="form-control w-fit">
                 <div class="label">
                     <b class="label-text">Nombre del Nuevo Departamento</b>
                 </div>
@@ -111,8 +155,32 @@
                 </label>
             </div>
 
+            <fieldset class="fieldset w-full mt-3">
+                <legend class="fieldset-legend font-bold text-sm mb-1">Descripcion del Departamento</legend>
+                <textarea class="textarea textarea-bordered w-full min-h-24" name="descripcion" placeholder="Descripcion..."></textarea>
+            </fieldset>
+
+            <div class="form-control w-full">
+                <div class="label">
+                    <b class="label-text">Escoja un Icono</b>
+                </div>
+                <div class="border shadow-md border-base-content p-3 rounded-xl max-w-sm 
+                 grid grid-cols-4
+                 gap-3 flex-wrap">
+                    {#each icons as icon}
+                        <div class="size-fit flex text-3xl">
+                           <label class="hover:bg-base-content hover:text-base-100 transition-all duration-200
+                           border border-base-content p-1 rounded-md cursor-pointer">
+                                <input type="radio" class="radio" name="departamento_icon" value="{icon}">
+                                <i class="{icon}"></i> 
+                           </label>
+                        </div> 
+                    {/each}
+                </div>
+            </div>
+
             <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" 
-                class="btn btn-sm btn-success text-base-100">Crear</button>
+                class="btn btn-sm btn-success text-base-100 px-8">Crear Departamento</button>
         </form>
     </div>
 </dialog>
@@ -120,5 +188,8 @@
 <style lang="postcss">
     * {
         @apply focus:outline-0;
+    }
+    .thin {
+        scrollbar-width: thin;
     }
 </style>
