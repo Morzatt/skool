@@ -1,6 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 
 import type { FormResponse } from "$lib/classes/responses.classes";
+import type pino from "pino";
 
 // for information about these interfaces
 declare global {

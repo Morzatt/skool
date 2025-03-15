@@ -85,11 +85,11 @@
                 </thead>
                 <tbody>
                     {#if usuarios}
-                        {#each usuarios as usuario}
+                        {#each usuarios as usuario, i}
                             {#if usuario.usuario !== data.usuario.usuario} <!-- if user is not the same -->
                                 {#if usuario.role.toLocaleLowerCase() !== "superadmin"} <!-- if user is not super admin-->
                                     {#if usuarioRange > usuario.range}
-                                        <tr>
+                                        <tr class="animate-pop-delayed" style="--delay: {i * 100}ms">
                                             <td>
                                                 <p>{capitalizeFirstLetter(usuario.nombre)} {capitalizeFirstLetter(usuario.apellido)}</p>
                                                 <p class="text-xs text-base-content/70">{capitalizeFirstLetter(usuario.role)}</p> 
@@ -180,8 +180,5 @@
     }
     .input {
         @apply focus:outline-0 ;
-    }
-    select {
-        @apply btn btn-sm btn-outline border-base-content/40 focus:outline-0;
     }
 </style>

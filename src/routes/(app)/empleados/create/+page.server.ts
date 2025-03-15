@@ -24,23 +24,16 @@ export const actions = {
             primer_apellido:   data.get("primer_apellido") as string,
             segundo_apellido:  data.get("segundo_apellido") as string,
             sexo: data.get('sexo') as "Masculino" | "Femenino",
-            // nacionalidad:      data.get('nacionalidad') as "Extranjero" | "Venezolano",
+            nacionalidad:      data.get('nacionalidad') as "Extranjero" | "Venezolano",
             fecha_nacimiento:  data.get('fecha_nacimiento') as string,
             departamento:      data.get('departamento') as string,
             cargo:             data.get('cargo') as string,
             turno:             data.get('turno') as "Mañana" | "Tarde",
-        } satisfies Omit<Omit<EmpleadoInsertable, "edad">, "nacionalidad">
+        } satisfies Omit<EmpleadoInsertable, "edad"> 
 
-        for (let i = 0; i < 100; i++) {
-            await async(empleadosRepository.create({
-                ...empleado,
-                cedula: (i+2039).toString(),
-                edad: getAge(empleado.fecha_nacimiento)
-            }) ,log)
-        }
-        // await async(empleadosRepository.create({
-        //     ...empleado,
-        //     edad: getAge(empleado.fecha_nacimiento)
-        // }) ,log)
+        await async(empleadosRepository.create({
+            ...empleado,
+            edad: getAge(empleado.fecha_nacimiento),
+        }) ,log)
     }
 } satisfies Actions 

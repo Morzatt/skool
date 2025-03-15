@@ -56,7 +56,6 @@ export let empleadosRepository: EmpleadosRepositoryInterface = {
     },
 }
 
-
 export interface DepaartamentosRepositoryInterface {
     create(departamento: DepartamentoInsertable): Promise<void>
     getById(id: string): Promise<Departamento | undefined>

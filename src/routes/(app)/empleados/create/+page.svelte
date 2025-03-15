@@ -20,7 +20,7 @@
     <Alert form={ form } styles="text-sm max-w-sm fixed lg:absolute top-16 left-4"/>
     <form action="?/create" method="POST" use:enhance class="w-full
                            bg-base-100 rounded-md shadow-md border border-base-300
-                           p-4 ">
+                           p-4 animate-pop">
 
         <div class="w-full flex items-center justify-between">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-helmet-safety"></i> Registrar Empleado</h1>
@@ -38,6 +38,23 @@
                         </div>
                         <input type="text" name="cedula" class="input" placeholder="Cédula del Empleado...">
                     </label>   
+
+                    <!-- NACIONALIDAD -->
+                    <label class="form-control max-w-[10rem]">
+                        <div class="label">
+                            <span class="label-text">Nacionalidad</span>
+                        </div>
+                        <Select name="nacionalidad" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-venus-mars" options={[
+                            {
+                                name: "Venezolano",
+                                value: "Venezolano"
+                            },
+                            {
+                                name: "Extranjero",
+                                value: "Extranjero"
+                            },
+                        ]}/>
+                    </label> 
 
                     <!-- SEXO -->
                     <label class="form-control max-w-[10rem]">

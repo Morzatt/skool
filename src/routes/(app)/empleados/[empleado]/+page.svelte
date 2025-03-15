@@ -1,13 +1,14 @@
 <script lang="ts">
     import { basePath } from '$lib';
-    import type { PageData } from './$types';
+    import type { ActionData, PageData } from './$types';
     import chevron from "$lib/images/icons/chevron_left.svg"
     import GeneralContent from './GeneralContent.svelte';
     import JustificacionesContent from './JustificacionesContent.svelte';
     import AsistenciasContent from './AsistenciasContent.svelte';
     import type { EstadosEmpleado } from '$lib/database/types';
+    import { enhance } from '$app/forms';
 
-    let { data }: { data: PageData } = $props();
+    let { data, form }: { data: PageData, form: ActionData } = $props();
     let { empleado } = $derived(data)
 
     type Data = {
@@ -45,7 +46,7 @@
             case "Activo": 
                 return "text-green-900 bg-success/50"
             case "Inhabilitado":
-                return "text-base-200 bg-error/50"
+                return "text-error-content/50 bg-error/50"
             case "Despedido":
                 return "text-red-900 bg-error/50"
             default: 
@@ -69,7 +70,7 @@
         rounded-xl">
         <div class="form-control p-0 m-0">
             <div class="label">
-                <div class="label-text">Cambiar Contenido</div>
+                <b class="label-text">Cambiar Contenido</b>
             </div>
             <div class="flex items-center justify-start gap-4">
                 <button onclick="{() => {content = "General"}}" 
@@ -84,9 +85,9 @@
         </div>
     </div>
 
-    <div class="bg-base-300 min-h-40 h-44 rounded-xl p-3
+    <div class="bg-base-300 min-h-44 animate-pop rounded-xl p-3
                 flex flex-col lg:flex-row gap-2
-                ">
+                relative">
         <!-- INFO -->
         <div class="lg:w-2/4 h-full flex items-center justify-start">
             <!-- PROFILE PIC -->
@@ -106,19 +107,21 @@
 
                 <!-- BOTONERA -->
                 <div class="mt-3 h-8 w-full flex items-center justify-start gap-3">
-                    {#each [1,2,3,4] as button}
-                        <button class="btn btn-sm bg-base-content text-base-100 btn-circle
-                        flex items-center justify-center">
-                            <i class="fa-solid fa-heart"></i>
-                        </button> 
-                    {/each}
+                    <button aria-label="action-button" data-tip=""
+                    class="action-button btn btn-sm">
+                        <i class="fa-solid fa-heart"></i>
+                    </button> 
+                    <button aria-label="action-button" data-tip="Imprimir Planilla del Empleado"
+                    class="action-button btn btn-sm">
+                        <i class="fa-solid fa-print"></i>
+                    </button> 
                 </div>
             </div>
         </div>
 
         <div class="divider divider-horizontal"></div>
 
-        <div class="lg:w-2/4 h-full flex items-start justify-start flex-col flex-wrap gap-2">
+        <div class="lg:w-2/4 max-h-44 flex items-start justify-start flex-col flex-wrap gap-2">
             {#each personalInfo as info}
                 <div class="info">
                     <h3 class="info-title">{info.title}</h3>
@@ -126,22 +129,65 @@
                 </div>                 
             {/each}
         </div>
+
+        <button class="rounded-md
+                    px-4 py-1 group
+                    btn btn-error btn-sm 
+                    text-base-100
+                    w-fit 
+                    flex items-center justify-between
+                    absolute right-2 bottom-2
+                    {empleado.estado == 'Despedido' || empleado.estado == "Inhabilitado" ? "hidden" : ""}" 
+        onclick="{() => { document.getElementById('retirar_empleado_modal').showModal() }}">
+            <p class="group-hover:text-white">Eliminar Cuenta</p>
+        </button> 
     </div> 
 
     <div class="h-10 my-4 w-full rounded-xl bg-base-00 px-4 py-1 border-0 border-base-content">
-        <h3 class="text-xl font-semibold">{content}</h3>
+        <h3 class="text-xl font-semibold animate-x">{content}</h3>
     </div>
 
     <div class="min-h-40 my-4 w-full rounded-xl bg-base-300 p-4">
         {#if content === "General"}
             <GeneralContent empleado={ empleado } qr={data.qr}/>
         {:else if content === "Justificaciones"} 
-            <JustificacionesContent empleado={ empleado }/>
+            <JustificacionesContent empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
         {:else if content === "Asistencias"}
             <AsistenciasContent empleado={ empleado }/>
         {/if}
     </div>
 </div>
+
+<dialog id="retirar_empleado_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-md overflow-hidden">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-16 shrink-0 stroke-current red-filter"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <h3 class="text-lg mt-3 text-center">¿Seguro que desea retirar este Empleado?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Esta acción es irreversible; una vez retirado, el empleado no podrá registrar asistencias, justificaciones, ni ningún tipo de proceso dentro de la aplicación.</p>
+
+        <div class="w-fit gap-3 mt-4 flex">
+            <form method="dialog">
+                <button type="submit" class="btn btn-sm">Volver</button>
+            </form>
+            
+            <form action="?/retirar" method="POST" use:enhance>
+                <input type="hidden" id="delete_account_close" name="cedula" value="{empleado.cedula}">
+                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Retirar</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 
 <style lang="postcss">
     .button-content {
@@ -163,5 +209,11 @@
         .info-info {
             @apply text-sm;
         }
+    }
+
+    .action-button {
+        @apply bg-base-content text-base-100 btn-circle
+        flex items-center justify-center
+        tooltip tooltip-top tooltip-secondary;
     }
 </style>

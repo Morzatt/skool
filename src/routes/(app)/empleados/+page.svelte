@@ -4,6 +4,7 @@
     import type { EstadosEmpleado } from '$lib/database/types';
     import type { PageData } from './$types';
     import FilterSelect from './FilterSelect.svelte';
+    import no_result from "$lib/images/3e01667b4c12daee9ea2a1cfabe58e2d.png"
 
     let { data }: { data: PageData } = $props();
     let { empleados, records, total } = $derived(data)
@@ -26,12 +27,14 @@
         incrementIndex: async () => {
             if (empleados && empleados.length <= 9) return;
             index += 10
+            animate = "animate-x"
             handleSearch()
         },
 
         decrementIndex: async () => {
             if (index === 0) return;
             index -= 10
+            animate = "animate--x"
             handleSearch()
         }
     }
@@ -46,7 +49,7 @@
             case "Activo": 
                 return "text-green-900 bg-success/50"
             case "Inhabilitado":
-                return "text-base-200 bg-error/50"
+                return "text-error-content/50 bg-error/50"
             case "Despedido":
                 return "text-red-900 bg-error/50"
             default: 
@@ -71,6 +74,7 @@
         handleSearch()
     }
 
+let animate: 'animate-x' | 'animate--x'= $state('animate-x')
 </script>
 
 <div class="*: w-full min-h-full lg:h-full">
@@ -185,7 +189,7 @@
 
             <button aria-label="clear-search" 
             class="{index || filter || search || estado || turno || departamento ? "block" : "hidden"} 
-            hover:text-error 
+            hover:text-error animate--x
             transition-all duration-200 ease-in-out 
             mb-0.5 mx-6 
             origin-right 
@@ -197,7 +201,17 @@
         </div>
     </div>
 
-    <div class="w-full h-max rounded-md px-4 flex items-end justify-end flex-wrap">
+    <div class="w-full h-max rounded-md px-4 flex items-end justify-between flex-wrap">
+        <div class="form-control ">
+            <div class="label">
+                <b class="label-text">Imprimir Lista</b>
+            </div>
+
+            <button class="btn btn-sm bg-base-content text-base-100 px-6 rounded-xl" aria-label="print-list">
+                <i class="fa-solid fa-print"></i>
+            </button>
+        </div>
+
         <div class="form-control">
             <div class="label justify-end px-4">
                 <b class="label-text">Pág. {index/10 === 0 ? 1 : index/10} de {Math.round(total/10)}</b>
@@ -215,81 +229,82 @@
             </div>
         </div>
     </div>
-    <div class="w-full h-max mt-4 bg-base-300 rounded-md">
-        <table class="table mt-2 text-center flex">
-            <thead class="">
-                <tr class="bg-accent [&_span]:font-bold">
-                    <th class="rounded-l-lg">
-                        <span class="text-sm font-medium text-base-content ext-base-100">#</span>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <div class="text-sm text-secondary-content ext-base-100">Cédula</div>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox" onclick={() => {cedula = cedula == "asc" ? "desc" : "asc"; handleSearch();}}/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox" onclick={() => { nombre= nombre == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox" onclick={() => { apellido = apellido == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox"/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
-                            <label class="swap swap-rotate">
-                                <input type="checkbox" onclick={() => { fecha = fecha == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                            </label>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span>
-                        </div>
-                    </th>
-                    <th class="rounded-r-lg"><span class="text-sm font-medium text-base-content ext-base-100">Administrar</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                {#if empleados}
+
+    <div class="w-full h-max mt-4 bg-base-300 rounded-md flex items-center justify-center">
+        {#if empleados && empleados.length > 1}
+            <table class="table mt-2 text-center flex animate-pop">
+                <thead class="">
+                    <tr class="bg-accent [&_span]:font-bold">
+                        <th class="rounded-l-lg">
+                            <span class="text-sm font-medium text-base-content ext-base-100">#</span>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <div class="text-sm text-secondary-content ext-base-100">Cédula</div>
+                                <label class="swap swap-rotate">
+                                    <input type="checkbox" onclick={() => {cedula = cedula == "asc" ? "desc" : "asc"; handleSearch();}}/>
+                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                                </label>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span>
+                                <label class="swap swap-rotate">
+                                    <input type="checkbox" onclick={() => { nombre= nombre == "asc" ? "desc" : "asc"; handleSearch(); }}/>
+                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                                </label>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span>
+                                <label class="swap swap-rotate">
+                                    <input type="checkbox" onclick={() => { apellido = apellido == "asc" ? "desc" : "asc"; handleSearch(); }}/>
+                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                                </label>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span>
+                                <label class="swap swap-rotate">
+                                    <input type="checkbox"/>
+                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                                </label>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
+                                <label class="swap swap-rotate">
+                                    <input type="checkbox" onclick={() => { fecha = fecha == "asc" ? "desc" : "asc"; handleSearch(); }}/>
+                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
+                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
+                                </label>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span>
+                            </div>
+                        </th>
+                        <th class="rounded-r-lg"><span class="text-sm font-medium text-base-content ext-base-100">Administrar</span></th>
+                    </tr>
+                </thead>
+                <tbody>
                     {#each empleados as empleado , i(empleado)}
-                        <tr class="border-0 border-base-content/30 shadow-sm">
-                            <th>{(i+1)+index}</th>
+                        <tr class="border-0 border-base-content/30 shadow-sm animate-pop-delayed" style="--delay: {i*100}ms;">
+                            <th>{(i+1)+index} {i}</th>
                             <th>{empleado.cedula}</th>
                             <th>{empleado.primer_nombre}</th>
                             <th>{empleado.primer_apellido}</th>
@@ -306,9 +321,14 @@
                             </th>
                         </tr>
                     {/each}                                       
-                {/if}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        {:else}
+            <div class="w-fit p-6 animate-pop">
+                <img src="{no_result}" alt="">
+                <h2 class="font-bold text-xl">No se encontró ningún resultado</h2>
+            </div>
+        {/if}
     </div>
 </div>
 

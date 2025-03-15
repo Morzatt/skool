@@ -11,6 +11,8 @@ export interface Database {
     preguntas: PreguntasSeguridadTable,
     sessions: SessionsTable,
     empleados: EmpleadosTable,
+    justificaciones: JustificacionesTable,
+    comprobantes: ComprobantesTable,
     departamentos: DepartamentosTable,
     asistencias: AsistenciasTable
 }
@@ -81,6 +83,35 @@ export type EmpleadosTable = {
 export type Empleado = Selectable<EmpleadosTable>
 export type EmpleadoInsertable = Insertable<EmpleadosTable>
 export type EmpleadoUpdateable = Updateable<EmpleadosTable>
+
+
+// Justificaciones
+export type JustificacionesTable = {
+    empleado: ColumnType<string, string, never>,
+    id: string,
+    tipo: string,
+    razon: string
+    detalles: string
+    fecha_inicio: string,
+    fecha_finalizacion: string,
+    created_at: ColumnType<Date, never>,
+}
+
+export type Justificacion = Selectable<JustificacionesTable>
+export type JustificacionInsertable = Insertable<JustificacionesTable>
+export type JustificacionUpdateable = Updateable<JustificacionesTable>
+
+// Comprobantes
+export type ComprobantesTable = {
+    id_justificacion: string,
+    id_comprobante: string,
+    path: string
+    created_at: ColumnType<Date, never>,
+}
+
+export type Comprobante = Selectable<ComprobantesTable>
+export type ComprobanteInsertable = Insertable<ComprobantesTable>
+export type ComprobanteUpdateable = Updateable<ComprobantesTable>
 
 
 // Departamentos

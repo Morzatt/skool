@@ -5,6 +5,7 @@ import type { Session, SessionInsertable } from '$lib/database/types';
 import { formatDateYYMMDDHHMMSS as formatDate } from '$lib';
 
 // Libraries Imports
+import * as bcrypt from "bcrypt"
 import { compareSync } from "bcrypt";
 import { fail, type RequestEvent } from '@sveltejs/kit';
 import { getFormData } from '$lib/utils/getFormData';

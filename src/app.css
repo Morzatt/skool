@@ -11,6 +11,10 @@
     src: url("./lib/fonts/poppins/Poppins-Regular.ttf");
 }
 
+* {
+    scroll-behavior: smooth;
+}
+
 body, main {
     overflow-x: hidden;
     scroll-behavior: smooth; 
@@ -45,9 +49,6 @@ html:has(.drawer-toggle:checked) {
 }
 
 @layer components {
-    .btn-hover {
-        @apply hover:bg-base-content text-white;
-    }
     .bb {
         @apply border border-black;
     }
@@ -59,4 +60,87 @@ html:has(.drawer-toggle:checked) {
     .red-filter {
         filter: brightness(0) saturate(100%) invert(38%) sepia(93%) saturate(2710%) hue-rotate(339deg) brightness(102%) contrast(86%);
     }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .animate-pop {
+            animation: button-pop var(--animation-btn, 0.25s)ease-out;
+        }
+    }
+
+    @keyframes fade {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .animate-pop-delayed {
+        --delay: 0ms;
+        opacity: 0;
+        animation: fade 0.1s ease-in-out forwards, button-pop var(--animation-btn, 0.25s) ease-out;
+        animation-delay: var(--delay);
+    }
+
+    @keyframes slideX {
+        from {
+            opacity: 0;
+            transform: translateX(20px); /* Start 20px below */
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0); /* End at original position */
+        }
+    }
+
+    @keyframes slide-X {
+        from {
+            opacity: 0;
+            transform: translateX(-20px); /* Start 20px below */
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0); /* End at original position */
+        }
+    }
+
+    /* Apply the animation to the items */
+    .animate-x {
+        --delay: 0ms;
+        opacity: 0; /* Start invisible */
+        animation: slideX 0.3s ease-in-out forwards; /* Animation properties */
+        animation-delay: var(--delay);
+    }
+
+    /* Apply the animation to the items */
+    .animate--x {
+        --delay: 0ms;
+        opacity: 0; /* Start invisible */
+        animation: slide-X 0.3s ease-in-out forwards; /* Animation properties */
+        animation-delay: var(--delay);
+    }
 }
+
+/* Define a custom component class */
+/* .custom-translate-y {
+  @apply animate-slideUp;
+  transform: translateY(var(--translate-y, 0));
+} */
+
+/* Define the animation */
+/* @keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(var(--translate-y-start, 20px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(var(--translate-y, 0));
+  }
+} */
+
+/* <div class="custom-translate-y" style="--translate-y: 50px; --translate-y-start: 100px;">
+  Item 1
+</div> */

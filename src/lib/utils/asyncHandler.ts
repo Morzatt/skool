@@ -14,7 +14,7 @@ export default async function async<T>(
     }
 }
 
-function handleError(logger: pino.Logger<never, boolean>, error: Error | unknown, context: any) {
+export function handleError(logger: pino.Logger<never, boolean>, error: Error | unknown, context: any) {
     error instanceof Error ?
         logger.error({ err: error, context: context }, error.message)
         :

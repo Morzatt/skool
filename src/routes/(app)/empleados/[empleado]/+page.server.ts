@@ -1,9 +1,11 @@
 import async from '$lib/utils/asyncHandler';
 import { getId } from '$lib/utils/getId';
-import { error } from '@sveltejs/kit';
+import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/database';
 import QRCode from "qrcode"
+import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
+import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response } = locals;
@@ -27,6 +29,38 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         errorCorrectionLevel: "H"
     })
 
-    return { empleado, qr }
+    let justificaciones = await async(
+        db
+        .selectFrom('justificaciones')
+        .leftJoin('comprobantes', 'comprobantes.id_justificacion', 'justificaciones.id')
+        .selectAll()
+        .where('empleado', "=", cedula_empleado)
+        .execute()
+    , log)
+
+    return { empleado, qr, justificaciones }
 });
 
+export const actions = {
+    deleteEmpleado: async ({ request, locals }) => {
+        let { log } = locals
+        let cedula = (await request.formData()).get("cedula") as string
+
+        await async(empleadosRepository.delete(cedula), log)
+
+        redirect(303, "/empleados")
+    },
+
+    retirar: async ({request, locals}) => {
+        let { log, response } = locals
+        let cedula = (await request.formData()).get("cedula") as string
+
+        await async(empleadosRepository.update({
+            estado: "Inhabilitado",
+        }, cedula), log)
+
+        return response.success("Usuario Inhabilitado Correctamente")
+    },
+
+    createJustificacion: createJustificacionHandler
+} satisfies Actions
