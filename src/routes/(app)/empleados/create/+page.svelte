@@ -26,7 +26,7 @@
             <h1 class="text-xl font-bold"><i class="fa-solid fa-helmet-safety"></i> Registrar Empleado</h1>
         </div>
 
-        <div class="w-full border border-base-content/30 rounded-md mt-4 p-2">
+        <div class="w-full border border-base-content/30 rounded-md mt-4 p-2 animate-pop-delayed" style="--delay: 140ms" >
             <h3 class="font-semibold"> <i class="fa-solid fa-fingerprint"></i> Datos Personales</h3>
 
             <div class="w-full mt-3 flex flex-col items-start justify-between gap-3">
@@ -118,7 +118,7 @@
             </div>
         </div>
 
-        <div class="w-full border border-base-content/30 rounded-md mt-4 p-2">
+        <div class="w-full border border-base-content/30 rounded-md mt-4 p-2 animate-pop-delayed" style="--delay: 200ms">
             <h3 class="font-semibold"><i class="fa-solid fa-briefcase"></i> Datos Laborales</h3>
 
             <div class="w-full mt-3 flex flex-col items-start justify-between gap-3 flex-wrap">
