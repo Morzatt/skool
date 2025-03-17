@@ -22,7 +22,8 @@ export async function createJustificacionHandler(
         detalles: data.get("detalles") as string,
         fecha_inicio: data.get("fecha_inicio") as string,
         fecha_finalizacion: data.get("fecha_finalizacion") as string,
-    } satisfies Omit<JustificacionInsertable, "id">
+        // razon: data.get('razon') as string
+    } satisfies Omit<JustificacionInsertable, "id" | "razon">
 
     if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
         return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       
@@ -44,16 +45,16 @@ export async function createJustificacionHandler(
     }
 
     let justificacionID = randomUUID()
-    let comprobanteID = randomUUID()
     
     await async(db.transaction().execute(async (trx) => {
         await justificacionesRepository.create(trx, {
             ...justificacion,
-            id: justificacionID
+            id: justificacionID,
         })
+
         for (let i of comprobantes) {
             await comprobantesRepository.create(trx, {
-                id_comprobante: comprobanteID,
+                id_comprobante: randomUUID(),
                 id_justificacion: justificacionID,
                 path: `/comprobantes/${i.name}`
             })

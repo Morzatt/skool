@@ -12,16 +12,25 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     let justificacion = await async(
         db
         .selectFrom('justificaciones')
-        .leftJoin('comprobantes', 'comprobantes.id_justificacion', 'justificaciones.id')
+        .innerJoin('empleados', 'empleados.cedula', 'justificaciones.empleado')
         .selectAll()
         .where("justificaciones.id", "=", id_justificacion)
         .executeTakeFirst()
     , log)
 
+    let comprobantes = await async(
+        db
+        .selectFrom('comprobantes')
+        .selectAll()
+        .where("comprobantes.id_justificacion", "=", id_justificacion)
+        .execute()
+    , log)
+
+
     if (!justificacion) {
         error(404, 'La justificacion no existe')
     }
 
-    return { justificacion }
+    return { justificacion, comprobantes }
 });
 

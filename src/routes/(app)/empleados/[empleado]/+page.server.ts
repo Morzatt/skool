@@ -32,11 +32,21 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     let justificaciones = await async(
         db
         .selectFrom('justificaciones')
-        .leftJoin('comprobantes', 'comprobantes.id_justificacion', 'justificaciones.id')
-        .selectAll()
+        .select((eb) => [
+            'justificaciones.detalles', 'justificaciones.empleado',
+            'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
+            'justificaciones.tipo',
+                eb.selectFrom('comprobantes')
+                .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
+                .select(['comprobantes.path'])
+                .limit(1)
+                .as('path')
+        ])
         .where('empleado', "=", cedula_empleado)
         .execute()
     , log)
+
+    console.log(justificaciones)
 
     return { empleado, qr, justificaciones }
 });
