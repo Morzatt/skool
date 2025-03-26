@@ -24,10 +24,19 @@ export async function createJustificacionHandler(
         fecha_finalizacion: data.get("fecha_finalizacion") as string,
         // razon: data.get('razon') as string
     } satisfies Omit<JustificacionInsertable, "id" | "razon">
+    
+    console.log(comprobantes)
 
     if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
         return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       
     }
+
+    for (let i of comprobantes) {
+        if (i.size === 0) {
+            return fail(401, response.error('No se pueden enviar comprobantes de justificativos vacios.'))
+        }
+    }
+
 
     if (comprobantes.length < 1) {
         return fail(401, response.error('No se puede crear una justificacion sin al menos (1) comprobante fisico correspondiente'))

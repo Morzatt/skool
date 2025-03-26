@@ -53,12 +53,12 @@ export const routes: RouteGroup[] = [
         routes: [
             {
                 icon: administrar_asistencias_icon,
-                href: "asistencias",
+                href: "asistencias/registrar",
                 name: "Registrar Asistencias"
             },
             {
                 icon: horarios,
-                href: "",
+                href: "asistencias",
                 name: "Administrar Asistencias"
             }
         ]

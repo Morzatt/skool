@@ -20,7 +20,7 @@ export const actions = {
         let empleado = {
             cedula:            data.get('cedula') as string,
             primer_nombre:     data.get("primer_nombre") as string,
-            segundo_nombre:    data.get("segundo_apellido") as string,
+            segundo_nombre:    data.get("segundo_nombre") as string,
             primer_apellido:   data.get("primer_apellido") as string,
             segundo_apellido:  data.get("segundo_apellido") as string,
             sexo: data.get('sexo') as "Masculino" | "Femenino",

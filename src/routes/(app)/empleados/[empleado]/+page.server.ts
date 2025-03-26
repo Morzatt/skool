@@ -46,8 +46,6 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .execute()
     , log)
 
-    console.log(justificaciones)
-
     return { empleado, qr, justificaciones }
 });
 
