@@ -304,7 +304,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <tbody>
                     {#each empleados as empleado , i(empleado)}
                         <tr class="border-0 border-base-content/30 shadow-sm animate-pop-delayed" style="--delay: {i*100}ms;">
-                            <th>{(i+1)+index} {i}</th>
+                            <th>{(i+1)+index}</th>
                             <th>{empleado.cedula}</th>
                             <th>{empleado.primer_nombre}</th>
                             <th>{empleado.primer_apellido}</th>

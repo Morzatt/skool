@@ -15,12 +15,11 @@
     // Handle date range selection
     function handleDateRangeSelected(event: any) {
         const { startDate, endDate } = event.detail;
+
         dateRangeStart = startDate;
         dateRangeEnd = endDate;
         
-        // Here you would typically filter your data based on the date range
-        // For now, we'll just log the date range
-        console.log('Date range selected:', { startDate, endDate });
+
     }
     
     // Filter and search
@@ -72,7 +71,7 @@
 <div class="size-full relative">
     <Alert form={null} styles="absolute top-4 left-4 max-w-sm"/>
 
-    <div class="w-full p-4 bg-base-100 rounded-md shadow-md border border-base-content/40 animate-pop mb-4">
+    <div class="w-full p-3 bg-base-100 rounded-md shadow-md border border-base-content/40 animate-pop mb-4">
         <div class="w-full flex items-center justify-between mb-4">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-clipboard-list"></i> Administrar Asistencias</h1>
             <div class="flex items-center gap-3">
@@ -83,20 +82,50 @@
         </div>
         
         <!-- Filters Section -->
-        <div class="w-full p-3 bg-base-300 rounded-md mb-4 animate-pop-delayed" style="--delay: 50ms">
-            <div class="flex flex-wrap items-end gap-4">
-                <div class="form-control">
+        <div class="w-full p-3 bg-base-200/50 rounded-md mb-4 animate-pop-delayed
+        border border-base-content/20 shadow-sm" style="--delay: 50ms">
+            <div class="flex flex-wrap items-start justify-between gap-4 ">
+
+                <div class="form-control w-[17rem]">
                     <label class="label">
                         <span class="label-text font-semibold"><i class="fa-solid fa-search mr-1"></i>Buscar</span>
                     </label>
 
-                    <div class="input-group">
-                        <input type="text" placeholder="Nombre o cédula..." 
-                               class="input input-bordered input-sm w-[180px]" 
-                               bind:value={searchTerm}/>
-                    </div>
+                    <input type="text" placeholder="Nombre o cédula..." 
+                            class="input input-bordered input-sm w-full" 
+                            bind:value={searchTerm}/>
                 </div>
-                
+
+                <div class="bg-base-100 text-base-content stats shadow">
+                    <div class="stat">
+                        <div class="stat-title">Total Empleados</div>
+                        <div class="stat-value">{data.empleados?.length || 0}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Asistencias Hoy</div>
+                        <div class="stat-value text-success">{data.asistenciasHoy || 0}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Ausencias Hoy</div>
+                        <div class="stat-value text-error">{(data.empleados?.length || 0) - (data.asistenciasHoy || 0)}</div>
+                    </div>
+                </div>  
+            </div>
+
+            <div class="w-full flex items-center justify-end mt-2">
+                <button class="btn btn-sm btn-outline" title="Exportar Registros">
+                    <i class="fa-solid fa-file-export mr-1"></i>Exportar
+                </button>
+            </div>
+        </div>
+        
+        <div class="w-full flex items-start justify-between gap-6 mb-4">
+            <div class="w-2/5 max-h-[25rem] bg-base-200/40
+            flex flex-col flex-wrap items-start justify-start gap-4 
+            border border-base-content/20
+            p-3 rounded-md shadow-md">
+                <h3 class="text-xl">Filtros</h3>
+
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text font-semibold"><i class="fa-solid fa-building mr-1"></i>Departamento</span>
@@ -125,38 +154,14 @@
                 <button class="btn btn-sm btn-outline" onclick={resetFilters}>
                     <i class="fa-solid fa-filter-circle-xmark mr-1"></i>Limpiar Filtros
                 </button>
-                
-                <div class="flex-grow"></div>
-                
-                <button class="btn btn-sm btn-outline" title="Exportar Registros">
-                    <i class="fa-solid fa-file-export mr-1"></i>Exportar
-                </button>
             </div>
-        </div>
-        
-        <div class="w-full flex items-center justify-between gap-6 mb-4">
-            <div class="stats shadow w-2/5">
-                <div class="stat">
-                    <div class="stat-title">Total Empleados</div>
-                    <div class="stat-value">{data.empleados?.length || 0}</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-title">Asistencias Hoy</div>
-                    <div class="stat-value text-success">{data.asistenciasHoy || 0}</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-title">Ausencias Hoy</div>
-                    <div class="stat-value text-error">{(data.empleados?.length || 0) - (data.asistenciasHoy || 0)}</div>
-                </div>
-            </div>
-        
 
             <div class="flex items-center gap-1 w-3/5">
                 <!-- Calendar component -->
                 <Calendar 
                     bind:startDate={dateRangeStart}
                     bind:endDate={dateRangeEnd}
-                    on:dateRangeSelected={handleDateRangeSelected}
+                    onDateRangeSelected={handleDateRangeSelected}
                 />
             </div>
         </div>
@@ -172,9 +177,6 @@
 </div>
 
 <style lang="postcss">
-    .stats {
-        @apply bg-base-200 text-base-content;
-    }
     .label {
         @apply p-0 pb-1;
     }

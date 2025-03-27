@@ -24,17 +24,17 @@ export const load = (async ({ locals }) => {
                     'cargo', e.cargo,
                     'asistencias', (
                         SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'fecha', DATE_FORMAT(a.fecha, '%d-%m-%Y'),
-                            'hora_entrada', a.hora_entrada,
-                            'hora_salida', a.hora_salida
-                        )
+                            JSON_OBJECT(
+                                'fecha', DATE_FORMAT(a.fecha, '%d-%m-%Y'),
+                                'hora_entrada', a.hora_entrada,
+                                'hora_salida', a.hora_salida
+                            )
                         )
                         FROM asistencias as a
                         WHERE a.empleado = e.cedula
                         ORDER BY a.fecha
                     )
-                    )
+            )
             )
                 FROM empleados as e
                 WHERE e.departamento = d.id_departamento

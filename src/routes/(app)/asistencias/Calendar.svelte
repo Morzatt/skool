@@ -1,10 +1,11 @@
 <script lang="ts">
     import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
-    import { createEventDispatcher } from 'svelte';
-    
-    const dispatch = createEventDispatcher();
 
-    let { startDate = $bindable(), endDate = $bindable() } = $props()
+    let { startDate = $bindable(), endDate = $bindable(), onDateRangeSelected }: {
+        startDate: Date,
+        endDate: Date,
+        onDateRangeSelected: Function,
+    } = $props()
     
     // Calendar state
     let rightMonth = $state(new Date());
@@ -145,6 +146,7 @@
             }
         }
         selectedPreset = 'custom';
+        dispatchEvent(startDate, endDate)
     }
     
     // Apply preset ranges
@@ -157,36 +159,51 @@
                 endDate = new Date();
                 startDate = new Date();
                 startDate.setDate(today.getDate() - 6);
+                dispatchEvent(startDate, endDate)
                 break;
             case 'last15days':
                 endDate = new Date();
                 startDate = new Date();
                 startDate.setDate(today.getDate() - 14);
+                dispatchEvent(startDate, endDate)
                 break;
             case 'last30days':
                 endDate = new Date();
                 startDate = new Date();
                 startDate.setDate(today.getDate() - 29);
+                dispatchEvent(startDate, endDate)
                 break;
             case 'last12months':
                 endDate = new Date();
                 startDate = new Date();
                 startDate.setFullYear(today.getFullYear() - 1);
                 startDate.setDate(startDate.getDate() + 1);
+                dispatchEvent(startDate, endDate)
                 break;
             case 'monthToDate':
                 endDate = new Date();
                 startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                dispatchEvent(startDate, endDate)
                 break;
             case 'allTime':
                 endDate = new Date();
                 startDate = new Date(2000, 0, 1); // Set some arbitrary past date
+                dispatchEvent(startDate, endDate)
                 break;
         }
         
         // Update the inputs
         startDateInput = formatDate(startDate);
         endDateInput = formatDate(endDate);
+    }
+
+    function dispatchEvent(startDate: Date, endDate: Date) {
+        onDateRangeSelected({
+            detail: {
+                startDate: startDate,
+                endDate: endDate,
+            }
+        })
     }
 </script>
 

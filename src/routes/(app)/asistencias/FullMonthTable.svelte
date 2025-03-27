@@ -24,7 +24,7 @@
     }
 </script>
 
-<div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh)d] animate-pop-delayed border border-base-content/40" style="--delay: 200ms">
+<div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh)] animate-pop-delayed border border-base-content/40" style="--delay: 200ms">
     <table class="table table-zebra">
         <thead class="sticky top-0 z-50">
             <tr>
