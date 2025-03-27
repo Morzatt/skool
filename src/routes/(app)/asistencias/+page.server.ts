@@ -23,6 +23,9 @@ interface Attendance {
     hora_entrada?: string;
     hora_salida?: string;
     encargado?: string;
+    // Add status code and color for server-side processing
+    statusCode?: string;
+    statusColor?: string;
 }
 
 interface AttendanceType {
@@ -31,8 +34,17 @@ interface AttendanceType {
     color: string;
 }
 
+interface DayInfo {
+    day: string;
+    month: number;
+    year: number;
+    weekday: string;
+    isWeekend: boolean;
+}
+
 interface AsistenciasPageData {
     empleados: Employee[];
+    filteredEmpleados: Employee[];
     asistencias: Attendance[];
     asistenciasHoy: number;
     departamentos: Departamento[];
@@ -41,6 +53,7 @@ interface AsistenciasPageData {
         startDate: Date;
         endDate: Date;
     };
+    dateRangeDays: DayInfo[];
 }
 
 export const load: PageServerLoad = async ({ url }): Promise<AsistenciasPageData> => {
@@ -48,6 +61,8 @@ export const load: PageServerLoad = async ({ url }): Promise<AsistenciasPageData
         // Parse date range from URL query params
         const startDateParam = url.searchParams.get('startDate');
         const endDateParam = url.searchParams.get('endDate');
+        const searchTerm = url.searchParams.get('search') || '';
+        const selectedDepartamento = url.searchParams.get('departamento') || 'all';
         
         // Set default date range (last 7 days) if not provided
         const endDate = endDateParam ? new Date(endDateParam) : new Date();
@@ -90,7 +105,7 @@ export const load: PageServerLoad = async ({ url }): Promise<AsistenciasPageData
             .orderBy('nombre_departamento')
             .execute();
         
-        // Fetch all attendance records in date range without the non-existent observaciones_asistencias table
+        // Fetch all attendance records in date range
         const asistencias = await db
             .selectFrom('asistencias')
             .select([
@@ -123,16 +138,88 @@ export const load: PageServerLoad = async ({ url }): Promise<AsistenciasPageData
             { codigo: 'FER', label: 'Feriado', color: 'bg-accent' }
         ];
         
+        // Generate days array based on date range (moved from client-side)
+        const dateRangeDays: DayInfo[] = [];
+        const weekdays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
+        
+        // Clone dates to avoid modifying originals
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        // Set time to beginning/end of day for accurate comparison
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        
+        // Generate array of days in the date range
+        const currentDate = new Date(start);
+        while (currentDate <= end) {
+            const day = currentDate.getDate().toString().padStart(2, '0');
+            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear();
+            const dayOfWeek = currentDate.getDay();
+            
+            dateRangeDays.push({
+                day,
+                month,
+                year,
+                weekday: weekdays[dayOfWeek],
+                isWeekend: dayOfWeek === 0 || dayOfWeek === 6
+            });
+            
+            // Move to next day
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        // Pre-process attendance records to include status code and color
+        const processedAsistencias = asistencias.map(attendance => {
+            let statusCode: string | null = null;
+            
+            // Determine attendance status
+            if (attendance.hora_entrada && !attendance.hora_salida) {
+                statusCode = 'PR'; // Present but not checked out
+            } else if (attendance.hora_entrada && attendance.hora_salida) {
+                statusCode = 'PR'; // Complete attendance
+            } else {
+                statusCode = 'AUS'; // Default to absent
+            }
+            
+            // Find the corresponding attendance type for color
+            const type = tiposAsistencia.find(t => t.codigo === statusCode);
+            
+            return {
+                ...attendance,
+                statusCode,
+                statusColor: type ? type.color : ''
+            };
+        });
+        
+        // Filter employees based on search term and department (moved from client-side)
+        const filteredEmpleados = empleados.filter(emp => {
+            // Text search filter
+            const matchesSearch = searchTerm === "" || 
+                emp.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                emp.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                emp.id.includes(searchTerm);
+            
+            // Department filter
+            const matchesDepartment = selectedDepartamento === "all" || 
+                emp.departamento_id === selectedDepartamento;
+            
+            return matchesSearch && matchesDepartment;
+        });
+        
         return {
             empleados: empleados as Employee[],
-            asistencias: asistencias as Attendance[],
+            filteredEmpleados: filteredEmpleados as Employee[],
+            asistencias: processedAsistencias as Attendance[],
             asistenciasHoy: asistenciasHoy?.count as number || 0,
             departamentos: departamentos as Departamento[],
             tiposAsistencia,
             dateRange: {
                 startDate,
                 endDate
-            }
+            },
+            dateRangeDays
         };
     } catch (err) {
         console.error('Error loading attendance data:', err);

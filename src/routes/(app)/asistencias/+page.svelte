@@ -27,6 +27,8 @@
         hora_entrada?: string;
         hora_salida?: string;
         encargado?: string;
+        statusCode?: string;
+        statusColor?: string;
     }
     
     interface AttendanceType {
@@ -41,7 +43,7 @@
     }
 
     let { data }: { data: PageData } = $props();
-    let { empleados, asistencias, departamentos, tiposAsistencia, dateRange } = $derived(data);
+    let { empleados, filteredEmpleados, asistencias, departamentos, tiposAsistencia, dateRange, dateRangeDays } = $derived(data);
 
     // Calendar and date range state - initialize from server data
     let dateRangeStart = $state<Date>(dateRange?.startDate ? new Date(dateRange.startDate) : new Date());
@@ -63,53 +65,24 @@
         const endStr = end.toISOString().split('T')[0];
         
         // Use goto to navigate with the new query parameters
-        goto(`?startDate=${startStr}&endDate=${endStr}`, { keepFocus: true, replaceState: true });
+        // Include search and department filters in the URL
+        const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+        const deptParam = selectedDepartamento !== 'all' ? `&departamento=${selectedDepartamento}` : '';
+        
+        goto(`?startDate=${startStr}&endDate=${endStr}${searchParam}${deptParam}`, { 
+            keepFocus: true, 
+            replaceState: true 
+        });
     }
     
-    // Filter and search
+    // Filter and search - maintain UI state but use server filtering
     let searchTerm = $state<string>("");
     let selectedDepartamento = $state<string>("all");
     
-    let filteredEmpleados = $state<Employee[]>(empleados || []);
-    
-    // Filter employees based on search and department
-    $effect(() => {
-        filteredEmpleados = empleados?.filter(emp => {
-            // Text search filter
-            const matchesSearch = searchTerm === "" || 
-                emp.nombres.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                emp.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                emp.id.includes(searchTerm);
-            
-            // Department filter
-            const matchesDepartment = selectedDepartamento === "all" || 
-                emp.departamento_id === selectedDepartamento;
-            
-            return matchesSearch && matchesDepartment;
-        }) || [];
-    });
-    
-    // Current month and days array for table
-    let currentMonth = $state<number>(new Date().getMonth());
-    let currentYear = $state<number>(new Date().getFullYear());
-    let daysArray = $state<string[]>([]);
-    
-    // Update current month/year from date range
-    $effect(() => {
-        if (dateRangeStart) {
-            currentMonth = dateRangeStart.getMonth();
-            currentYear = dateRangeStart.getFullYear();
-            generateDaysArray();
-        }
-    });
-    
-    function generateDaysArray(): void {
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const tempArray: string[] = [];
-        for (let i = 1; i <= daysInMonth; i++) {
-            tempArray.push(i.toString().padStart(2, '0'));
-        }
-        daysArray = tempArray;
+    // Update filter state when search term or department changes
+    function updateFilters(): void {
+        // Update URL to trigger server-side filtering
+        updateURLWithDateRange(dateRangeStart, dateRangeEnd);
     }
     
     // Reset all filters
@@ -126,8 +99,16 @@
         updateURLWithDateRange(dateRangeStart, dateRangeEnd);
     }
     
-    onMount(() => {
-        generateDaysArray();
+    // Current month and year from date range - needed for backward compatibility
+    let currentMonth = $state<number>(dateRangeStart.getMonth());
+    let currentYear = $state<number>(dateRangeStart.getFullYear());
+    
+    // Update current month/year when date range changes
+    $effect(() => {
+        if (dateRangeStart) {
+            currentMonth = dateRangeStart.getMonth();
+            currentYear = dateRangeStart.getFullYear();
+        }
     });
 </script>
 
@@ -158,14 +139,18 @@
 
                     <input type="text" placeholder="Nombre o cédula..." 
                             class="input input-bordered input-sm w-full" 
-                            bind:value={searchTerm}/>
+                            bind:value={searchTerm}
+                            on:input={() => updateFilters()}/>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text font-semibold"><i class="fa-solid fa-building mr-1"></i>Departamento</span>
                     </label>
-                    <select class="select select-bordered select-sm w-[180px]" bind:value={selectedDepartamento}>
+                    <select 
+                        class="select select-bordered select-sm w-[180px]" 
+                        bind:value={selectedDepartamento}
+                        on:change={() => updateFilters()}>
                         <option value='all'>Todos</option>
                         {#if departamentos}
                             {#each departamentos as dept}
@@ -218,12 +203,14 @@
 
     <!-- Full Month Attendance Table -->
     <FullMonthTable  
-        daysArray={daysArray}
+        startDate={dateRangeStart}
+        endDate={dateRangeEnd}
         employees={filteredEmpleados}
         currentYear={currentYear}
         currentMonth={currentMonth}
         asistencias={asistencias}
         attendanceTypes={tiposAsistencia}
+        dateRangeDays={dateRangeDays}
     />
 </div>
 
