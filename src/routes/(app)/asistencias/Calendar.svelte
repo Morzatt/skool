@@ -21,10 +21,11 @@
         { label: 'Personalizado', value: 'custom' }
     ];
     
-    let selectedPreset = $state('last7days');
+    type PresetValue = 'last7days' | 'last15days' | 'last30days' | 'last12months' | 'monthToDate' | 'allTime' | 'custom';
+    let selectedPreset = $state<PresetValue>('last7days');
     
     // Date formatting
-    function formatDate(date) {
+    function formatDate(date: Date | null): string {
         if (!date) return '';
         return date.toLocaleDateString('es-VE', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/');
     }
@@ -39,25 +40,33 @@
     });
     
 
-    function previousRightMonth() {
+    function previousRightMonth(): void {
         rightMonth = new Date(rightMonth.getFullYear(), rightMonth.getMonth() - 1);
     }
     
-    function nextRightMonth() {
+    function nextRightMonth(): void {
         rightMonth = new Date(rightMonth.getFullYear(), rightMonth.getMonth() + 1);
     }
     
     
     // Calendar generation
-    function getDaysInMonth(year, month) {
+    function getDaysInMonth(year: number, month: number): number {
         return new Date(year, month + 1, 0).getDate();
     }
     
-    function getFirstDayOfMonth(year, month) {
+    function getFirstDayOfMonth(year: number, month: number): number {
         return new Date(year, month, 1).getDay();
     }
+
+    interface CalendarDay {
+        day: number;
+        month: number;
+        year: number;
+        isCurrentMonth: boolean;
+        date: Date;
+    }
     
-    function generateCalendarDays(year, month) {
+    function generateCalendarDays(year: number, month: number): CalendarDay[] {
         const daysInMonth = getDaysInMonth(year, month);
         const firstDay = getFirstDayOfMonth(year, month);
         
@@ -66,7 +75,7 @@
             ? getDaysInMonth(year - 1, 11) 
             : getDaysInMonth(year, month - 1);
         
-        let days = [];
+        let days: CalendarDay[] = [];
         
         // Add previous month days
         for (let i = 0; i < firstDay; i++) {
@@ -115,23 +124,23 @@
     }
     
     // Date selection
-    function isDateInRange(date) {
+    function isDateInRange(date: Date): boolean {
         return date >= startDate && date <= endDate;
     }
     
-    function isStartDate(date) {
+    function isStartDate(date: Date): boolean {
         return date.getDate() === startDate.getDate() &&
                date.getMonth() === startDate.getMonth() &&
                date.getFullYear() === startDate.getFullYear();
     }
     
-    function isEndDate(date) {
+    function isEndDate(date: Date): boolean {
         return date.getDate() === endDate.getDate() &&
                date.getMonth() === endDate.getMonth() &&
                date.getFullYear() === endDate.getFullYear();
     }
     
-    function selectDate(date) {
+    function selectDate(date: Date): void {
         if (!startDate || (startDate && endDate)) {
             // Start new range
             startDate = date;
@@ -150,7 +159,7 @@
     }
     
     // Apply preset ranges
-    function applyPreset(preset) {
+    function applyPreset(preset: PresetValue): void {
         selectedPreset = preset;
         const today = new Date();
         
@@ -197,7 +206,7 @@
         endDateInput = formatDate(endDate);
     }
 
-    function dispatchEvent(startDate: Date, endDate: Date) {
+    function dispatchEvent(startDate: Date, endDate: Date): void {
         onDateRangeSelected({
             detail: {
                 startDate: startDate,
@@ -220,7 +229,7 @@
                         <button 
                             class="w-full text-left py-2 px-4 rounded-md transition-colors duration-200
                                     {selectedPreset === preset.value ? 'bg-primary text-primary-content' : 'hover:bg-base-200'}"
-                                onclick={() => applyPreset(preset.value)}>
+                                on:click={() => applyPreset(preset.value as PresetValue)}>
                             {preset.label}
                         </button>
                     </li>
@@ -233,18 +242,18 @@
             <!-- Right Month -->
             <div class="month-calendar">
                 <div class="flex items-center justify-between mb-4">
-                    <button class="btn btn-sm btn-circle" onclick={previousRightMonth}>
+                    <button class="btn btn-sm btn-circle" on:click={previousRightMonth}>
                         <i class="fa-solid fa-chevron-left"></i>
                     </button>
                     <h3 class="text-lg font-medium">
                         {capitalizeFirstLetter(rightMonth.toLocaleDateString('es', { month: 'long', year: 'numeric' }))}
                     </h3>
-                    <button class="btn btn-sm btn-circle" onclick={nextRightMonth}>
+                    <button class="btn btn-sm btn-circle" on:click={nextRightMonth}>
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
                 
-                {#key null}
+                {#key rightMonth}
                     <div class="grid grid-cols-7 gap-1">
                         <!-- Week days -->
                         {#each ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'] as day}
@@ -259,7 +268,7 @@
                                     {isDateInRange(date) ? 'animate-pop bg-primary text-primary-content' : 'hover:bg-base-200'}
                                     {isStartDate(date) ? 'animate-pop bg-primary rounded-l-md' : ''}
                                     {isEndDate(date) ? 'animate-pop bg-primary rounded-r-md' : ''}"
-                                onclick={() => selectDate(date)}>
+                                on:click={() => selectDate(date)}>
                                 {day}
                             </button>
                         {/each}
