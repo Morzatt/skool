@@ -47,7 +47,9 @@
                 flex flex-col gap-3 items-center justify-start">
             <input type="hidden" name="empleado" value="{empleado?.cedula}">
             <input type="hidden" name="encargado" value="{usuario?.usuario}">
-            <input type="hidden" name="hora_{type}" value="{date?.toLocaleTimeString('esp', { hour12: true })}">
+            <input type="hidden" name="fecha" value="{date?.getFullYear()}-{date?.getMonth() === 12 ? "1" : `${(date?.getMonth()+1)}`}-{date?.getDate()}">
+            <input type="hidden" name="hora_{type}" value="{date?.toLocaleTimeString('esp')}">
+
             
             {#if empleado} 
                 <!-- CEDULA, NOMBRE Y APELLIDO, DEPARTAMENTO Y CARGO -->
@@ -140,8 +142,8 @@
                 <div class="w-full mt-3 flex flex-col items-start justify-between gap-3">
                     <div class="w-full h-full bg-base-200 rounded-md p-2 flex items-center justify-start gap-6">
                         <fieldset class="fieldset w-full mt-3">
-                            <legend class="fieldset-legend font-bold text-sm mb-1">Descripcion del Departamento</legend>
-                            <textarea class="textarea textarea-bordered w-full min-h-24" name="descripcion" placeholder="Descripcion..."></textarea>
+                            <legend class="fieldset-legend font-bold text-sm mb-1">Observacion <b>*</b></legend>
+                            <textarea class="textarea textarea-bordered w-full min-h-24" name="observacion" placeholder="Descripcion..."></textarea>
                         </fieldset>
                     </div>
                 </div>

@@ -15,6 +15,7 @@ export interface Database {
     comprobantes: ComprobantesTable,
     departamentos: DepartamentosTable,
     asistencias: AsistenciasTable
+    observaciones_asistencias: ObservacionesAsistenciasTable
 }
 
 type Roles = "superadmin" | "administrador" | "editor" | "usuario"
@@ -140,3 +141,15 @@ export type AsistenciasTable = {
 export type Asistencia = Selectable<AsistenciasTable>
 export type AsistenciaInsertable = Insertable<AsistenciasTable>
 export type AsistenciaUpdateable = Updateable<AsistenciasTable>
+
+export type ObservacionesAsistenciasTable = {
+    empleado: ColumnType<string, string, never>,
+    fecha: ColumnType<string, string, never>,
+    hora_entrada: ColumnType<string, string, never>,
+    hora_salida: string | undefined,
+    encargado: ColumnType<string, string, never>,
+}
+
+export type ObservacionAsistencia = Selectable<ObservacionesAsistenciasTable>
+export type ObservacionAsistenciaInsertable = Insertable<ObservacionesAsistenciasTable>
+export type ObservacinoAsistenciaUpdateable = Updateable<ObservacionesAsistenciasTable>
