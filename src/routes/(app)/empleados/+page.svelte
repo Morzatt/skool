@@ -41,7 +41,7 @@
 
     async function handleSearch() {
         await invalidateAll()
-        goto(url)
+        goto(url, { keepFocus: true, replaceState: true })
     }
 
     function asignColor(status: EstadosEmpleado): string {
@@ -86,7 +86,8 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
             <div class="join border border-base-content/60">
                 <label class="input join-item flex items-center justify-start gap-2 focus:outline-0 outline-0">
                     <i class="fa-solid fa-user-tie"></i>
-                    <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."/>
+                    <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."
+                    oninput="{handleSearch()}"/>
 
                     <kbd class="kbd kbd-sm">ctrl</kbd>
                     <kbd class="kbd kbd-sm">K</kbd>

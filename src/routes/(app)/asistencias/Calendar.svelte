@@ -15,9 +15,7 @@
         { label: 'Ultimos 7 Dias', value: 'last7days' },
         { label: 'Ultimos 15 Dias', value: 'last15days' },
         { label: 'Ultimos 30 Dias', value: 'last30days' },
-        { label: 'Ultimos 12 Meses', value: 'last12months' },
         { label: 'Mes Actual', value: 'monthToDate' },
-        { label: 'Todas las Asistencias', value: 'allTime' },
         { label: 'Personalizado', value: 'custom' }
     ];
     
@@ -30,7 +28,7 @@
         return date.toLocaleDateString('es-VE', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/');
     }
     
-    // Input fields
+    // // Input fields
     let startDateInput = $state(formatDate(startDate));
     let endDateInput = $state(formatDate(endDate));
     
@@ -182,21 +180,9 @@
                 startDate.setDate(today.getDate() - 29);
                 dispatchEvent(startDate, endDate)
                 break;
-            case 'last12months':
-                endDate = new Date();
-                startDate = new Date();
-                startDate.setFullYear(today.getFullYear() - 1);
-                startDate.setDate(startDate.getDate() + 1);
-                dispatchEvent(startDate, endDate)
-                break;
             case 'monthToDate':
                 endDate = new Date();
                 startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-                dispatchEvent(startDate, endDate)
-                break;
-            case 'allTime':
-                endDate = new Date();
-                startDate = new Date(2000, 0, 1); // Set some arbitrary past date
                 dispatchEvent(startDate, endDate)
                 break;
         }

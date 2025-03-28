@@ -54,7 +54,7 @@ export const load = (async ({ url, locals }) => {
     }
 
     if (filter && search) {
-        query = query.where(`empleados.${filter}`, '=', search)
+        query = query.where(`empleados.${filter}`, 'like', `%${search}%`)
     }
 
     empleados = await async(query.selectAll().execute(), log)

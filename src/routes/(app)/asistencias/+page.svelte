@@ -1,88 +1,54 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import Alert from "$lib/components/Messages/Alert.svelte";
-    import { onMount } from 'svelte';
     import Calendar from './Calendar.svelte';
     import FullMonthTable from './FullMonthTable.svelte';
     import { goto } from '$app/navigation';
 
-    interface Employee {
-        id: string;
-        nombres: string;
-        apellidos: string;
-        cargo?: string;
-        turno?: string;
-        departamento_id?: string;
-        departamento_nombre?: string;
-    }
-    
-    interface Departamento {
-        id: string;
-        nombre: string;
-    }
-    
-    interface Attendance {
-        empleado_id: string;
-        fecha: string;
-        hora_entrada?: string;
-        hora_salida?: string;
-        encargado?: string;
-        statusCode?: string;
-        statusColor?: string;
-    }
-    
-    interface AttendanceType {
-        codigo: string;
-        label: string;
-        color: string;
-    }
-    
-    interface DateRange {
-        startDate: Date | string;
-        endDate: Date | string;
-    }
+    // Get data from props
+    let { data } = $props<{ data: PageData }>();
+    let { 
+        empleados, filteredEmpleados, asistencias, 
+        departamentos, tiposAsistencia, dateRange, dateRangeDays 
+    } = $derived(data);
 
-    let { data }: { data: PageData } = $props();
-    let { empleados, filteredEmpleados, asistencias, departamentos, tiposAsistencia, dateRange, dateRangeDays } = $derived(data);
-
-    // Calendar and date range state - initialize from server data
-    let dateRangeStart = $state<Date>(dateRange?.startDate ? new Date(dateRange.startDate) : new Date());
-    let dateRangeEnd = $state<Date>(dateRange?.endDate ? new Date(dateRange.endDate) : new Date());
+    // Calendar date range state
+    let dateRangeStart = $state<Date>(new Date(dateRange?.startDate || Date.now()));
+    let dateRangeEnd = $state<Date>(new Date(dateRange?.endDate || Date.now()));
     
-    // Handle date range selection
+    // Filter state synced with URL params
+    let searchTerm = $state<string>("");
+    let selectedDepartamento = $state<string>("all");
+    
+    // Current month/year for backward compatibility
+    let currentMonth = $state<number>(dateRangeStart.getMonth());
+    let currentYear = $state<number>(dateRangeStart.getFullYear());
+    
+    // Update month/year when date range changes
+    $effect(() => {
+        currentMonth = dateRangeStart.getMonth();
+        currentYear = dateRangeStart.getFullYear();
+    });
+    
+    // Update URL with all filter parameters
+    function updateURL(start = dateRangeStart, end = dateRangeEnd): void {
+        const params = new URLSearchParams();
+
+        params.set('startDate', start.toISOString().split('T')[0]);
+        params.set('endDate', end.toISOString().split('T')[0]);
+        
+        if (searchTerm) params.set('search', searchTerm);
+        if (selectedDepartamento !== 'all') params.set('departamento', selectedDepartamento);
+        
+        goto(`?${params.toString()}`, { keepFocus: true, replaceState: true });
+    }
+    
+    // Handle date range selection from calendar
     function handleDateRangeSelected(event: { detail: { startDate: Date, endDate: Date } }): void {
         const { startDate, endDate } = event.detail;
         dateRangeStart = startDate;
         dateRangeEnd = endDate;
-        
-        // Update URL with new date range
-        updateURLWithDateRange(startDate, endDate);
-    }
-    
-    // Update URL with date range parameters
-    function updateURLWithDateRange(start: Date, end: Date): void {
-        const startStr = start.toISOString().split('T')[0];
-        const endStr = end.toISOString().split('T')[0];
-        
-        // Use goto to navigate with the new query parameters
-        // Include search and department filters in the URL
-        const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-        const deptParam = selectedDepartamento !== 'all' ? `&departamento=${selectedDepartamento}` : '';
-        
-        goto(`?startDate=${startStr}&endDate=${endStr}${searchParam}${deptParam}`, { 
-            keepFocus: true, 
-            replaceState: true 
-        });
-    }
-    
-    // Filter and search - maintain UI state but use server filtering
-    let searchTerm = $state<string>("");
-    let selectedDepartamento = $state<string>("all");
-    
-    // Update filter state when search term or department changes
-    function updateFilters(): void {
-        // Update URL to trigger server-side filtering
-        updateURLWithDateRange(dateRangeStart, dateRangeEnd);
+        updateURL(startDate, endDate);
     }
     
     // Reset all filters
@@ -90,101 +56,40 @@
         searchTerm = "";
         selectedDepartamento = "all";
         
-        // Reset date range to current month
+        // Set date range to current month
         const today = new Date();
         dateRangeStart = new Date(today.getFullYear(), today.getMonth(), 1);
         dateRangeEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         
-        // Update URL
-        updateURLWithDateRange(dateRangeStart, dateRangeEnd);
+        updateURL(dateRangeStart, dateRangeEnd);
     }
-    
-    // Current month and year from date range - needed for backward compatibility
-    let currentMonth = $state<number>(dateRangeStart.getMonth());
-    let currentYear = $state<number>(dateRangeStart.getFullYear());
-    
-    // Update current month/year when date range changes
-    $effect(() => {
-        if (dateRangeStart) {
-            currentMonth = dateRangeStart.getMonth();
-            currentYear = dateRangeStart.getFullYear();
+
+    function setDate(type: 'start' | 'end') {
+        let input = document.getElementById(`input_${type}`) as HTMLInputElement
+        switch (type) {
+            case "start":
+                dateRangeStart = new Date(input.value)
+                break
+            case "end":
+                dateRangeEnd = new Date(input.value)
+                break
         }
-    });
+    }
 </script>
 
 <div class="size-full relative">
     <Alert form={null} styles="absolute top-4 left-4 max-w-sm"/>
-
-    <div class="w-full p-3 bg-base-100 rounded-md shadow-md border border-base-content/40 animate-pop mb-4">
-        <div class="w-full flex items-center justify-between mb-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
             <h1 class="text-xl font-bold"><i class="fa-solid fa-clipboard-list"></i> Administrar Asistencias</h1>
-            <div class="flex items-center gap-3">
-                <a href="/asistencias/registrar" class="btn btn-sm btn-primary">
-                    <i class="fa-solid fa-plus"></i> Registrar
-                </a>
-            </div>
+            <a href="/asistencias/registrar" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-plus"></i> Registrar
+            </a>
         </div>
-        
-        <div class="w-full flex items-start justify-between gap-6 mb-4">
-            <div class="w-2/5 max-h-[25rem] bg-base-200/40
-            flex flex-col flex-wrap items-start justify-start gap-4 
-            border border-base-content/20
-            p-3 rounded-md shadow-md">
-                <h3 class="text-xl">Filtros</h3>
 
-                <div class="form-control w-[17rem]">
-                    <label class="label">
-                        <span class="label-text font-semibold"><i class="fa-solid fa-search mr-1"></i>Buscar</span>
-                    </label>
-
-                    <input type="text" placeholder="Nombre o cédula..." 
-                            class="input input-bordered input-sm w-full" 
-                            bind:value={searchTerm}
-                            on:input={() => updateFilters()}/>
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-semibold"><i class="fa-solid fa-building mr-1"></i>Departamento</span>
-                    </label>
-                    <select 
-                        class="select select-bordered select-sm w-[180px]" 
-                        bind:value={selectedDepartamento}
-                        on:change={() => updateFilters()}>
-                        <option value='all'>Todos</option>
-                        {#if departamentos}
-                            {#each departamentos as dept}
-                                <option value={dept.id}>{dept.nombre}</option>
-                            {/each}                           
-                        {/if}
-                    </select>
-                </div>
-                
-                <button class="btn btn-sm btn-outline" on:click={resetFilters}>
-                    <i class="fa-solid fa-filter-circle-xmark mr-1"></i>Limpiar Filtros
-                </button>
-                
-                <div class="divider">Periodo</div>
-                
-                <div class="text-sm">
-                    <p class="font-semibold">Rango seleccionado:</p>
-                    <p class="text-primary">
-                        {dateRangeStart.toLocaleDateString('es-ES')} - {dateRangeEnd.toLocaleDateString('es-ES')}
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-1 w-3/5">
-                <!-- Calendar component -->
-                <Calendar 
-                    bind:startDate={dateRangeStart}
-                    bind:endDate={dateRangeEnd}
-                    onDateRangeSelected={handleDateRangeSelected}
-                />
-            </div>
-        </div>
-        <div>
-        <div class="bg-base-200 text-base-content stats shadow border border-base-content/20">
+    <div class="w-full flex items-end justify-between my-4">
+        <!-- Stats section -->
+        <div class="stats bg-base-200 text-base-content shadow border border-base-content/20">
             <div class="stat">
                 <div class="stat-title">Total Empleados</div>
                 <div class="stat-value">{empleados?.length || 0}</div>
@@ -197,17 +102,80 @@
                 <div class="stat-title">Ausencias Hoy</div>
                 <div class="stat-value text-error">{(empleados?.length || 0) - (data.asistenciasHoy || 0)}</div>
             </div>
-        </div> 
+        </div>
+
+        <!-- Selected date range display -->
+        <div class="text-sm w-full max-w-sm">
+            <p class="font-semibold">Rango seleccionado:</p>
+            <p class="text-primary">
+                {dateRangeStart.toLocaleDateString('es-ES')} - {dateRangeEnd.toLocaleDateString('es-ES')}
+            </p>
+
+            <div class="w-full border border-base-content/30 p-2 rounded-md mt-2 flex items-center justify-between">
+                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('start')}  id="input_start" value={`${dateRangeStart.getFullYear()}-${(dateRangeStart.getMonth()+1) <= 9 ? `0${dateRangeStart.getMonth()+1}` : dateRangeStart.getMonth()+1}-${(dateRangeStart.getDate()) <= 9 ? `0${dateRangeStart.getDate()}` : dateRangeStart.getDate()}`}>
+                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('end')}   id="input_end"    value={`${dateRangeEnd.getFullYear()}-${(dateRangeEnd.getMonth()+1) <= 9 ? `0${dateRangeEnd.getMonth()+1}` : dateRangeEnd.getMonth()+1}-${(dateRangeEnd.getDate()) <= 9 ? `0${dateRangeEnd.getDate()}` : dateRangeEnd.getDate()}`}>
+            </div>
         </div>
     </div>
 
-    <!-- Full Month Attendance Table -->
+    <div class="w-full p-3 bg-base-100 rounded-md shadow-md border border-base-content/40 animate-pop mb-4">        
+        <!-- Filters and Calendar section -->
+        <div class="flex items-start justify-between gap-6 mb-4">
+            <!-- Filters panel -->
+            <div class="w-2/5 bg-base-200/40 flex flex-col flex-wrap items-start gap-4 
+                border border-base-content/20 p-3 rounded-md shadow-md">
+                <div class="w-full max-h-[20rem] flex flex-col flex-wrap items-start gap-4">
+                    <h3 class="text-xl">Filtros</h3>
+
+                    <!-- Search filter -->
+                    <div class="form-control w-[17rem]">
+                        <label class="label">
+                            <span class="label-text font-semibold"><i class="fa-solid fa-search mr-1"></i>Buscar</span>
+                        </label>
+                        <input type="text" placeholder="Nombre o cédula..." 
+                            class="input input-bordered input-sm w-full" 
+                            bind:value={searchTerm}
+                            on:input={updateURL}/>
+                    </div>
+
+                    <!-- Department filter -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text font-semibold"><i class="fa-solid fa-building mr-1"></i>Departamento</span>
+                        </label>
+                        <select class="select select-bordered select-sm w-[180px]" 
+                            bind:value={selectedDepartamento}
+                            on:change={updateURL}>
+                            <option value='all'>Todos</option>
+                            {#each departamentos || [] as dept}
+                                <option value={dept.id}>{dept.nombre}</option>
+                            {/each}
+                        </select>
+                    </div>
+                    
+                    <!-- Reset filters button -->
+                    <button class="btn btn-sm btn-outline" on:click={resetFilters}>
+                        <i class="fa-solid fa-filter-circle-xmark mr-1"></i>Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar component -->
+            <div class="w-3/5">
+                <Calendar 
+                    bind:startDate={dateRangeStart}
+                    bind:endDate={dateRangeEnd}
+                    onDateRangeSelected={handleDateRangeSelected}
+                />
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Table -->
     <FullMonthTable  
         startDate={dateRangeStart}
         endDate={dateRangeEnd}
         employees={filteredEmpleados}
-        currentYear={currentYear}
-        currentMonth={currentMonth}
         asistencias={asistencias}
         attendanceTypes={tiposAsistencia}
         dateRangeDays={dateRangeDays}
@@ -215,7 +183,5 @@
 </div>
 
 <style lang="postcss">
-    .label {
-        @apply p-0 pb-1;
-    }
+    .label { @apply p-0 pb-1; }
 </style>

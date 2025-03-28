@@ -139,7 +139,7 @@
                     absolute right-2 bottom-2
                     {empleado.estado == 'Despedido' || empleado.estado == "Inhabilitado" ? "hidden" : ""}" 
         onclick="{() => { document.getElementById('retirar_empleado_modal').showModal() }}">
-            <p class="group-hover:text-white">Eliminar Cuenta</p>
+            <p class="group-hover:text-white">Inhabilitar</p>
         </button> 
     </div> 
 
@@ -147,7 +147,7 @@
         <h3 class="text-xl font-semibold animate-x">{content}</h3>
     </div>
 
-    <div class="min-h-40 my-4 w-full rounded-xl bg-base-300 p-4">
+    <div class="min-h-40 my-4 w-full rounded-xl bg-base-300 p-2 lg:p-4">
         {#if content === "General"}
             <GeneralContent empleado={ empleado } qr={data.qr}/>
         {:else if content === "Justificaciones"} 

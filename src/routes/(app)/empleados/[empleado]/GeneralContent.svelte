@@ -108,8 +108,8 @@
 </script>
 
 <!-- // CONTACTO, LABORAL, MEDICA -->
-<div class="w-full min-h-80 flex items-start justify-center gap-5 animate-pop-delayed">
-    <div class="w-[75%] h-full *:my-4">
+<div class="w-full min-h-80 flex flex-col-reverse lg:flex-row items-start justify-center gap-5 animate-pop-delayed">
+    <div class="w-full lg:w-[75%] h-full *:my-4">
         <!-- PERSONAL -->
         <div class="w-full p-1 px-4 border border-base-content/40 rounded-md">
             <div class="w-full flex items-center justify-between">
@@ -245,7 +245,7 @@
 
     <div class="divider divider-horizontal m-0 p-0"></div>
 
-    <div class="w-[25%] h-full
+    <div class="w-full lg:w-[25%] h-full
     text-center gap-2
     flex flex-col items-center justify-start">
         <div class="w-full h-8">
