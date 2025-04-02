@@ -231,12 +231,12 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
         </div>
     </div>
 
-    <div class="w-full h-max mt-4 bg-base-300 rounded-md flex items-center justify-center">
+    <div class="w-full h-max mt-4 bg-base-300 rounded-md flex items-center justify-center ">
         {#if empleados && empleados.length > 1}
-            <table class="table mt-2 text-center flex animate-pop">
+            <table class="table mt-2 text-center flex w-full animate-pop ">
                 <thead class="">
                     <tr class="bg-accent [&_span]:font-bold">
-                        <th class="rounded-l-lg">
+                        <th class="rounded-l-lg hidden lg:table-cell">
                             <span class="text-sm font-medium text-base-content ext-base-100">#</span>
                         </th>
                         <th>
@@ -269,7 +269,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                                 </label>
                             </div>
                         </th>
-                        <th>
+                        <th class="hidden lg:table-cell" >
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span>
                                 <label class="swap swap-rotate">
@@ -279,7 +279,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                                 </label>
                             </div>
                         </th>
-                        <th>
+                        <th class="hidden lg:table-cell">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
                                 <label class="swap swap-rotate">
@@ -289,12 +289,12 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                                 </label>
                             </div>
                         </th>
-                        <th>
+                        <th class="hidden lg:table-cell">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Edad</span>
                             </div>
                         </th>
-                        <th>
+                        <th class="hidden sm:table-cell">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Estado</span>
                             </div>
@@ -305,14 +305,14 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <tbody>
                     {#each empleados as empleado , i(empleado)}
                         <tr class="border-0 border-base-content/30 shadow-sm animate-pop-delayed" style="--delay: {i*100}ms;">
-                            <th>{(i+1)+index}</th>
+                            <th class="hidden lg:table-cell">{(i+1)+index}</th>
                             <th>{empleado.cedula}</th>
                             <th>{empleado.primer_nombre}</th>
                             <th>{empleado.primer_apellido}</th>
-                            <th>{empleado.sexo}</th>
-                            <th>{new Date(empleado.fecha_nacimiento).toLocaleDateString()}</th>
-                            <th>{empleado.edad}</th>
-                            <th>
+                            <th class="hidden lg:table-cell">{empleado.sexo}</th>
+                            <th class="hidden lg:table-cell">{new Date(empleado.fecha_nacimiento).toLocaleDateString()}</th>
+                            <th class="hidden lg:table-cell">{empleado.edad}</th>
+                            <th class="hidden sm:table-cell">
                                 <span class=" px-4 rounded-md py-1 font-bold {asignColor(empleado.estado)}">{empleado.estado}</span>
                             </th>
                             <th>

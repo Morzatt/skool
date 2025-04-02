@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { formatStringWithDots } from "$lib";
+    import { goto } from "$app/navigation";
+    import { basePath, formatStringWithDots } from "$lib";
     
     type Attendance = {
         empleado_id: string;
@@ -80,7 +81,7 @@
                     <i class="fa-solid fa-print"></i> Imprimir
                 </button>
             </div>
-        </div>
+                        </div>
         
         <!-- Table with scrolling -->
         <div class="overflow-x-auto rounded-lg max-h-[calc(100vh-9rem)] border border-base-content/30">
@@ -101,7 +102,7 @@
                                     <div class="flex flex-col items-center">
                                         <span class="font-bold">Hora de Entrada</span>
                                         <span class="opacity-70">{day.weekday}</span>
-                                    </div>
+                                </div>
                                 </th>
                                 <th class="text-center min-w-10 text-xs {day.isWeekend ? 'bg-base-300' : 'bg-base-200'}">
                                     <div class="flex flex-col items-center">
@@ -146,7 +147,7 @@
 
                                     {#if attendance?.hora_entrada}                                   
                                         <td class="text-center h-12 cursor-pointer hover:bg-base-200/70 {bgColor} {textColor}"
-                                            on:click={() => console.log('Clicked:', employee.nombres, day.day, attendance)}>
+                                            onclick={() => { goto(`${basePath}/asistencias/${employee.id}_${day.year}-${day.month+1}-${day.day}`); console.log('Clicked:', employee.nombres, day.day, attendance) }}>
                                             <div class="flex flex-col items-center">
                                                 <span class="text-xs font-medium">
                                                     {attendance?.statusCode || (day.isWeekend ? 'LIB' : '')}
@@ -161,7 +162,7 @@
                                         <td>{formatTime(attendance.hora_salida)}</td>
                                     {:else}
                                         <td class="text-center h-12 cursor-pointer hover:bg-base-200/70 {bgColor} {textColor}"
-                                            on:click={() => console.log('Clicked:', employee.nombres, day.day, attendance)}>
+                                            onclick={() => console.log('Clicked:', employee.nombres, day.day, attendance)}>
                                             <div class="flex flex-col items-center">
                                                 <span class="text-xs font-medium">
                                                     {attendance?.statusCode || (day.isWeekend ? 'LIB' : '')}
@@ -183,7 +184,7 @@
                                         : 'text-base-content'}
                                     
                                     <td class="text-center h-12 cursor-pointer hover:bg-base-200/70 {bgColor} {textColor}"
-                                        on:click={() => console.log('Clicked:', employee.nombres, day.day, attendance)}>
+                                            onclick={() => { attendance?.hora_entrada ? goto(`${basePath}/asistencias/${employee.id}_${day.year}-${day.month+1}-${day.day}`) : "" }}>
                                         <div class="flex flex-col items-center">
                                             <span class="text-xs font-medium">
                                                 {attendance?.statusCode || (day.isWeekend ? 'LIB' : '')}
@@ -194,12 +195,12 @@
                                                     {formatTime(attendance.hora_entrada)}
                                                 </span>
                                             {/if}
-                                        </div>
-                                    </td>
-                                {/each}
+                                </div>
+                            </td>
+                        {/each}
                             {/if}
-                        </tr>
-                    {/each}
+                    </tr>
+                {/each}
                     
                     <!-- Empty state -->
                     {#if employees.length === 0}
@@ -209,9 +210,9 @@
                                 <p class="text-base-content/60">No se encontraron empleados</p>
                             </td>
                         </tr>
-                    {/if}
-                </tbody>
-            </table>
+            {/if}
+        </tbody>
+    </table>
         </div>
         
         <!-- Legend -->
@@ -224,7 +225,7 @@
             {/each}
         </div>
     </div>
-</div>
+</div>    
 
 <style lang="postcss">
     th, td {

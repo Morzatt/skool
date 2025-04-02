@@ -121,6 +121,10 @@ html:has(.drawer-toggle:checked) {
         animation: slide-X 0.3s ease-in-out forwards; /* Animation properties */
         animation-delay: var(--delay);
     }
+    
+    @-webkit-keyframes scale-down-hor-left{0%{-webkit-transform:scaleX(1);transform:scaleX(1);-webkit-transform-origin:0 0;transform-origin:0 0}100%{-webkit-transform:scaleX(.3);transform:scaleX(.3);-webkit-transform-origin:0 0;transform-origin:0 0}}@keyframes scale-down-hor-left{0%{-webkit-transform:scaleX(1);transform:scaleX(1);-webkit-transform-origin:0 0;transform-origin:0 0}100%{-webkit-transform:scaleX(.3);transform:scaleX(.3);-webkit-transform-origin:0 0;transform-origin:0 0}}
+    .animat-scale-down-hor-left{-webkit-animation:scale-down-hor-left .4s cubic-bezier(.25,.46,.45,.94) both;animation:scale-down-hor-left .4s cubic-bezier(.25,.46,.45,.94) both}
+
 }
 
 /* Define a custom component class */
