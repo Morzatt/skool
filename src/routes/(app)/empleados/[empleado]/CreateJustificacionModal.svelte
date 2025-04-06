@@ -50,7 +50,7 @@
             </button>
 
             <img class="size-16" src="{copy_icon}" alt="">
-            <p class="text-xs text-center">Haga click para elegir una imagen {index}.</p>
+            <p class="text-xs text-center">Haga click para elegir una imagen</p>
             <input class="hidden" 
                     id="comprobante_input_{index}" 
                     type="file" 
@@ -82,7 +82,7 @@
 
             <!-- EMPLEADO, TIPO, DETALLES, FECHA INICIO, FECHA FINAL -->
             <div class="w-full border border-base-content/30 rounded-md mt-4 p-2">
-                <h3 class="font-semibold"> <i class="fa-solid fa-fingerprint"></i> Datos de Justificación</h3>
+                <h3 class="font-semibold"> <i class="fa-solid fa-clipboard"></i> Datos de Justificación</h3>
 
                 <div class="w-full mt-3 flex flex-col items-start justify-between gap-3">
                     <div class="w-full h-full bg-base-200 rounded-md p-2 flex items-center justify-start gap-5 flex-wrap">
@@ -91,7 +91,7 @@
                             <div class="label">
                                 <span class="label-text">Tipo</span>
                             </div>
-                            <Select name="tipo" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-venus-mars" options={[
+                            <Select name="tipo" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-notes-medical" options={[
                                 {
                                     name: "Reposo",
                                     value: "Reposo"
@@ -131,7 +131,7 @@
 
             <!-- COMPROBANTE Y CAMBIAR NOMBRE DE COMPROBANTE -->
             <div class="w-full border border-base-content/30 rounded-md mt-4 p-2">
-                <h3 class="font-semibold"> <i class="fa-solid fa-fingerprint"></i>Comprobantes</h3>
+                <h3 class="font-semibold"> <i class="fa-solid fa-note-sticky mx-2"></i>Comprobantes</h3>
 
                 <div class="w-full mt-3 flex flex-col items-start justify-between gap-3">
                     <div class="w-full h-full bg-base-200 rounded-md p-2 grid grid-cols-3 gap-5 justify-center items-center">

@@ -6,6 +6,7 @@ import { db } from '$lib/database';
 import QRCode from "qrcode"
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
+import type { InfoContactoInsertable } from '$lib/database/types';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response } = locals;
@@ -46,7 +47,30 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .execute()
     , log)
 
-    return { empleado, qr, justificaciones }
+    let personal = await async(
+        db.selectFrom("info_personal")
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
+
+    let contacto = await async(
+        db.selectFrom("info_contacto")
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
+
+    let laboral = await async(
+        db.selectFrom("info_laboral")
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
+
+    console.log(personal, contacto, laboral)
+
+    return { empleado, qr, justificaciones, personal, contacto, laboral}
 });
 
 export const actions = {
@@ -70,5 +94,134 @@ export const actions = {
         return response.success("Usuario Inhabilitado Correctamente")
     },
 
-    createJustificacion: createJustificacionHandler
+    createJustificacion: createJustificacionHandler,
+
+    personal: async ({ request, locals }) => {
+        let { log, response } = locals;
+        let data = await request.formData()
+
+        let personal = await async(db.selectFrom('info_personal').selectAll().where('info_personal.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+
+        if (!personal) {
+            await async(
+                db
+                .insertInto('info_personal')
+                .values({
+                    id_empleado: data.get("id_empleado") as string,
+                    estado_civil: data.get('estado_civil') as string,
+                    nivel_academico: data.get('nivel_academico') as string,
+                })
+                .execute()
+            , log)
+        } else {
+            await async(
+                db.updateTable('info_personal')
+                .set({
+                    estado_civil: data.get('estado_civil') as string,
+                    nivel_academico: data.get('nivel_academico') as string,
+                })
+                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .execute()
+            , log)
+        }
+    },
+
+    contacto: async ({ request, locals }) => {
+        let { log, response } = locals;
+        let data = await request.formData()
+
+        let contacto = await async(db.selectFrom('info_contacto').selectAll().where('info_contacto.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+
+        if (!contacto) {
+            await async(
+                db
+                .insertInto('info_contacto')
+                .values({
+                    id_empleado: data.get("id_empleado") as string,
+                    direccion_habitacion: data.get('direccion_habitacion') as string,
+                    telefono_habitacion: data.get('telefono_habitacion') as string,
+                    telefono_personal: data.get('telefono_personal') as string,
+                    correo_electronico: data.get('correo_electronico') as string,
+                })
+                .execute()
+            , log)
+        } else {
+            await async(
+                db.updateTable('info_contacto')
+                .set({
+                    direccion_habitacion: data.get('direccion_habitacion') as string,
+                    telefono_habitacion: data.get('telefono_habitacion') as string,
+                    telefono_personal: data.get('telefono_personal') as string,
+                    correo_electronico: data.get('correo_electronico') as string,
+                })
+                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .execute()
+            , log)
+        }
+    },
+
+    laboral: async ({ request, locals }) => {
+        let { log, response } = locals;
+        let data = await request.formData()
+        let laboral = await async(db.selectFrom('info_laboral').selectAll().where('info_laboral.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+        
+        let hora_entrada = data.get('hora_entrada') as string
+        let hora_salida = data.get('hora_salida') as string
+
+        if (!hora_entrada || !hora_salida) {
+            return response.error('No se han especificado horas de entrada/salida')
+        }
+
+        if (parseInt(hora_entrada.replaceAll(":", "")) > parseInt(hora_salida.replaceAll(":", ""))) {
+            return response.error('La hora de entrada es superior a la hora de salida.')
+        }
+
+        if (!laboral) {
+            await async(
+                db
+                .insertInto('info_laboral')
+                .values({
+                    id_empleado: data.get("id_empleado") as string,
+                    hora_entrada: hora_entrada,
+                    hora_salida: hora_salida
+                })
+                .execute()
+            , log)
+            await async(
+                db
+                .updateTable('empleados')
+                .set({
+                    turno: data.get('turno') as "Mañana" | "Tarde"
+                })
+                .where('empleados.cedula', '=', data.get("id_empleado") as string)
+                .execute()
+            , log)
+        } else {
+            await async(
+                db.updateTable('info_laboral')
+                .set({
+                    hora_entrada: data.get('hora_entrada') as string,
+                    hora_salida: data.get('hora_salida') as string,
+                })
+                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .execute()
+            , log)
+            await async(
+                db
+                .updateTable('empleados')
+                .set({
+                    turno: data.get('turno') as "Mañana" | "Tarde"
+                })
+                .where('empleados.cedula', '=', data.get("id_empleado") as string)
+                .execute()
+            , log)
+        }
+    },
+
+    medic: async ({ request, locals }) => {
+        let { log, response } = locals;
+        let data = await request.formData()
+
+        console.log(data)
+    },
 } satisfies Actions

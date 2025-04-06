@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { basePath } from '$lib';
+    import { basePath, formatStringWithDots } from '$lib';
     import type { ActionData, PageData } from './$types';
     import chevron from "$lib/images/icons/chevron_left.svg"
     import GeneralContent from './GeneralContent.svelte';
@@ -9,7 +9,7 @@
     import { enhance } from '$app/forms';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-    let { empleado } = $derived(data)
+    let { empleado, laboral, contacto, personal } = $derived(data)
 
     type Data = {
         title: string, value: string, icon?: string
@@ -100,7 +100,7 @@
                 <h3 class="text-xl font-bold">{empleado.primer_nombre} {empleado.segundo_nombre} {empleado.primer_apellido} {empleado.segundo_apellido}</h3>
                 <!-- CEDULA - DEPARTAMENTO - CARGO -->
                 <div>
-                    <p class="text-sm mb-2">{`${!empleado.nacionalidad ? "V-" : empleado.nacionalidad == "Venezolano" ? "V-" : "E-"}${empleado.cedula}`}</p>
+                    <p class="text-sm mb-2">{`${!empleado.nacionalidad ? "V-" : empleado.nacionalidad == "Venezolano" ? "V-" : "E-"}${formatStringWithDots(empleado.cedula)}`}</p>
                     <p class="text-sm"><b>Departamento:</b> {empleado.nombre_departamento}</p>
                     <p><b>Cargo:</b> <i>{empleado.cargo}</i></p>
                 </div>
@@ -149,7 +149,7 @@
 
     <div class="min-h-40 my-4 w-full rounded-xl bg-base-300 p-2 lg:p-4">
         {#if content === "General"}
-            <GeneralContent empleado={ empleado } qr={data.qr}/>
+            <GeneralContent empleado={ empleado } qr={data.qr} personal={personal} contacto={contacto} laboral={laboral}/>
         {:else if content === "Justificaciones"} 
             <JustificacionesContent empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
         {:else if content === "Asistencias"}

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, invalidateAll } from '$app/navigation';
-    import { basePath } from '$lib';
+    import { basePath, formatStringWithDots } from '$lib';
     import type { EstadosEmpleado } from '$lib/database/types';
     import type { PageData } from './$types';
     import FilterSelect from './FilterSelect.svelte';
@@ -306,7 +306,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                     {#each empleados as empleado , i(empleado)}
                         <tr class="border-0 border-base-content/30 shadow-sm animate-pop-delayed" style="--delay: {i*100}ms;">
                             <th class="hidden lg:table-cell">{(i+1)+index}</th>
-                            <th>{empleado.cedula}</th>
+                            <th>{empleado.nacionalidad === "Venezolano" ? "V-" : "E-"} {formatStringWithDots(empleado.cedula)}</th>
                             <th>{empleado.primer_nombre}</th>
                             <th>{empleado.primer_apellido}</th>
                             <th class="hidden lg:table-cell">{empleado.sexo}</th>

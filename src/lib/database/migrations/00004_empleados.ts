@@ -32,6 +32,42 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('icon', 'varchar(120)', (col) => col.notNull())
     .addColumn('descripcion', 'text', (col) => col.notNull())
     .execute()
+
+  await db.schema
+    .createTable('info_personal')
+    .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
+    .addColumn('estado_civil', 'varchar(20)')
+    .addColumn('nivel_academico', 'varchar(70)')
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .execute()
+
+  await db.schema
+    .createTable('info_contacto')
+    .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
+    .addColumn('direccion_habitacion', 'varchar(250)')
+    .addColumn('telefono_personal', 'varchar(20)')
+    .addColumn('telefono_habitacion', 'varchar(20)')
+    .addColumn('correo_electronico', 'varchar(100)')
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .execute()
+
+  await db.schema
+    .createTable('info_laboral')
+    .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
+    .addColumn('fecha_ingreso', 'date')
+    .addColumn('tiempo_servicio', "integer")
+    .addColumn('hora_entrada', 'varchar(30)')
+    .addColumn('hora_salida', 'varchar(30)')
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .execute()
+
+  await db.schema
+    .createTable('info_medica')
+    .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
+    .addColumn('tipo_sangre', 'varchar(30)')
+    .addColumn('medicamentos_alergia', 'varchar(30)')
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

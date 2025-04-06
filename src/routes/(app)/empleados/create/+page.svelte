@@ -36,7 +36,7 @@
                         <div class="label">
                             <span class="label-text">Cédula</span>
                         </div>
-                        <input type="text" name="cedula" class="input" placeholder="Cédula del Empleado...">
+                        <input type="number" name="cedula" class="input" placeholder="Cédula del Empleado...">
                     </label>   
 
                     <!-- NACIONALIDAD -->
@@ -44,7 +44,7 @@
                         <div class="label">
                             <span class="label-text">Nacionalidad</span>
                         </div>
-                        <Select name="nacionalidad" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-venus-mars" options={[
+                        <Select name="nacionalidad" placeholder="Elegir" type="dropdown-bottom" styles="rounded-md" icon="fa-solid fa-flag-usa" options={[
                             {
                                 name: "Venezolano",
                                 value: "Venezolano"
@@ -145,7 +145,7 @@
                         <div class="label">
                             <span class="label-text">Departamento</span>
                         </div>
-                        <Select name="departamento" placeholder="Elegir" type="dropdown-top" styles="rounded-md" icon="fa-solid fa-cloud-sun" 
+                        <Select name="departamento" placeholder="Elegir" type="dropdown-top" styles="rounded-md" icon="fa-solid fa-briefcase" 
                         options={
                             data.departamentos !== undefined ? 
                                 data.departamentos.map((i) => {
@@ -156,6 +156,14 @@
                                 }) : 
                                 [{ name: "No hay departamentos creados", value: "" }]}
                         />
+                    </label> 
+
+                    <!-- SEXO -->
+                    <label class="form-control max-w-[17rem]">
+                        <div class="label">
+                            <span class="label-text">Fecha de Ingreso</span>
+                        </div>
+                        <input type="date" name="fecha_ingreso" class="input" placeholder="Cargo del Empleado...">
                     </label> 
 
                     <!-- SEXO -->

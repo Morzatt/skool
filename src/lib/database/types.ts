@@ -11,6 +11,9 @@ export interface Database {
     preguntas: PreguntasSeguridadTable,
     sessions: SessionsTable,
     empleados: EmpleadosTable,
+    info_laboral: InfoLaboralTable,
+    info_personal: InfoPersonalTable,
+    info_contacto: InfoContactoTable,
     justificaciones: JustificacionesTable,
     comprobantes: ComprobantesTable,
     departamentos: DepartamentosTable,
@@ -67,9 +70,9 @@ export type EstadosEmpleado ='Activo'| 'Reposo'| 'Inhabilitado'| 'Despedido' | "
 export type EmpleadosTable = {
     cedula: ColumnType<string, string, never>,
     primer_nombre: string,
-    segundo_nombre: string,
+    segundo_nombre: string | undefined,
     primer_apellido: string,
-    segundo_apellido: string,
+    segundo_apellido: string | undefined,
     sexo: "Masculino" | "Femenino",
     edad: string
     nacionalidad: "Extranjero" | "Venezolano"
@@ -85,6 +88,39 @@ export type Empleado = Selectable<EmpleadosTable>
 export type EmpleadoInsertable = Insertable<EmpleadosTable>
 export type EmpleadoUpdateable = Updateable<EmpleadosTable>
 
+export type InfoPersonalTable= {
+    id_empleado: ColumnType<string, string, never>,
+    estado_civil: string,
+    nivel_academico: string
+}
+
+export type InfoPersonal = Selectable<InfoPersonalTable>
+export type InfoPersonalInsertable = Insertable<InfoPersonalTable>
+export type InfoPersonalUpdateable = Updateable<InfoPersonalTable>
+
+export type InfoContactoTable= {
+    id_empleado: ColumnType<string, string, never>,
+    direccion_habitacion: string
+    telefono_personal: string
+    telefono_habitacion: string
+    correo_electronico: string
+}
+
+export type InfoContacto = Selectable<InfoContactoTable>
+export type InfoContactoInsertable = Insertable<InfoContactoTable>
+export type InfoContactoUpdateable = Updateable<InfoContactoTable>
+
+export type InfoLaboralTable= {
+    id_empleado: ColumnType<string, string, never>,
+    fecha_ingreso: ColumnType<string, string | undefined>
+    tiempo_servicio: ColumnType<string, string | undefined>
+    hora_entrada: ColumnType<string, string | undefined>
+    hora_salida: ColumnType<string, string | undefined>
+}
+
+export type InfoLaboral = Selectable<InfoLaboralTable>
+export type InfoLaboralInsertable = Insertable<InfoLaboralTable>
+export type InfoLaboralUpdateable = Updateable<InfoLaboralTable>
 
 // Justificaciones
 export type JustificacionesTable = {

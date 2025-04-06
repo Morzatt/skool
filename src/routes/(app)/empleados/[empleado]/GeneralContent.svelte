@@ -1,8 +1,11 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    import type { InfoContacto, InfoLaboral, InfoPersonal } from "$lib/database/types";
     import delete_icon from "$lib/images/icons/borrar_icon.svg"
+    import Select from "../create/Select.svelte";
     import CreateIdModal from "./CreateIDModal.svelte";
-    let { empleado, qr }: {empleado: any, qr: string} = $props()
+    let { empleado, qr, personal, contacto, laboral }: { empleado: any, qr: string,
+    personal: InfoPersonal | undefined, contacto: InfoContacto| undefined, laboral: InfoLaboral | undefined } = $props()
 
     type Data = {
         title: string,
@@ -12,19 +15,14 @@
 
     let infoPersonal: Data[] = $derived([
         {
-            title: "Dirección de Habitación",
-            value: "Urbanización Los Proceres, Manzana 17, Casa 12",
-            name: 'direccion'
+            title: "Estado Civil",
+            value: personal?.estado_civil,
+            name: 'estado_civil'
         },
         {
-            title: "Teléfono de Habitación",
-            value: '0285-12839953',
-            name: 'telefono_hogar'
-        },
-        {
-            title: "Correo Electrónico",
-            value: 'carlosrafa@gmail.com',
-            name: 'correo_electronico'
+            title: "Nivel Académico",
+            value: personal?.nivel_academico,
+            name: 'nivel_academico'
         },
     ])
     let editPersonal = $state(false)
@@ -32,57 +30,93 @@
     let infoContacto: Data[] = $derived([
         {
             title: "Teléfono Personal",
-            value: '0416-1028853',
+            value: contacto?.telefono_personal,
             name: 'telefono_personal'
         },
         {
             title: "Teléfono de Habitación",
-            value: '0285-12839953',
-            name: 'telefono_hogar'
+            value: contacto?.telefono_habitacion,
+            name: 'telefono_habitacion'
         },
         {
             title: "Correo Electrónico",
-            value: 'carlosrafa@gmail.com',
+            value: contacto?.correo_electronico,
             name: 'correo_electronico'
+        },
+        {
+            title: "Direccion de Habitacion",
+            value: contacto?.direccion_habitacion,
+            name: 'direccion_habitacion'
         },
     ])
     let editContacto = $state(false)
 
-    let infoLaboral: Data[] = $derived([
+    type DataLaboral = Data & { update: boolean, type?: 'date' | 'time' | "select", options?:  { name: string, value: string }[]}
+    let infoLaboral: DataLaboral[] = $derived([
         {
             title: "Departamento",
             value: empleado.nombre_departamento,
-            name: 'departamento'
+            name: 'departamento',
+            update: false
         },
         {
             title: "Cargo",
             value: empleado.cargo,
-            name: 'cargo'
+            name: 'cargo',
+            update: false
         },
         {
             title: "Fecha de Ingreso",
-            value: '19/04/2024',
-            name: 'fecha_ingreso'
+            value: laboral?.fecha_ingreso ? new Date(laboral.fecha_ingreso).toLocaleDateString('es') : "",
+            name: 'fecha_ingreso',
+            update: false
         },
         {
             title: "Tiempo de Servicio",
-            value: '11 Meses',
-            name: 'tiempo_servicio'
+            value: laboral?.tiempo_servicio,
+            name: 'tiempo_servicio',
+            update: false
         },
         {
             title: "Turno",
             value: empleado.turno,
-            name: 'turno'
+            name: 'turno',
+            type: "select",
+            options: [
+                {
+                    name: "Mañana",
+                    value: "Mañana"
+                },
+                {
+                    name: "Tarde",
+                    value: "Tarde"
+                },
+            ],
+            update: true 
         },
         {
             title: "Hora de Entrada",
-            value: '07:00 AM',
-            name: 'hora_entrada'
+            value: laboral?.hora_entrada ?
+                    new Date(1995,1,1,
+                    parseInt(laboral.hora_entrada.slice(0, laboral.hora_entrada.lastIndexOf(':'))),
+                    parseInt(laboral.hora_entrada.slice(laboral.hora_entrada.lastIndexOf(':')+1))
+                    ).toLocaleTimeString("ve", { hour12: true, hour: "2-digit", minute: "2-digit" }) 
+            : "",
+            name: 'hora_entrada',
+            type: "time",
+            update: true
         },
         {
             title: "Hora de Salida",
-            value: '08:00 AM',
-            name: 'hora_salida'
+            value: laboral?.hora_salida ? 
+                    new Date(1995,1,1,
+                    parseInt(laboral.hora_salida.slice(0, laboral.hora_salida.lastIndexOf(':'))),
+                    parseInt(laboral.hora_salida.slice(laboral.hora_salida.lastIndexOf(':')+1))
+                    ).toLocaleTimeString("ve", { hour12: true, hour: "2-digit", minute: "2-digit" }) 
+                : "",
+            name: 'hora_salida',
+            update: true,
+            type: "time"
         },
     ])
     let editLaboral = $state(false)
@@ -120,17 +154,19 @@
                 </button>
             </div>
 
-            <div class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form action='?/personal' method="POST" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+                <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoPersonal as info}
                     <div class="info">
                         <h3 class="info-title">{info.title}</h3>
                         {#if editPersonal}
                                 <input type="text" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
                                 placeholder="{info.title}..."
+                                name={info.name}
                                 value="{info.value}"
                                 min="7"> 
                             {:else}
-                                <p class="info-info">{info.value}</p>   
+                                <p class="info-info {info.value ? "" : "text-error"}">{info.value ? info.value : "Sin Especificar"}</p>   
                         {/if}
                     </div>                     
                 {/each}
@@ -140,7 +176,7 @@
                         <button class="btn btn-md bg-base-content text-base-100">Aceptar</button>
                     </div>
                 {/if}
-            </div>  
+            </form>  
         </div>
 
         <!-- CONTACTO -->
@@ -153,7 +189,8 @@
                 </button>
             </div>
 
-            <div class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form method="POST" action="?/contacto" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+                <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoContacto as info}
                     <div class="info">
                         <h3 class="info-title">{info.title}</h3>
@@ -161,9 +198,10 @@
                                 <input type="text" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
                                 placeholder="{info.title}..."
                                 value="{info.value}"
+                                name={info.name}
                                 min="7"> 
                             {:else}
-                                <p class="info-info">{info.value}</p>   
+                                <p class="info-info {info.value ? "" : "text-error"}">{info.value ? info.value : "Sin Especificar"}</p>   
                         {/if}
                     </div>                     
                 {/each}
@@ -173,7 +211,7 @@
                         <button class="btn btn-md bg-base-content text-base-100">Aceptar</button>
                     </div>
                 {/if}
-            </div>  
+            </form>  
         </div>
 
         <!-- LABORAL -->
@@ -186,17 +224,33 @@
                 </button>
             </div>
 
-            <div class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form method="POST" action="?/laboral" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+                <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoLaboral as info}
                     <div class="info">
                         <h3 class="info-title">{info.title}</h3>
-                        {#if editLaboral}
-                                <input type="text" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
-                                placeholder="{info.title}..."
-                                value="{info.value}"
-                                min="7"> 
+                        {#if editLaboral && info.update}
+                                {#if info.type !== "select"}
+                                    <input type="{info.type ? info.type : "text"}" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
+                                    placeholder="{info.title}..."
+                                    value="{info.value}"
+                                    name={info.name}
+                                    min="7">                                    
+                                {:else}
+                                    {#if info.options}
+                                        <Select name={info.name} placeholder={empleado.turno} options={
+                                            info.options.map(i => {
+                                                return {
+                                                    name: i.name,
+                                                    value: i.value  
+                                                }
+                                            })
+                                        }/>
+                                    {/if}
+                                {/if}
+
                             {:else}
-                                <p class="info-info">{info.value}</p>   
+                                <p class="info-info {info.value ? "" : "text-error"}">{info.value ? info.value : "Sin Especificar"}</p>   
                         {/if}
                     </div>                     
                 {/each}
@@ -206,11 +260,11 @@
                         <button class="btn btn-md bg-base-content text-base-100">Aceptar</button>
                     </div>
                 {/if}
-            </div>  
+            </form>  
         </div>
 
         <!-- MEDICO -->
-        <div class="w-full p-2 px-4 border border-base-content/40 rounded-md">
+        <!-- <div class="w-full p-2 px-4 border border-base-content/40 rounded-md">
             <div class="w-full flex items-center justify-between">
                 <h3><i class="fa-solid fa-kit-medical"></i> Información Médica</h3>
                 <button class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
@@ -240,7 +294,7 @@
                     </div>
                 {/if}
             </div>  
-        </div>
+        </div> -->
     </div>
 
     <div class="divider divider-horizontal m-0 p-0"></div>

@@ -33,7 +33,7 @@ export const routes: RouteGroup[] = [
 
             {
                 icon: administrar_justificaciones_icon,
-                href: "",
+                href: "justificaciones",
                 name: "Administrar Justificaciones"
             },
         ]

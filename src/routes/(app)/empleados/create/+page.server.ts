@@ -1,10 +1,10 @@
-import type { Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import async from '$lib/utils/asyncHandler';
 import { db } from '$lib/database';
 import type { EmpleadoInsertable, EstadosEmpleado } from '$lib/database/types';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
-import { getAge } from '$lib/utils/getAge';
+import { calculateTime, getAge } from '$lib/utils/getAge';
 
 export const load = (async ({locals, url}) => {
     let { log } = locals
@@ -31,9 +31,25 @@ export const actions = {
             turno:             data.get('turno') as "Mañana" | "Tarde",
         } satisfies Omit<EmpleadoInsertable, "edad"> 
 
+        let fecha_ingreso = data.get('fecha_ingreso') as string
+        let tiempo_servicio = calculateTime(fecha_ingreso)
+
+
         await async(empleadosRepository.create({
             ...empleado,
             edad: getAge(empleado.fecha_nacimiento),
         }) ,log)
+
+        await async(
+            db.insertInto('info_laboral')
+            .values({
+                id_empleado: empleado.cedula,
+                fecha_ingreso: fecha_ingreso,
+                tiempo_servicio: tiempo_servicio 
+            })
+            .execute()
+        ,log)
+
+        redirect(302, `/empleados/${empleado.cedula}`)
     }
 } satisfies Actions 
