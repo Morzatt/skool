@@ -232,7 +232,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
     </div>
 
     <div class="w-full h-max mt-4 bg-base-300 rounded-md flex items-center justify-center ">
-        {#if empleados && empleados.length > 1}
+        {#if empleados && empleados.length > 0}
             <table class="table mt-2 text-center flex w-full animate-pop ">
                 <thead class="">
                     <tr class="bg-accent [&_span]:font-bold">

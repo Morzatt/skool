@@ -5,11 +5,12 @@
     import database_icon from "$lib/images/icons/database_icon.svg"
     import cancelar_icon from "$lib/images/icons/cancelar_icon.svg"
 
+
     import { enhance } from '$app/forms';
     import Alert from '$lib/components/Messages/Alert.svelte';
     import { fly, slide } from 'svelte/transition';
     import { sineInOut } from 'svelte/easing';
-    let { data, form }: { data: PageData, form: ActionData } = $props();
+    let { data, form }: { data: PageData, form: ActionData & { timestamp: string } } = $props();
 
     // Images Import
 
@@ -42,12 +43,13 @@
     }
 
     $effect(() => {
-        
         if (form?.success && form?.form === "generate") {
-            const link = document.createElement('a');
-            link.href = `/backup_${form.timestamp}.sql`;
-            link.download = `backup_${form.timestamp}.sql`; // Set the desired filename
-            link.click(); 
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = `/backup_${form.timestamp}.tar`;
+                link.download = `backup_${form.timestamp}.tar`; // Set the desired filename
+                link.click();                
+            }, 1000)
         }
     })
 </script>

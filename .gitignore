@@ -24,4 +24,6 @@ vite.config.ts.timestamp-*
 
 # Sensitive
 /static/comprobantes/*
+/static/*.tar
+/staitc/*.tar.gz
 ./VSCodeCounter

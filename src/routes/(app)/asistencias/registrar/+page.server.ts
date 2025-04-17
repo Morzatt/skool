@@ -7,7 +7,7 @@ import { asistenciasRepository } from '$lib/database/repositories/asistencias.re
 import { db } from '$lib/database';
 
 export const load = (async ({locals}) => {
-    let qr = await QRCode.toDataURL('2138', {
+    let qr = await QRCode.toDataURL('8933618', {
         errorCorrectionLevel: "H"
     })
     

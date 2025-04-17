@@ -96,8 +96,8 @@
 
     <div class="w-full h-max mt-4 p-4 pb-8 bg-base-300 rounded-md grid grid-cols-3 items-start gap-2 gap-y-6">
         {#if departamentos}
-            {#each departamentos as departamento}
-                <div class="stack h-full *:h-full">
+            {#each departamentos as departamento, i}
+                <div class="stack h-full *:h-full animate-pop" style="--delay: {i*100}ms">
                     <div class="card shadow-md bg-base-100">
                         <div class="card-body">
                             <h2 class="card-title"><i class="{departamento.icon}"></i>{departamento.nombre_departamento}</h2>

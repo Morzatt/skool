@@ -9,15 +9,38 @@
 
     type Data = {
         title: string,
-        value: string,
+        value: string | undefined,
         name: string,
+        update?: boolean,
+        type?: 'date' | 'time' | "select" | 'number' | 'text',
+        options?:  { name: string, value: string }[]
     }
 
     let infoPersonal: Data[] = $derived([
         {
             title: "Estado Civil",
             value: personal?.estado_civil,
-            name: 'estado_civil'
+            name: 'estado_civil',
+            type: "select",
+            options: [
+                {
+                    name: "Soltero(a)",
+                    value: "Soltero(a)"
+                },
+                {
+                    name: "Casado(a)",
+                    value: "Casado(a)"
+                },
+                {
+                    name: "Divorciado(a)",
+                    value: "Divorciado(a)"
+                },
+                {
+                    name: "Viudo(a)",
+                    value: "Viudo(a)"
+                },
+            ],
+            update: true 
         },
         {
             title: "Nivel Académico",
@@ -31,11 +54,13 @@
         {
             title: "Teléfono Personal",
             value: contacto?.telefono_personal,
+            type: "number",
             name: 'telefono_personal'
         },
         {
             title: "Teléfono de Habitación",
             value: contacto?.telefono_habitacion,
+            type: "number",
             name: 'telefono_habitacion'
         },
         {
@@ -51,8 +76,7 @@
     ])
     let editContacto = $state(false)
 
-    type DataLaboral = Data & { update: boolean, type?: 'date' | 'time' | "select", options?:  { name: string, value: string }[]}
-    let infoLaboral: DataLaboral[] = $derived([
+    let infoLaboral: Data[] = $derived([
         {
             title: "Departamento",
             value: empleado.nombre_departamento,
@@ -160,13 +184,26 @@
                     <div class="info">
                         <h3 class="info-title">{info.title}</h3>
                         {#if editPersonal}
+                            {#if info.type !== "select"}
                                 <input type="text" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
                                 placeholder="{info.title}..."
                                 name={info.name}
                                 value="{info.value}"
-                                min="7"> 
+                                min="7">                              
                             {:else}
-                                <p class="info-info {info.value ? "" : "text-error"}">{info.value ? info.value : "Sin Especificar"}</p>   
+                                {#if info.options}
+                                    <Select name={info.name} placeholder='Elegir' options={
+                                        info.options.map(i => {
+                                            return {
+                                                name: i.name,
+                                                value: i.value  
+                                            }
+                                        })
+                                    }/>
+                                {/if}
+                            {/if}
+                        {:else}
+                            <p class="info-info {info.value ? "" : "text-error"}">{info.value ? info.value : "Sin Especificar"}</p>   
                         {/if}
                     </div>                     
                 {/each}
@@ -195,7 +232,7 @@
                     <div class="info">
                         <h3 class="info-title">{info.title}</h3>
                         {#if editContacto}
-                                <input type="text" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
+                                <input type="{info.type !== 'text' ? info.type : 'text'}" class="input input-bordered input-sm focus:outline-0 bg-base-100/70 animate-pop"
                                 placeholder="{info.title}..."
                                 value="{info.value}"
                                 name={info.name}

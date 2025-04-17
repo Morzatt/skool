@@ -22,7 +22,7 @@
         },
         {
             title: "Edad",
-            value: empleado.edad
+            value: `${empleado.edad} Años`
         },
         {
             title: "Sexo",
@@ -100,7 +100,7 @@
                 <h3 class="text-xl font-bold">{empleado.primer_nombre} {empleado.segundo_nombre} {empleado.primer_apellido} {empleado.segundo_apellido}</h3>
                 <!-- CEDULA - DEPARTAMENTO - CARGO -->
                 <div>
-                    <p class="text-sm mb-2">{`${!empleado.nacionalidad ? "V-" : empleado.nacionalidad == "Venezolano" ? "V-" : "E-"}${formatStringWithDots(empleado.cedula)}`}</p>
+                    <p class="text-sm mb-2">{`${empleado.nacionalidad === "Venezolano" ? "V-" : "E-"}${formatStringWithDots(empleado.cedula)}`}</p>
                     <p class="text-sm"><b>Departamento:</b> {empleado.nombre_departamento}</p>
                     <p><b>Cargo:</b> <i>{empleado.cargo}</i></p>
                 </div>
