@@ -6,7 +6,7 @@ import { unlinkSync, writeFileSync } from 'fs';
 import fs from "fs"
 import path from 'path';
 import * as tar from "tar"
-import { cp, mkdir, rm } from 'fs/promises';
+import { cp, mkdir, rm, access, readdir, unlink } from 'fs/promises';
 
 export const load = (async () => {
     return {};
@@ -66,40 +66,48 @@ export const actions = {
         let data = await request.formData()
 
         let backupUpload = data.get('backupUpload') as File
-        if (!backupUpload.name.endsWith(".tar.gz")) return fail(400, response.error("El archivo seleccionado no es una archivo de respaldo compatible"));
+        if (!backupUpload.name.endsWith(".tar")) {
+            return fail(400, response.error("El archivo seleccionado no es una archivo de respaldo compatible"));
+        }
 
-        writeFileSync(`static/${backupUpload.name}`, Buffer.from(await backupUpload.arrayBuffer()));
-        execSync(`mysql -u ${import.meta.env.VITE_MSUSER} --password=${import.meta.env.VITE_MSPASSWORD} -P ${import.meta.env.VITE_MSPORT || 3306} ${import.meta.env.VITE_MSDATABASE} < ./static/${backupUpload.name}`)
+        let cwd = process.cwd()
+        let temporalTarPath = path.join(cwd, `/static/temporal/${backupUpload.name}`)
+        let backupID = backupUpload.name.slice(backupUpload.name.lastIndexOf('_') + 1, backupUpload.name.lastIndexOf('.'))
 
-        setTimeout(() => {
-            unlinkSync(`static/${backupUpload.name}`)
-        }, 5000)
+        try {
+            writeFileSync(temporalTarPath, Buffer.from(await backupUpload.arrayBuffer()));
+
+            tar.x({
+                sync:true,
+                file: temporalTarPath,
+                cwd: path.join(process.cwd(), '/static/temporal')
+            })
+
+            await async(unlink(temporalTarPath), log)
+
+            let backupFolderPath = path.join(cwd, `/static/temporal/backup_${backupID}`)
+            let backupFilePath = path.join(backupFolderPath, `/backup_${backupID}.sql`)
+            let backupComprobantesFolder = path.join(backupFolderPath, `/comprobantes`)
+            let comprobantesPath = path.join(cwd, '/static/comprobantes')
+
+            execSync(`mysql -u ${import.meta.env.VITE_MSUSER} --password=${import.meta.env.VITE_MSPASSWORD} -P ${import.meta.env.VITE_MSPORT || 3306} ${import.meta.env.VITE_MSDATABASE} < ${backupFilePath}`)
+
+            await async(access(comprobantesPath), log)
+            const items = await async(readdir(comprobantesPath), log);
+
+            if (items && items.length > 0) {
+                for (const item of items) {
+                    const itemPath = path.join(comprobantesPath, item);
+                    await async(rm(itemPath, { recursive: true, force: true }), log);
+                }
+            }
+
+            await async(cp(backupComprobantesFolder, comprobantesPath, { recursive: true }), log)
+            await async(rm(backupFolderPath, { recursive: true, force: true }), log)
+        } catch (error) {
+            handleError(log, error, {})
+        }
 
         return response.success('Respaldo restaurado correctamente..')
     },
-
-    folder: async ({ locals, request }) => {
-        let { response, log } = locals
-        let data = await request.formData()
-        console.log('data', data)
-
-
-        // Retrieve all uploaded files
-        const files = data.getAll('files') as File[];
-        // Process each file
-        await Promise.all(
-            files.map(async (file) => {
-                // Derive output path from webkitRelativePath
-                const relativePath = (file as any).webkitRelativePath || file.name;
-                const outPath = path.join('static', 'uploads', relativePath);
-                // Ensure directory exists
-                await fs.promises.mkdir(path.dirname(outPath), { recursive: true });
-                // Stream file to disk
-                const buffer = Buffer.from(await file.arrayBuffer());
-                await writeFile(outPath, buffer);
-            })
-        );
-
-        return response.success('Respaldo restaurado correctamente..')
-    }
 } satisfies Actions 
