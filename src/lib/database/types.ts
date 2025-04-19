@@ -167,6 +167,7 @@ export type DepartamentoUpdateable = Updateable<DepartamentosTable>
 
 // Asistencias
 export type AsistenciasTable = {
+    id_asistencia: string,
     empleado: ColumnType<string, string, never>,
     fecha: ColumnType<string, string, never>,
     hora_entrada: ColumnType<string, string, never>,
@@ -179,11 +180,11 @@ export type AsistenciaInsertable = Insertable<AsistenciasTable>
 export type AsistenciaUpdateable = Updateable<AsistenciasTable>
 
 export type ObservacionesAsistenciasTable = {
-    empleado: ColumnType<string, string, never>,
-    fecha: ColumnType<string, string, never>,
-    hora_entrada: ColumnType<string, string, never>,
-    hora_salida: string | undefined,
-    encargado: ColumnType<string, string, never>,
+    id_asistencia: ColumnType<string, string, never>,
+    encargado_observacion: string,
+    tipo_observacion: 'Entrada'  | 'Salida',
+    observacion: string,
+    created_at: ColumnType<Date, never>,
 }
 
 export type ObservacionAsistencia = Selectable<ObservacionesAsistenciasTable>

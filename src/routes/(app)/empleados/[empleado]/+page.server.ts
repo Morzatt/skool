@@ -68,8 +68,6 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .executeTakeFirst()
     , log)
 
-    console.log(personal, contacto, laboral)
-
     return { empleado, qr, justificaciones, personal, contacto, laboral}
 });
 
@@ -222,6 +220,5 @@ export const actions = {
         let { log, response } = locals;
         let data = await request.formData()
 
-        console.log(data)
     },
 } satisfies Actions

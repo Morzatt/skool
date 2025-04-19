@@ -24,8 +24,6 @@ export async function createJustificacionHandler(
         fecha_finalizacion: data.get("fecha_finalizacion") as string,
         // razon: data.get('razon') as string
     } satisfies Omit<JustificacionInsertable, "id" | "razon">
-    
-    console.log(comprobantes)
 
     if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
         return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       
@@ -37,16 +35,19 @@ export async function createJustificacionHandler(
         }
     }
 
-
     if (comprobantes.length < 1) {
         return fail(401, response.error('No se puede crear una justificacion sin al menos (1) comprobante fisico correspondiente'))
     }
 
+    let ids = []
+
     for (let i of comprobantes) {
         let arrayBuffer = await i.arrayBuffer()
         let data = Buffer.from(arrayBuffer)
+        let id = `${justificacion.empleado}-${btoa(i.name).slice(0, 8)}`
+        ids.push(`${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`)
         
-        writeFile(`static/comprobantes/${i.name}`, data, (error) => {
+        writeFile(`static/comprobantes/${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`, data, (error) => {
             if (error) {
                 handleError(log, error, {})
             }
@@ -61,11 +62,11 @@ export async function createJustificacionHandler(
             id: justificacionID,
         })
 
-        for (let i of comprobantes) {
+        for (let i of ids) {
             await comprobantesRepository.create(trx, {
                 id_comprobante: randomUUID(),
                 id_justificacion: justificacionID,
-                path: `/comprobantes/${i.name}`
+                path: `/comprobantes/${i}`
             })
         }
     }), log) 

@@ -3,7 +3,6 @@ import type { PageServerLoad } from './$types';
 import { execSync } from "child_process"
 import async, { handleError } from '$lib/utils/asyncHandler';
 import { unlinkSync, writeFileSync } from 'fs';
-import fs from "fs"
 import path from 'path';
 import * as tar from "tar"
 import { cp, mkdir, rm, access, readdir, unlink } from 'fs/promises';
@@ -36,29 +35,27 @@ export const actions = {
 
             // CARPETA DE COMPROBANTES DENTRO DE LA CARPETA DE RESPALDO
             await async(mkdir(path.join(backupFolderPath, '/comprobantes')), log)
-        
+
             // COPIAR CARPETA DE RESPALDOS
             await cp(comprobantesFolderPath, path.join(backupFolderPath, '/comprobantes'), { recursive: true });
 
             // COMPRIMIR CARPETA DE RESPALDO
-            tar.c({ 
+            tar.c({
                 // gzip: false,
                 file: tarPath,
                 sync: true,
                 portable: true,
                 cwd: path.join(process.cwd(), '/static/temporal')
             }, [`backup_${timestamp}`])
+            setTimeout(() => {
+                unlinkSync(tarPath)
+                rm(backupFolderPath, { recursive: true, force: true })
+            }, 15000)
 
+            return response.success('Copia de Seguridad creada correctamente.', { timestamp: timestamp })
         } catch (error) {
             handleError(log, error, {})
         }
-
-        setTimeout(() => {
-            unlinkSync(tarPath)
-            rm(backupFolderPath, { recursive: true, force: true })
-        }, 15000)
-
-        return response.success('Copia de Seguridad creada correctamente.', { timestamp: timestamp })
     },
 
     upload: async ({ locals, request }) => {
@@ -78,7 +75,7 @@ export const actions = {
             writeFileSync(temporalTarPath, Buffer.from(await backupUpload.arrayBuffer()));
 
             tar.x({
-                sync:true,
+                sync: true,
                 file: temporalTarPath,
                 cwd: path.join(process.cwd(), '/static/temporal')
             })
@@ -104,10 +101,9 @@ export const actions = {
 
             await async(cp(backupComprobantesFolder, comprobantesPath, { recursive: true }), log)
             await async(rm(backupFolderPath, { recursive: true, force: true }), log)
+            return response.success('Respaldo restaurado correctamente..')
         } catch (error) {
             handleError(log, error, {})
         }
-
-        return response.success('Respaldo restaurado correctamente..')
     },
 } satisfies Actions 

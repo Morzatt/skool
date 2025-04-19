@@ -103,7 +103,6 @@
                 })
                 if (response.ok) {
                     let data = await response.json()
-                    console.log("data: ", data)
                     preg_1_indicator.textContent= data.preg_1
                     preg_2_indicator.textContent= data.preg_2
                 }

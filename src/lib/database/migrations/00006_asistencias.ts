@@ -3,31 +3,33 @@ import { Kysely, sql } from 'kysely'
 export async function up(db: Kysely<any>):  Promise<void> {
   await db.schema
     .createTable('asistencias')
-    .addColumn('empleado', 'varchar(12)')
+    // '30451822_20250418'
+    .addColumn('id_asistencia', 'varchar(40)', (col) => col.notNull().primaryKey())
+    .addColumn('empleado', 'varchar(12)', (col) => col.notNull())
     .addColumn('fecha', 'date', (col) => col.notNull())
     .addColumn('hora_entrada', 'time', (col) => col.notNull())
     .addColumn('hora_salida', 'time')
-    .addColumn('encargado', 'varchar(50)')
+    .addColumn('encargado', 'varchar(50)', (col) => col.notNull())
     .addForeignKeyConstraint('fk_empleado', ['empleado'], 'empleados', ["cedula"], (col) => col.onDelete('no action').onUpdate('cascade'))
     .addForeignKeyConstraint('fk_encargado',['encargado'], 'usuarios', ["usuario"], (col) => col.onDelete('no action').onUpdate('cascade'))
-    .addPrimaryKeyConstraint('pkey_asistencias', ['empleado', 'fecha'])
     .execute()
 
   await db.schema
     .createTable('observaciones_asistencias')
-    .addColumn('empleado', 'varchar(12)')
-    .addColumn('fecha', 'date', (col) => col.notNull())
-    .addColumn('hora_entrada', 'time', (col) => col.notNull())
-    .addColumn('hora_salida', 'time')
-    .addColumn('encargado', 'varchar(50)')
-    .addForeignKeyConstraint('fk_empleado', ['empleado'], 'empleados', ["cedula"], (col) => col.onDelete('no action').onUpdate('cascade'))
-    .addForeignKeyConstraint('fk_encargado',['encargado'], 'usuarios', ["usuario"], (col) => col.onDelete('no action').onUpdate('cascade'))
-    .addPrimaryKeyConstraint('pkey_asistencias', ['empleado', 'fecha'])
+    .addColumn('id_asistencia', 'varchar(40)', (col) => col.notNull())
+    .addColumn('encargado_observacion', 'varchar(50)', (col) => col.notNull())
+    .addColumn('tipo_observacion', 'varchar(12)', (col) => col.notNull().check(sql`tipo_observacion IN ('Entrada', 'Salida')`))
+    .addColumn('observacion', 'varchar(50)', (col) => col.notNull())
+    .addColumn('created_at', 'timestamp', (col) =>
+      col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
+    )
+    .addForeignKeyConstraint('fk_asistencia', ['id_asistencia'], 'asistencias', ["id_asistencia"], (col) => col.onDelete('no action').onUpdate('cascade'))
     .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('asistencias').execute()
+  await db.schema.dropTable('observaciones_asistencias').execute()
 }
 
 

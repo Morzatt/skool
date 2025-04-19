@@ -2,13 +2,14 @@
     import { enhance } from "$app/forms";
     import Alert from "$lib/components/Messages/Alert.svelte";
     import type { ActionData } from "./$types";
-    import type { Departamento, Empleado, Usuario } from "$lib/database/types";
+    import type { Departamento, Empleado, InfoContacto, InfoLaboral, InfoPersonal, Usuario } from "$lib/database/types";
     import { formatStringWithDots } from "$lib";
     import { capitalizeFirstLetter } from "$lib/utils/capitlizeFirstLetter";
+    import { format } from "date-fns";
 
     let { empleado = $bindable(), form, usuario, date = $bindable(), type }:
     { 
-        empleado: Empleado & Departamento | null,
+        empleado: Empleado & Departamento & InfoPersonal & InfoContacto & InfoLaboral | null,
         form: ActionData | null,
         usuario: Omit<Usuario, "contraseña">,
         date: Date | null,
@@ -19,6 +20,13 @@
     function clearAll() {
         empleado = null;
         date = null;
+    }
+
+    function formatTime(time: string): string {
+        return new Date(1995,1,1,
+        parseInt(time.slice(0, time.lastIndexOf(':'))),
+        parseInt(time.slice(time.lastIndexOf(':')+1))
+        ).toLocaleTimeString("ve", { hour12: true, hour: "2-digit", minute: "2-digit" })
     }
 </script>
 
@@ -74,9 +82,9 @@
 
                             <div class="form-control">
                                 <div class="label">
-                                    <b class="label-text">Hora de Entrada <i class="fa-solid fa-hourglass-half mx-2"></i> </b>
+                                    <b class="label-text">Hora de {type === "entrada" ? "Entrada" : "Salida"}<i class="fa-solid fa-hourglass-half mx-2"></i> </b>
                                 </div>
-                                <p>07:00:00 a.m.</p>
+                                <p>{type === "entrada" ? formatTime(empleado.hora_entrada) : formatTime(empleado.hora_salida)}</p>
                             </div> 
                         </div>
                         <div class="w-full h-full bg-base-200 rounded-md p-1 flex items-center justify-start gap-4">
