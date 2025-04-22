@@ -107,7 +107,7 @@
                                                 <i class="fa-solid fa-eye"></i>
                                             </button>
                                         </div>
-                                        <img src="{comprobante.path}" alt="" class="border border-base-content/30"> 
+                                        <img src="/downloads/000?path={comprobante.path}&type=comprobante" alt="" class="border border-base-content/30"> 
                                     </div>
 
                                     <!-- MODAL -->
@@ -122,7 +122,7 @@
                                             </div> -->
                                             
                                             <div class="img-container h-full overflow-auto">
-                                                <img src="{comprobante.path}" alt="" class="border border-base-content/30"> 
+                                                <img src="/downloads/000?path={comprobante.path}&type=comprobante" alt="" class="border border-base-content/30"> 
                                             </div>
 
                                             <!-- <div class="button-container">

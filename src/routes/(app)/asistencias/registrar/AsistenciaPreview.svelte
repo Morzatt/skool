@@ -50,7 +50,9 @@
 
         <div class="divider m-0 mt-3 p-0"></div>
 
-        <form action="?/{type}" method="post" enctype="multipart/form-data" use:enhance
+        <form action="?/{type}" method="post" enctype="multipart/form-data" use:enhance={() => {
+            document.getElementById('asistencia_close').click()
+        }}
                 class="w-full overflow-y-auto 
                 flex flex-col gap-3 items-center justify-start">
             <input type="hidden" name="empleado" value="{empleado?.cedula}">

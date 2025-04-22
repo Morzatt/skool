@@ -46,7 +46,7 @@
         if (form?.success && form?.form === "generate") {
             setTimeout(() => {
                 const link = document.createElement('a');
-                link.href = `/backup_${form.timestamp}.tar`;
+                link.href = `/downloads/${form.timestamp}?type=backup`;
                 link.download = `backup_${form.timestamp}.tar`; // Set the desired filename
                 link.click();                
             }, 1000)

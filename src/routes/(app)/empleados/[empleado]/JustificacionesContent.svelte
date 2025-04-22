@@ -73,7 +73,7 @@
                 bg-base-100 border-y border-base-content/40
                 flex items-start justify-between gap-4">
                     <div class="border border-base-content/60 w-1/3 h-full">
-                        <img src="{justificacion.path}" alt="" class="w-full h-40">
+                        <img src="/downloads/000?path={justificacion.path}&type=comprobante" alt="" class="w-full h-40">
                     </div>
 
                     <div class="w-2/3 h-full py-2 flex flex-col justify-between items-start">
