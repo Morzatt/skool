@@ -38,7 +38,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
     .addColumn('estado_civil', 'varchar(20)')
     .addColumn('nivel_academico', 'varchar(70)')
-    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .execute()
 
   await db.schema
@@ -48,7 +48,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('telefono_personal', 'varchar(20)')
     .addColumn('telefono_habitacion', 'varchar(20)')
     .addColumn('correo_electronico', 'varchar(100)')
-    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .execute()
 
   await db.schema
@@ -58,7 +58,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('tiempo_servicio', "integer")
     .addColumn('hora_entrada', 'varchar(30)')
     .addColumn('hora_salida', 'varchar(30)')
-    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .execute()
 
   await db.schema
@@ -66,7 +66,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('id_empleado', 'varchar(12)', (col) => col.notNull())
     .addColumn('tipo_sangre', 'varchar(30)')
     .addColumn('medicamentos_alergia', 'varchar(30)')
-    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_empleado', ['id_empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .execute()
 }
 

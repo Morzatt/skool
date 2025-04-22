@@ -15,7 +15,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
     )
-    .addForeignKeyConstraint('fk_empleado', ['empleado'], 'empleados', ['cedula'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_empleado', ['empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .execute()
 
   await db.schema
@@ -26,7 +26,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
     )
-    .addForeignKeyConstraint('fk_justificacion', ['id_justificacion'], 'justificaciones', ['id'], (col) => col.onDelete('no action').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_justificacion', ['id_justificacion'], 'justificaciones', ['id'], (col) => col.onDelete('cascade').onUpdate('cascade'))
     .addPrimaryKeyConstraint('pk_comprobante', ['id_comprobante', 'id_justificacion'])
     .execute()
 }

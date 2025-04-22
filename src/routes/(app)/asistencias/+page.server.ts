@@ -1,6 +1,7 @@
 import { db } from '$lib/database';
-import { error } from '@sveltejs/kit';
+import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { printAsistenciasHandler } from '$lib/handlers/print.handlers';
 
 // Consolidated interfaces
 interface Employee {
@@ -241,3 +242,8 @@ function filterEmployees(empleados: any[], searchTerm: string, departamento: str
         return matchesSearch && matchesDepartment;
     });
 }
+
+
+export const actions = {
+    printAsistencias: printAsistenciasHandler,
+} satisfies Actions

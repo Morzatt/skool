@@ -1,11 +1,12 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import type { InfoContacto, InfoLaboral, InfoPersonal } from "$lib/database/types";
+    import type { Departamento, InfoContacto, InfoLaboral, InfoPersonal } from "$lib/database/types";
     import delete_icon from "$lib/images/icons/borrar_icon.svg"
     import Select from "../create/Select.svelte";
     import CreateIdModal from "./CreateIDModal.svelte";
-    let { empleado, qr, personal, contacto, laboral }: { empleado: any, qr: string,
-    personal: InfoPersonal | undefined, contacto: InfoContacto| undefined, laboral: InfoLaboral | undefined } = $props()
+    let { empleado, qr, personal, contacto, laboral, departamentos }: { empleado: any, qr: string,
+    personal: InfoPersonal | undefined, contacto: InfoContacto| undefined, laboral: InfoLaboral | undefined, 
+    departamentos: Departamento[] | undefined } = $props()
 
     type Data = {
         title: string,
@@ -81,13 +82,20 @@
             title: "Departamento",
             value: empleado.nombre_departamento,
             name: 'departamento',
-            update: false
+            update: true,
+            type: "select",
+            options: departamentos?.map(d => {
+                return {
+                    name: d.nombre_departamento,
+                    value: d.id_departamento 
+                }
+            })
         },
         {
             title: "Cargo",
             value: empleado.cargo,
             name: 'cargo',
-            update: false
+            update: true
         },
         {
             title: "Fecha de Ingreso",
@@ -163,6 +171,9 @@
         },
     ])
     let editMedica = $state(false)
+    function closeSection(id: string) {
+        document.getElementById(id).click()
+    }
 </script>
 
 <!-- // CONTACTO, LABORAL, MEDICA -->
@@ -172,13 +183,13 @@
         <div class="w-full p-1 px-4 border border-base-content/40 rounded-md">
             <div class="w-full flex items-center justify-between">
                 <h3><i class="fa-solid fa-person"></i> Información Personal</h3> 
-                <button class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
+                <button id='personal_close' class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
                 onclick={()=>{editPersonal = !editPersonal}}>
                     <i class="fa-solid fa-pencil"></i>
                 </button>
             </div>
 
-            <form action='?/personal' method="POST" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form action='?/personal' method="POST" use:enhance={ () => closeSection('personal_close') } class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
                 <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoPersonal as info}
                     <div class="info">
@@ -220,13 +231,13 @@
         <div class="w-full p-2 px-4 border border-base-content/40 rounded-md">
             <div class="w-full flex items-center justify-between">
                 <h3><i class="fa-solid fa-phone"></i> Información De Contacto</h3>
-                <button class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
+                <button id="contacto_close" class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
                 onclick={()=>{editContacto = !editContacto}}>
                     <i class="fa-solid fa-pencil"></i>
                 </button>
             </div>
 
-            <form method="POST" action="?/contacto" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form method="POST" action="?/contacto" use:enhance={ () => closeSection('contacto_close') } class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
                 <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoContacto as info}
                     <div class="info">
@@ -255,13 +266,13 @@
         <div class="w-full p-2 px-4 border border-base-content/40 rounded-md">
             <div class="w-full flex items-center justify-between">
                 <h3><i class="fa-solid fa-briefcase"></i> Información Laboral</h3>
-                <button class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
+                <button id="laboral_close" class="btn btn-sm btn-circle bg-base-content text-base-100" aria-label="edit-button"
                 onclick={()=>{editLaboral = !editLaboral}}>
                     <i class="fa-solid fa-pencil"></i>
                 </button>
             </div>
 
-            <form method="POST" action="?/laboral" use:enhance class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
+            <form method="POST" action="?/laboral" use:enhance={ () => closeSection('laboral_close') } class="lg:w-full h-full flex items-start justify-start flex-wrap gap-4">
                 <input type="hidden" value={empleado.cedula} name="id_empleado">
                 {#each infoLaboral as info}
                     <div class="info">
@@ -275,7 +286,7 @@
                                     min="7">                                    
                                 {:else}
                                     {#if info.options}
-                                        <Select name={info.name} placeholder={empleado.turno} options={
+                                        <Select name={info.name} placeholder={info.name === "turno" ? empleado.turno : empleado.nombre_departamento ? empleado.nombre_departamento : "Elegir"} options={
                                             info.options.map(i => {
                                                 return {
                                                     name: i.name,

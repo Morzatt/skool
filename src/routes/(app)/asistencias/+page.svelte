@@ -1,12 +1,20 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+    import type { ActionData, PageData } from './$types';
     import Alert from "$lib/components/Messages/Alert.svelte";
     import Calendar from './Calendar.svelte';
     import FullMonthTable from './FullMonthTable.svelte';
     import { goto } from '$app/navigation';
+    import { downloadFile } from '$lib/utils/downloadFile';
 
     // Get data from props
-    let { data } = $props<{ data: PageData }>();
+    let { data, form } = $props<{ data: PageData, form: ActionData & { documentId: string } }>();
+
+    $effect(() => {
+        if (form && form.success && form.form === "printAsistencias") {
+            downloadFile(`/downloads/${form.documentId}?type=asistencias`, `asistencia_${form.documentId}.pdf`)
+        }
+    })
+
     let { 
         empleados, filteredEmpleados, asistencias, 
         departamentos, tiposAsistencia, dateRange, dateRangeDays 

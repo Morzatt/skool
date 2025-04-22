@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { enhance } from "$app/forms";
     import { goto } from "$app/navigation";
     import { basePath, formatStringWithDots } from "$lib";
     
@@ -77,11 +78,18 @@
                 <button class="btn btn-sm btn-outline">
                     <i class="fa-solid fa-file-export"></i> Exportar
                 </button>
-                <button class="btn btn-sm btn-outline">
-                    <i class="fa-solid fa-print"></i> Imprimir
-                </button>
+
+                <form action="?/printAsistencias" method="post" use:enhance class="">
+                    <input type="hidden" name="startDate" value={startDate}>
+                    <input type="hidden" name="endDate" value={endDate}>
+                    <input type="hidden" name="departamento" value="">
+
+                    <button class="btn btn-sm btn-outline">
+                        <i class="fa-solid fa-print"></i> Imprimir
+                    </button>
+                </form>
             </div>
-                        </div>
+        </div>
         
         <!-- Table with scrolling -->
         <div class="overflow-x-auto rounded-lg max-h-[calc(100vh-9rem)] border border-base-content/30">

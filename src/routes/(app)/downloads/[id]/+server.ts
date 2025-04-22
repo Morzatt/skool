@@ -24,6 +24,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
         const filePath = url.searchParams.get('path') as string
         return await downloadComprobante(filePath, TEMP_DIR, log, response)
     }
+
+    if (type === "asistencias") {
+        const TEMP_DIR = path.join(process.cwd(), '/static/temporal');
+        return await downloadAsistencia(id, TEMP_DIR, log, response)
+    }
 };
 
 async function accessReadStream(path: string) {
@@ -51,6 +56,19 @@ let downloadBackups: DownloadFunction = async (uniqueId, TEMP_DIR, log, response
 
 let downloadComprobante: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
     const tempFileName = uniqueId;
+    const tempFilePath = path.join(TEMP_DIR, tempFileName);
+
+    try {
+        let fileStream = await async(accessReadStream(tempFilePath), log)
+        return new Response(fileStream);
+    } catch (e) {
+        handleError(log, e, {})
+    }
+}
+
+let downloadAsistencia: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
+    const tempFileName = `asistencias_${uniqueId}.pdf`;
+    console.log(tempFileName)
     const tempFilePath = path.join(TEMP_DIR, tempFileName);
 
     try {

@@ -1,10 +1,10 @@
-import type { Alumno, Empleado, Grado, GradoAlumno, GradoCursado } from "$lib/database/types";
+// import type { Alumno, Empleado, Grado, GradoAlumno, GradoCursado } from "$lib/database/types";
 import type { StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
 import path from "path"
 import { formatStringWithDots } from "$lib";
 import { capitalizeFirstLetter } from "$lib/utils/capitlizeFirstLetter";
-import { formatGrado } from "$lib/utils/createGradoId";
-import { getYear } from "$lib/utils/getSchoolarYear";
+// import { formatGrado } from "$lib/utils/createGradoId";
+// import { getYear } from "$lib/utils/getSchoolarYear";
 
 const styles: StyleDictionary = {
     text_header: {

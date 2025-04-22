@@ -9,7 +9,7 @@
     import { enhance } from '$app/forms';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-    let { empleado, laboral, contacto, personal } = $derived(data)
+    let { empleado, laboral, contacto, personal, departamentos } = $derived(data)
 
     type Data = {
         title: string, value: string, icon?: string
@@ -101,7 +101,7 @@
                 <!-- CEDULA - DEPARTAMENTO - CARGO -->
                 <div>
                     <p class="text-sm mb-2">{`${empleado.nacionalidad === "Venezolano" ? "V-" : "E-"}${formatStringWithDots(empleado.cedula)}`}</p>
-                    <p class="text-sm"><b>Departamento:</b> {empleado.nombre_departamento}</p>
+                    <p class="text-sm"><b>Departamento:</b> {empleado.nombre_departamento ? empleado.nombre_departamento : "Sin Departamento"}</p>
                     <p><b>Cargo:</b> <i>{empleado.cargo}</i></p>
                 </div>
 
@@ -149,7 +149,7 @@
 
     <div class="min-h-40 my-4 w-full rounded-xl bg-base-300 p-2 lg:p-4">
         {#if content === "General"}
-            <GeneralContent empleado={ empleado } qr={data.qr} personal={personal} contacto={contacto} laboral={laboral}/>
+            <GeneralContent empleado={ empleado } qr={data.qr} personal={personal} contacto={contacto} laboral={laboral} departamentos={departamentos}/>
         {:else if content === "Justificaciones"} 
             <JustificacionesContent empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
         {:else if content === "Asistencias"}

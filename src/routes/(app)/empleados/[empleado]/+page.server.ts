@@ -4,7 +4,7 @@ import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/database';
 import QRCode from "qrcode"
-import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
+import { departamentosRepository, empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
 import type { InfoContactoInsertable } from '$lib/database/types';
 
@@ -16,7 +16,7 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     let empleado = await async(
         db
         .selectFrom('empleados')
-        .innerJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+        .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
         .selectAll()
         .where('cedula', "=", cedula_empleado)
         .executeTakeFirst()
@@ -68,7 +68,9 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .executeTakeFirst()
     , log)
 
-    return { empleado, qr, justificaciones, personal, contacto, laboral}
+    let departamentos = await async(db.selectFrom('departamentos').selectAll().execute(), log)
+
+    return { empleado, qr, justificaciones, personal, contacto, laboral, departamentos}
 });
 
 export const actions = {
@@ -161,7 +163,38 @@ export const actions = {
     laboral: async ({ request, locals }) => {
         let { log, response } = locals;
         let data = await request.formData()
+        let cedula_empleado = data.get('id_empleado') as string
+
         let laboral = await async(db.selectFrom('info_laboral').selectAll().where('info_laboral.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+        let empleado = await async(
+            db
+            .selectFrom('empleados')
+            .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+            .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo'])
+            .executeTakeFirst()
+        , log)
+
+        if (!empleado) {
+            return response.error('El empleado no existe')
+        }
+
+        if (data.get('departamento') !== empleado.departamento) { 
+            await async(
+                db.updateTable('empleados')
+                .set({departamento: data.get('departamento') as string})
+                .where('empleados.cedula', '=', cedula_empleado)
+                .execute()
+            , log)
+        }
+
+        if (data.get('cargo') !== empleado.cargo) {
+            await async(
+                db.updateTable('empleados')
+                .set({cargo: data.get('cargo') as string})
+                .where('empleados.cedula', '=', cedula_empleado)
+                .execute()
+            , log)
+        }
         
         let hora_entrada = data.get('hora_entrada') as string
         let hora_salida = data.get('hora_salida') as string
