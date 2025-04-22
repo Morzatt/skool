@@ -1,8 +1,9 @@
+import type { Transaction } from "kysely";
 import { db } from "../";
-import type { Asistencia, AsistenciaInsertable, AsistenciaUpdateable } from "../types";
+import type { Asistencia, AsistenciaInsertable, AsistenciaUpdateable, Database } from "../types";
 
 export interface AsistenciasRepositoryInterface {
-    create(asistencia: AsistenciaInsertable): Promise<void>
+    create(asistencia: AsistenciaInsertable, trx?: Transaction<Database> | undefined): Promise<void>
     getById(empleado: string, fecha: string): Promise<Asistencia | undefined>
     getByEmpleado(empleado: string): Promise<Asistencia[] | undefined>
     getByDia(dia: string): Promise<Asistencia[] | undefined>
@@ -11,11 +12,17 @@ export interface AsistenciasRepositoryInterface {
 }
 
 export let asistenciasRepository: AsistenciasRepositoryInterface = {
-    create: async (asistencia) => {
+    create: async (asistencia, trx) => {
         try {
-            await db.insertInto("asistencias")
-                .values(asistencia)
-                .execute()
+            if (trx) {
+                await trx.insertInto("asistencias")
+                    .values(asistencia)
+                    .execute()
+            } else {
+                await db.insertInto("asistencias")
+                    .values(asistencia)
+                    .execute()
+            }
         } catch (error) {
             throw error
         }

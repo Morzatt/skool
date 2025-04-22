@@ -109,24 +109,25 @@
                                         </div>
                                         <img src="{comprobante.path}" alt="" class="border border-base-content/30"> 
                                     </div>
+
                                     <!-- MODAL -->
                                     <dialog id="comprobante_{comprobante.id_comprobante}" class="modal modal- sm:modal-middle">
                                         <div class="modal-box relative
                                         bg-transparent shadow-none
-                                        flex items-start justify-between gap-4
+                                        flex items-start justify-between gap-4 
                                         sm:w-10/12 sm:max-w-4xl h-[100%] overflow-hidden">
 
-                                            <div class="button-container">
+                                            <!-- <div class="button-container">
                                                 <button aria-label="bu"><i class="fa-solid fa-circle-chevron-left"></i></button>
-                                            </div>
+                                            </div> -->
                                             
                                             <div class="img-container h-full overflow-auto">
                                                 <img src="{comprobante.path}" alt="" class="border border-base-content/30"> 
                                             </div>
 
-                                            <div class="button-container">
+                                            <!-- <div class="button-container">
                                                 <button aria-label="bu"><i class="fa-solid fa-circle-chevron-right"></i></button>
-                                            </div>
+                                            </div> -->
                                         </div>
 
                                         <form method="dialog" class="modal-backdrop bg-black">

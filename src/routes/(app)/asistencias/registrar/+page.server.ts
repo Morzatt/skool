@@ -6,6 +6,7 @@ import async from '$lib/utils/asyncHandler';
 import { asistenciasRepository } from '$lib/database/repositories/asistencias.repository';
 import { db } from '$lib/database';
 import { createAsistenciaID } from '$lib/utils/getId';
+import { fail } from '@sveltejs/kit';
 
 export const load = (async ({locals}) => {
     let qr = await QRCode.toDataURL('8933618', {
@@ -27,27 +28,39 @@ export const actions = {
             fecha: data.get("fecha") as string,
         } satisfies Omit<AsistenciaInsertable, "id_asistencia">
 
-        let observacion = data.get('observacion') as string
+        let observacion = data.get('observacion') as string | undefined | null
 
         let asistencia = await async(asistenciasRepository.getById(entrada.empleado, entrada.fecha), log)
         if (asistencia){ 
             if (asistencia.hora_entrada) {
-                return error(404, 'La asistencia ya tiene un registro de entrada.')
+                return fail(404, response.error('La asistencia ya tiene un registro de entrada.'))
             }
-            return error(404, 'La asistencia ya existe.')
+            return fail(404, response.error('La asistencia ya existe.'))
         }
 
-        await async(asistenciasRepository.create({
-            ...entrada, 
-            id_asistencia: createAsistenciaID(entrada.empleado, entrada.fecha)
-        }) ,log)
+        await async(
+            db.transaction().execute(async (trx) => {
+                let asistenciaID = createAsistenciaID(entrada.empleado, entrada.fecha)
 
-        // if (observacion) {
-        //     await async(
-        //         db.insertInto("observaciones_asistencias")
+                await asistenciasRepository.create({
+                    ...entrada,
+                    id_asistencia: asistenciaID
+                }, trx)
 
-        //         , log)
-        // }
+                if (observacion && observacion.length > 0) {
+                    await trx
+                    .insertInto('observaciones_asistencias')
+                    .values({
+                        id_asistencia: asistenciaID,
+                        encargado_observacion: entrada.encargado,
+                        tipo_observacion: "Entrada",
+                        observacion: observacion,
+                    })
+                    .execute()
+                }
+            })
+        , log)
+
         return response.success('Asistencia correctamente Insertada!.')
     },
 
@@ -63,35 +76,41 @@ export const actions = {
         } satisfies Omit<AsistenciaInsertable, "id_asistencia">
 
 
-        let observacion = data.get('observacion') as string
-
+        let observacion = data.get('observacion') as string | undefined | null
         let asistencia = await async(asistenciasRepository.getById(salida.empleado, salida.fecha), log)
 
         if (!asistencia){ 
-            return error(404, 'La asistencia a la que se intenta anexar una salida no existe.')
+            return fail(404, response.error('La asistencia a la que se intenta anexar una salida no existe.'))
         }
 
         await async(
-            db.updateTable('asistencias')
-            .set({
-                hora_salida: salida.hora_salida,
+            db.transaction().execute(async (trx) => {
+                await trx.updateTable('asistencias')
+                .set({
+                    hora_salida: salida.hora_salida,
+                })
+                .where((eb) =>
+                    eb.and([
+                        eb('asistencias.empleado', "=", salida.empleado),
+                        eb('asistencias.fecha', "=", salida.fecha),
+                    ])
+                )
+                .execute()
+
+                if (observacion && observacion.length > 0) {
+                    await trx
+                    .insertInto('observaciones_asistencias')
+                    .values({
+                        id_asistencia: asistencia.id_asistencia,
+                        encargado_observacion: salida.encargado,
+                        tipo_observacion: "Salida",
+                        observacion: observacion,
+                    })
+                    .execute()
+                }
             })
-            .where((eb) => 
-                eb.and([
-                    eb('asistencias.empleado', "=", salida.empleado),
-                    eb('asistencias.fecha', "=", salida.fecha),
-                ])
-            )
-            .execute()
         ,log)
 
-        // if (observacion) {
-        //     await async(
-        //         db.insertInto("observaciones_asistencias")
-
-        //         , log)
-        // }
         return response.success('Asistencia correctamente Insertada!.')
-
     }
 } satisfies Actions

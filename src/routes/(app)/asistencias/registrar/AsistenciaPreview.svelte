@@ -80,12 +80,19 @@
                                 <p>{empleado.primer_nombre} {empleado.primer_apellido}</p>
                             </div> 
 
+
                             <div class="form-control">
                                 <div class="label">
                                     <b class="label-text">Hora de {type === "entrada" ? "Entrada" : "Salida"}<i class="fa-solid fa-hourglass-half mx-2"></i> </b>
                                 </div>
-                                <p>{type === "entrada" ? formatTime(empleado.hora_entrada) : formatTime(empleado.hora_salida)}</p>
-                            </div> 
+                                <p>
+                                    {
+                                        type === "entrada" ? 
+                                            empleado.hora_entrada ? formatTime(empleado.hora_entrada) : "No Asignada" :
+                                            empleado.hora_salida ? formatTime(empleado.hora_salida) : "No Asignada" 
+                                    }
+                                </p>
+                            </div>                                
                         </div>
                         <div class="w-full h-full bg-base-200 rounded-md p-1 flex items-center justify-start gap-4">
                             <div class="form-control">

@@ -18,8 +18,8 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .createTable('observaciones_asistencias')
     .addColumn('id_asistencia', 'varchar(40)', (col) => col.notNull())
     .addColumn('encargado_observacion', 'varchar(50)', (col) => col.notNull())
-    .addColumn('tipo_observacion', 'varchar(12)', (col) => col.notNull().check(sql`tipo_observacion IN ('Entrada', 'Salida')`))
-    .addColumn('observacion', 'varchar(50)', (col) => col.notNull())
+    .addColumn('tipo_observacion', 'varchar(12)', (col) => col.notNull().check(sql`tipo_observacion IN ('Entrada', 'Salida', 'General')`))
+    .addColumn('observacion', 'text', (col) => col.notNull())
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
     )

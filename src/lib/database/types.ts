@@ -182,7 +182,7 @@ export type AsistenciaUpdateable = Updateable<AsistenciasTable>
 export type ObservacionesAsistenciasTable = {
     id_asistencia: ColumnType<string, string, never>,
     encargado_observacion: string,
-    tipo_observacion: 'Entrada'  | 'Salida',
+    tipo_observacion: 'Entrada'  | 'Salida' | 'General',
     observacion: string,
     created_at: ColumnType<Date, never>,
 }

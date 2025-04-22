@@ -1,20 +1,16 @@
 <script lang="ts">
-   let { index }: { index: number } = $props()
+    import { enhance } from "$app/forms";
+    import type { ObservacionAsistencia, Usuario } from "$lib/database/types";
+    import { capitalizeFirstLetter } from "$lib/utils/capitlizeFirstLetter";
+
+   let { index, observacion }: { index: number, observacion: ObservacionAsistencia & { nombre_usuario: string, apellido_usuario: string, role_usuario: string } } = $props()
 </script>
 
 <div class="card w-full h-fit bg-base-100 rounded-xl shadow-lg animate-pop-delayed" style="--delay: {(index*100)+200}ms">
-  <span class="title">Observación</span>
+  <span class="title {observacion.tipo_observacion === "Entrada" ? "text-success" : "text-error"}">Observación {observacion.tipo_observacion === "General" ? "" : `de ${observacion.tipo_observacion}`}</span>
+
   <div class="comments">
-    <div class="comment-react">
-      <button>
-        <svg fill="none" viewBox="0 0 24 24" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#707277" stroke-linecap="round" stroke-width="2" stroke="#707277" d="M19.4626 3.99415C16.7809 2.34923 14.4404 3.01211 13.0344 4.06801C12.4578 4.50096 12.1696 4.71743 12 4.71743C11.8304 4.71743 11.5422 4.50096 10.9656 4.06801C9.55962 3.01211 7.21909 2.34923 4.53744 3.99415C1.01807 6.15294 0.221721 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15294 19.4626 3.99415Z"></path>
-        </svg>
-      </button>
-      <hr>
-      <span>14</span>
-    </div>
-    <div class="comment-container">
+    <div class="comment-container w-full">
       <div class="user">
         <div class="user-pic">
           <svg fill="none" viewBox="0 0 24 24" height="20" width="20" xmlns="http://www.w3.org/2000/svg">
@@ -23,19 +19,65 @@
           </svg>
         </div>
         <div class="user-info">
-          <span>Yassine Zanina</span>
-          <p>Wednesday, March 13th at 2:45pm</p>
+          <div>
+            <h3 class="font-bold">{observacion.nombre_usuario} {observacion.apellido_usuario}</h3>
+            <span class="text-base-content/80">{observacion.encargado_observacion}</span>
+          </div>
+
+          <p>
+            <span>{new Date(observacion.created_at).toLocaleDateString('es')},</span>
+            <span>{new Date(observacion.created_at).toLocaleTimeString('es', { timeStyle: 'short', hour12: true })}</span>
+          </p>
         </div>
       </div>
-      <p class="comment-content">
-        I've been using this product for a few days now and I'm really impressed! The interface is intuitive and easy to
-        use, and the features are exactly what I need to streamline my workflow.
-      </p>
+
+      <p class="comment-content">{capitalizeFirstLetter(observacion.observacion)}</p>
+    </div>
+
+    <div class="comment-react">
+      <button
+       aria-label="button" class="rounded-md transition-all duration-200 ease-in-out hover:text-base-100 hover:bg-base-content"><i class="fa-solid fa-pencil"></i></button>
+      <button onclick="{() => { document.getElementById(`delete_observation_modal_${observacion.created_at}`).showModal() }}"
+       aria-label="button" class="rounded-md transition-all duration-200 ease-in-out hover:text-base-100 hover:bg-base-content"><i class="fa-solid fa-trash-can"></i></button> 
+      <hr>
     </div>
   </div>
+
 </div>
 
-<style>
+<dialog id="delete_observation_modal_{observacion.created_at}" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-sm overflow-hidden">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-16 shrink-0 stroke-current red-filter"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <h3 class="text-lg mt-3">¿Desea eliminar Esta Observacion?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center mt-1">Esta acción es irreversible.</p>
+
+        <div class="w-fit gap-3 mt-4 flex">
+
+            <form method="dialog">
+                <button type="submit" class="btn btn-sm">Volver</button>
+            </form>
+            
+            <form action="?/deleteObservation" method="POST" use:enhance>
+                <input type="hidden" name="timestamp" value="{observacion.created_at}">
+                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<style lang="postcss">
   .title {
     width: 100%;
     height: 50px;
@@ -59,10 +101,7 @@
   }
 
   .comments {
-    display: grid;
-    grid-template-columns: 35px 1fr;
-    gap: 20px;
-    padding: 20px;
+    @apply flex p-4 gap-2 pb-4;
   }
 
   .comment-react {
@@ -82,7 +121,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
     border: 0;
     outline: none;
   }
@@ -134,7 +172,6 @@
     margin: auto;
     font-size: 13px;
     font-weight: 600;
-    color: #707277;
   }
 
   .comment-container {
@@ -184,19 +221,19 @@
   }
 
   .comment-container .user .user-info span {
-    font-weight: 700;
-    font-size: 12px;
-    color: #47484b;
+    font-weight: 600;
+    font-size: 13px;
   }
 
   .comment-container .user .user-info p {
-    font-weight: 600;
-    font-size: 10px;
+    font-weight: 500;
+    font-size: 12px;
     color: #acaeb4;
   }
 
   .comment-container .comment-content {
-    font-size: 12px;
+    @apply text-wrap flex w-full;
+    font-size: 14px;
     line-height: 16px;
     font-weight: 600;
     color: #5f6064;
