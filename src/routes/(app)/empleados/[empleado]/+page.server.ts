@@ -76,12 +76,19 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 });
 
 export const actions = {
+    activar: async ({ request, locals }) => {
+        let { log, response } = locals
+        let cedula = (await request.formData()).get("cedula") as string
+
+        await async(empleadosRepository.update({ estado: 'Activo' }, cedula), log)
+        return response.success('Empleado activado correctamente.')
+    },
+
     deleteEmpleado: async ({ request, locals }) => {
         let { log } = locals
         let cedula = (await request.formData()).get("cedula") as string
 
         await async(empleadosRepository.delete(cedula), log)
-
         redirect(303, "/empleados")
     },
 

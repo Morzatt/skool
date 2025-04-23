@@ -27,6 +27,16 @@ export async function createJustificacionHandler(
         created_by: data.get('created_by') as string
     } satisfies Omit<JustificacionInsertable, "id">
 
+    let empleado = await async(empleadosRepository.getById(justificacion.empleado), log)
+
+    if (!empleado) {
+        return response.error('El empleado no existe')
+    }
+
+    if (empleado.estado === "Inhabilitado" || empleado.estado === "Retirado") {
+        return response.error('El empleado se encuentra inhabilitado dentro del sistema')
+    }
+
     if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
         return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       
     }

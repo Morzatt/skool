@@ -43,7 +43,6 @@ export const actions = {
         let justificacionesEmpleado = await async(
             db
             .selectFrom('justificaciones')
-            .innerJoin('empleados', 'justificaciones.empleado', 'empleados.cedula')
             .selectAll()
             .where('justificaciones.empleado', '=', entrada.empleado)
             .execute()
@@ -61,7 +60,7 @@ export const actions = {
 
         if (justificacionesEmpleado) {
             for (let j of justificacionesEmpleado) {
-                if (new Date(j.fecha_finalizacion) < new Date(entrada.fecha)) {
+                if (new Date(j.fecha_finalizacion) > new Date(entrada.fecha)) {
                     return response.error('Existe una justificacion bloqueando la asistencia')
                 }
             }

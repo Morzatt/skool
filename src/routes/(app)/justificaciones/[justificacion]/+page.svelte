@@ -6,11 +6,13 @@
     import Alert from '$lib/components/Messages/Alert.svelte';
     import { enhance } from '$app/forms';
     import type { EstadosEmpleado } from '$lib/database/types';
+    import { checkVigencia } from '$lib/utils/vigencia';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
     let { justificacion, comprobantes, encargado } = $derived(data)
 
-    const vigencia = $derived(new Date() < new Date(justificacion.fecha_finalizacion))
+    const vigencia = $derived(checkVigencia(justificacion.fecha_inicio, justificacion.fecha_finalizacion))
+
     function asignColor(status: EstadosEmpleado): string {
         switch (status) {
             case "Activo": 
@@ -63,7 +65,7 @@
                                 <i class="fa-regular fa-file-lines text-5xl"></i>
                                 <b class="text-xl">Razon: Enfermedad</b>
                                 <p class="text-xs">Tipo: {justificacion.tipo}</p>
-                                <p>Estado: <b class="{vigencia ? 'text-success' : 'text-error'}">{!vigencia ? "Expirado" : "Vigente"}</b> </p>                                   
+                                <p>Estado: <b class="{vigencia === "Vigente" ? "text-success" : vigencia === "Expirado" ? "text-error" : "text-warning"}">{vigencia}</b> </p>                                   
                             </div>
 
                             <div class="flex items-center justify-between text-sm mt-1">

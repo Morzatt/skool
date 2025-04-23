@@ -67,7 +67,7 @@
         <Alert form={ form } styles="absolute left-2 top-2 max-w-sm"/>
 
         <form method="dialog">
-            <button type="submit" id="create_justificacion_modal" aria-label="close-modal" 
+            <button type="submit" id="create_justificacion_close" aria-label="close-modal" 
             class="hover:text-error transition-all duration-200 ease-in-out absolute top-4 right-4">
                 <i class="fa-solid fa-circle-xmark text-3xl"></i>
             </button>

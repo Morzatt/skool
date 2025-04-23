@@ -51,6 +51,12 @@
                 return "text-yellow-900 bg-warning/50"
         }
     }
+
+    $effect(() => {
+        if (form && form.form === "createJustificacion" && form.success) {
+            document.getElementById('create_justificacion_close')?.click()
+        }
+    })
 </script>
 
 <div class="">
@@ -120,11 +126,32 @@
         <div class="divider divider-horizontal"></div>
 
         <div class="lg:w-2/4 max-h-44 flex items-start justify-start flex-col flex-wrap gap-2">
-            {#each personalInfo as info}
-                <div class="info">
-                    <h3 class="info-title">{info.title}</h3>
-                    <p class="info-info {info.title === "Estado" ? `${asignColor(info.value)} px-3 rounded-xl font-bold` : ""}">{info.value}</p>
-                </div>                 
+            {#each personalInfo as info, i(info)}
+                    {#if info.title === "Estado"}
+                        <div class="flex gap-4 animate-pop">
+                            <div class="info">
+                                <h3 class="info-title mb-1">{info.title}</h3>
+                                <p class="info-info {asignColor(info.value)} px-3 rounded-xl font-bold">{info.value}</p>
+                            </div>
+
+                            <div class="info {empleado.estado !== "Activo" ? "" : "hidden"}">
+                                <h3 class="info-title">Activar</h3>
+                                <form action="?/activar" method="post" use:enhance>
+                                    <input type="hidden" name="cedula" value="{empleado.cedula}">
+                                    <button data-tip="Activar Empleado"
+                                    class="tooltip tooltip-top btn btn-sm bg-transparent hover:text-success/50 text-success btn-circle flex items-center justify-center text-center" aria-label="button">
+                                        <i class="fa-solid fa-circle-check text-3xl"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="info">
+                            <h3 class="info-title">{info.title}</h3>
+                            <p class="info-info">{info.value}</p>
+                        </div>                 
+                    {/if}
+
             {/each}
         </div>
 
@@ -172,7 +199,7 @@
         </svg>
 
         <h3 class="text-lg mt-3 text-center">¿Seguro que desea retirar este Empleado?</h3>
-        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Esta acción es irreversible; una vez retirado, el empleado no podrá registrar asistencias, justificaciones, ni ningún tipo de proceso dentro de la aplicación.</p>
+        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Una vez retirado, el empleado no podrá registrar asistencias, justificaciones, ni ningún tipo de proceso dentro de la aplicación.</p>
 
         <div class="w-fit gap-3 mt-4 flex">
             <form method="dialog">
