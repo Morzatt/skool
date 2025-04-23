@@ -9,6 +9,7 @@ import { createAsistenciaID } from '$lib/utils/getId';
 import { fail } from '@sveltejs/kit';
 import { justificacionesRepository } from '$lib/database/repositories/justificaciones.repository';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
+import { checkVigencia } from '$lib/utils/vigencia';
 
 export const load = (async ({locals}) => {
     let qr = await QRCode.toDataURL('8933618', {
@@ -60,7 +61,8 @@ export const actions = {
 
         if (justificacionesEmpleado) {
             for (let j of justificacionesEmpleado) {
-                if (new Date(j.fecha_finalizacion) > new Date(entrada.fecha)) {
+                let vigencia = checkVigencia(j.fecha_inicio, j.fecha_inicio)
+                if (vigencia === "Vigente") {
                     return response.error('Existe una justificacion bloqueando la asistencia')
                 }
             }

@@ -39,7 +39,9 @@
     });
     
     // Update URL with all filter parameters
-    function updateURL(start = dateRangeStart, end = dateRangeEnd): void {
+    function updateURL(): void {
+        let start = dateRangeStart;
+        let end = dateRangeEnd;
         const params = new URLSearchParams();
 
         params.set('startDate', start.toISOString().split('T')[0]);

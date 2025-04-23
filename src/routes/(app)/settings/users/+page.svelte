@@ -101,12 +101,13 @@
                                             <td>
                                                 <form action="?/role" method="post" use:enhance class="flex items-center justify-center gap-3 max-w-fit">
                                                     <input type="hidden" name="usuario" value="{usuario.usuario}">
+
                                                     <div class="dropdown dropdown-bottom">
                                                         <div tabindex="0" role="button" class="btn btn-sm w-max justify-between border border-base-content/60">
                                                             {capitalizeFirstLetter(usuario.role)}
                                                             <img src="{chevron}" alt="" class="rotate-[-90deg]">
                                                         </div>
-                                                        <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                                                        <ul class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow">
                                                             {#if data.usuario.role.toLocaleLowerCase().includes('superadmin')}
                                                                 <li><input type="submit" name="role" value="Administrador"></li>                                                           
                                                             {/if}
