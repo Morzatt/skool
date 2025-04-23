@@ -33,10 +33,12 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     let justificaciones = await async(
         db
         .selectFrom('justificaciones')
+        .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
         .select((eb) => [
             'justificaciones.detalles', 'justificaciones.empleado',
             'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
-            'justificaciones.tipo',
+            'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
+            'usuarios.nombre as nombre_encargado', 'usuarios.apellido as apellido_encargado',
                 eb.selectFrom('comprobantes')
                 .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
                 .select(['comprobantes.path'])

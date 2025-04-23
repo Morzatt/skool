@@ -9,7 +9,7 @@
     import { enhance } from '$app/forms';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-    let { empleado, laboral, contacto, personal, departamentos } = $derived(data)
+    let { empleado, laboral, contacto, personal, departamentos, usuario } = $derived(data)
 
     type Data = {
         title: string, value: string, icon?: string
@@ -151,7 +151,7 @@
         {#if content === "General"}
             <GeneralContent empleado={ empleado } qr={data.qr} personal={personal} contacto={contacto} laboral={laboral} departamentos={departamentos}/>
         {:else if content === "Justificaciones"} 
-            <JustificacionesContent empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
+            <JustificacionesContent encargado={{nombre: `${usuario.nombre} ${usuario.apellido}`, id: usuario.usuario}} empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
         {:else if content === "Asistencias"}
             <AsistenciasContent empleado={ empleado }/>
         {/if}
@@ -178,10 +178,10 @@
 
         <div class="w-fit gap-3 mt-4 flex">
             <form method="dialog">
-                <button type="submit" class="btn btn-sm">Volver</button>
+                <button id="retiro_close" type="submit" class="btn btn-sm">Volver</button>
             </form>
             
-            <form action="?/retirar" method="POST" use:enhance>
+            <form action="?/retirar" method="POST" use:enhance={()=>{ document.getElementById('retiro_close').click() }}>
                 <input type="hidden" id="delete_account_close" name="cedula" value="{empleado.cedula}">
                 <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Retirar</button>
             </form>

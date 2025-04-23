@@ -9,14 +9,19 @@
         id: string;
         tipo: string;
         detalles: string;
+        razon: string,
+        created_by: string
+        created_at: string
         fecha_inicio: string;
         fecha_finalizacion: string;
         id_justificacion: string | null;
         id_comprobante: string | null;
         path: string | null;
+        nombre_encargado: string | null;
+        apellido_encargado: string | null;
     }[] | undefined
 
-    let { empleado, justificaciones, form }: { empleado: any, justificaciones: Justificaciones, form: ActionData } = $props()
+    let { empleado, justificaciones, form, encargado }: {encargado: {nombre: string, id: string}, empleado: any, justificaciones: Justificaciones, form: ActionData } = $props()
 </script>
 
 <div class="h-max w-full flex items-end justify-between animate-pop-delayed">
@@ -53,14 +58,14 @@
                             <div class="label p-0 m-0">
                                 <b class="label-text text-neutral/70">Fecha de Creacion</b>
                             </div>
-                            <b>{new Date().toLocaleDateString()}</b>
+                            <b>{new Date(justificacion.created_at).toLocaleDateString('es')}</b>
                         </div>
 
                         <div class="form-control">
                             <div class="label p-0 m-0">
                                 <b class="label-text text-neutral/70">Creado por:</b>
                             </div>
-                            <b>Carlos Tineo</b>
+                            <b>{justificacion.nombre_encargado} {justificacion.apellido_encargado}</b>
                         </div>
                     </div>
 
@@ -78,7 +83,7 @@
 
                     <div class="w-2/3 h-full py-2 flex flex-col justify-between items-start">
                         <div class="w-full">
-                            <h3 class="text-lg font-semibold">Razon: {justificacion.tipo}</h3> 
+                            <h3 class="text-lg font-semibold">Razon: {justificacion.razon}</h3> 
                             <p class="text-xs">Tipo: {justificacion.tipo}</p>
                             <p class="text-sm">{justificacion.detalles}</p>
                             <div class="form-control text-xs mt-2">
@@ -106,7 +111,7 @@
     {/if}
 </div>
 
-<CreateJustificacionModal empleado={ empleado } form={ form }/>
+<CreateJustificacionModal empleado={ empleado } form={ form } encargado={encargado}/>
 
 
 <style lang="postcss">

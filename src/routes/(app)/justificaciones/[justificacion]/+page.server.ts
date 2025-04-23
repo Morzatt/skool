@@ -18,6 +18,17 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .executeTakeFirst()
     , log)
 
+    if (!justificacion) {
+        error(404, 'La justificacion no existe')
+    }
+
+    let encargado = await async(
+        db.selectFrom('usuarios')
+        .selectAll()
+        .where('usuarios.usuario', '=', justificacion.created_by)
+        .executeTakeFirst()
+    , log)
+
     let comprobantes = await async(
         db
         .selectFrom('comprobantes')
@@ -26,11 +37,6 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
         .execute()
     , log)
 
-
-    if (!justificacion) {
-        error(404, 'La justificacion no existe')
-    }
-
-    return { justificacion, comprobantes }
+    return { justificacion, comprobantes, encargado }
 });
 

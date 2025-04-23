@@ -13,7 +13,7 @@
       const element = document.getElementById('IDCard') as HTMLElement;
 
       // Use html2canvas to capture the element
-      html2canvas(element).then(canvas => {
+      html2canvas(element, { useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
         // Convert the canvas to a data URL
         const image = canvas.toDataURL('image/png');
 
@@ -29,7 +29,7 @@
 </script>
 
 {#snippet card()}
-    <div id="IDCard" class="card relative bg-white w-[22rem] shadow-sm border border-base-content">
+    <div class="card relative bg-white w-[22rem] shadow-sm border border-base-content">
         <div class="p-4 bg-[--color] absolute top-2 left-[50%] translate-x-[-50%] rounded-full" style="--color: {bgColor}"></div>
 
         <div class="p-1 bg-[--color] absolute top-2 left-2 rounded-full" style="--color: {bgColor}">
@@ -92,6 +92,7 @@
             </div>
 
             {@render card()}
+
 
             <button onclick="{downloadId}" type="submit" 
                 class="btn btn-sm btn-success text-base-100 px-12">

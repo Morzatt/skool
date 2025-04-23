@@ -22,8 +22,9 @@ export async function createJustificacionHandler(
         detalles: data.get("detalles") as string,
         fecha_inicio: data.get("fecha_inicio") as string,
         fecha_finalizacion: data.get("fecha_finalizacion") as string,
-        // razon: data.get('razon') as string
-    } satisfies Omit<JustificacionInsertable, "id" | "razon">
+        razon: data.get('razon') as string,
+        created_by: data.get('created_by') as string
+    } satisfies Omit<JustificacionInsertable, "id">
 
     if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
         return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       

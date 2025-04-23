@@ -5,7 +5,7 @@
     import Alert from '$lib/components/Messages/Alert.svelte';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-    let { justificacion, comprobantes } = $derived(data)
+    let { justificacion, comprobantes, encargado } = $derived(data)
 </script>
 
 <div class="size-full relative">
@@ -28,7 +28,7 @@
                 flex items-start justify-center gap-3
                 animate-pop-delayed" style="--delay: 150ms">
 
-                <div class="w-3/5 h-full border border-base-content/30 rounded-md p-4">
+                <div class="w-3/5 h-full border border-base-content/30 rounded-md p-4 overflow-y-auto">
                     <div class="w-full h-[calc(100%-(0.75rem+0.5rem+1rem))]">
                         <div class="w-full bg-base-200 rounded-md p-4">
                             <div class="flex flex-col items-center justify-center relative">
@@ -36,7 +36,7 @@
                                 <i class="fa-regular fa-file-lines text-5xl"></i>
                                 <b class="text-xl">Razon: Enfermedad</b>
                                 <p class="text-xs">Tipo: {justificacion.tipo}</p>
-                                <p>Estado: Vigente</p>
+                                <p>Estado: <b>{new Date() > new Date(justificacion.fecha_finalizacion) ? "Expirado" : "Vigente"}</b> </p>
                             </div>
 
                             <div class="flex items-center justify-between text-sm mt-1">
@@ -49,11 +49,29 @@
                                     <p>Hasta el {new Date(justificacion.fecha_finalizacion).toLocaleDateString()}</p>
                                 </div>
                             </div>
+
                             <div class="divider p-0 m-0 mt-3"></div>
+
+                            <div class="w-full h-fit p-2 mt-2
+                                    bg-base-200 rounded-md text-sm
+                                    flex items-center justify-start gap-8">
+                                <div>
+                                    <b>Creado por:</b>
+                                    {#if encargado}
+                                        <p class="font-semibold text-medium">{encargado.nombre} {encargado.apellido} </p>
+                                        <p>{encargado.usuario}</p>                                       
+                                    {:else}
+                                        <p>No registrado</p>
+                                    {/if}
+                                </div>
+                            </div>
+
+                            <div class="divider p-0 m-0 mt-3"></div>
+
                             <div class="flex items-center justify-start gap-10 text-sm mt-4">
                                 <div class="w-full">
                                     <b>Detalles</b>
-                                    <p class="text-wrap w-full">{justificacion.detalles}</p>
+                                    <p class="text-wrap w-full">{justificacion.detalles ? justificacion.detalles : "No se han especificado detalles para la justificación."}</p>
                                 </div>
                             </div>
                         </div>
@@ -64,6 +82,7 @@
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                         </div>
+
                         <div class="w-full h-fit p-2 mt-2
                                 bg-base-200 rounded-md
                                 flex items-center justify-start gap-8">
@@ -80,6 +99,8 @@
                                 <p>{justificacion.turno} </p>
                             </div>                           
                         </div>
+
+                        <div class="pb-12"></div>
                     </div>
                 </div>
 

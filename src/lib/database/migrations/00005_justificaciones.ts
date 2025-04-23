@@ -6,16 +6,17 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('empleado', 'varchar(12)')
     .addColumn('id', 'char(40)', (col) => col.notNull().primaryKey().defaultTo(sql`UUID()`))
     .addColumn('tipo', 'text')
-    .addColumn('razon', 'text')
+    .addColumn('razon', 'varchar(100)')
     .addColumn('detalles', 'text')
     .addColumn('fecha_inicio', 'text')
     .addColumn('fecha_finalizacion', 'text')
 
-    .addColumn('created_by', 'text')
+    .addColumn('created_by', 'varchar(50)')
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
     )
     .addForeignKeyConstraint('fk_empleado', ['empleado'], 'empleados', ['cedula'], (col) => col.onDelete('cascade').onUpdate('cascade'))
+    .addForeignKeyConstraint('fk_created_by', ["created_by"], 'usuarios', ['usuario'], (col) => col.onDelete('set null').onUpdate('cascade'))
     .execute()
 
   await db.schema

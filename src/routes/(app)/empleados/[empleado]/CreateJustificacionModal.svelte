@@ -7,7 +7,7 @@
     import type { ActionData } from "./$types";
 
 
-    let { empleado, form }: {empleado: any, form: ActionData } = $props()
+    let { empleado, form, encargado }: { encargado: {nombre: string, id: string}, empleado: any, form: ActionData } = $props()
 
     function add(node: HTMLElement, c: string[]) {
         for (let i of c) {
@@ -103,6 +103,16 @@
                             ]}/>
                         </label> 
 
+                        <!-- RAZON -->
+                        <label class="form-control max-w-[13rem]">
+                            <div class="label">
+                                <span class="label-text">Razon</span>
+                            </div>
+                            <input type="text" name="razon" class="input input-sm" placeholder="Razon del Justificativo" max="30">
+                        </label> 
+                    </div>
+
+                    <div class="w-full h-full mt-3 bg-base-200 rounded-md p-2 flex items-center justify-start gap-5 flex-wrap">
                         <!-- Fecha de Inicio -->
                         <label class="form-control max-w-[15rem]">
                             <div class="label">
@@ -116,6 +126,17 @@
                                 <span class="label-text">Fecha de Finalización</span>
                             </div>
                             <input type="date" name="fecha_finalizacion" class="input input-sm focus:outline-0">
+                        </label> 
+                    </div>
+
+                    <div class="w-full h-full bg-base-200 rounded-md p-2 px-4 flex items-center justify-start gap-5 flex-wrap">
+                        <!-- Encargado -->
+                        <label class="form-control max-w-[13rem]">
+                            <div class="label">
+                                <span class="label-text">Encargado del Registro</span>
+                            </div>
+                            <span class="text-sm">{encargado.nombre}</span>
+                            <input type="hidden" name="created_by" value="{encargado.id}">
                         </label> 
                     </div>
 

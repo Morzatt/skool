@@ -133,12 +133,10 @@ function createDepartmentInfoTable(departamento: AsistenciaDepartamento) {
 function createDailyAttendanceTables(asistencias: any[]) {
     return asistencias.flatMap(asistenciaDia => {
         // Format date for display - use the original date string if available
-        const fechaOriginal = asistenciaDia.fechaOriginal;
-        const fechaStr = formatDateForDisplay(asistenciaDia, fechaOriginal);
-        
+
         return [
             // Date header
-            createTableHeader(fechaStr, [0, 0, 0, 0]),
+            createTableHeader(new Date(asistenciaDia.fechaOriginal).toLocaleDateString('es'), [0, 0, 0, 0]),
             
             // Day name header
             createTableHeader(asistenciaDia.dia, [0, 0, 0, 0]),

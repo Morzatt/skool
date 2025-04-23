@@ -131,6 +131,7 @@ export type JustificacionesTable = {
     detalles: string
     fecha_inicio: string,
     fecha_finalizacion: string,
+    created_by: string,
     created_at: ColumnType<Date, never>,
 }
 
