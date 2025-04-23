@@ -7,6 +7,8 @@ import { asistenciasRepository } from '$lib/database/repositories/asistencias.re
 import { db } from '$lib/database';
 import { createAsistenciaID } from '$lib/utils/getId';
 import { fail } from '@sveltejs/kit';
+import { justificacionesRepository } from '$lib/database/repositories/justificaciones.repository';
+import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 
 export const load = (async ({locals}) => {
     let qr = await QRCode.toDataURL('8933618', {
@@ -36,6 +38,33 @@ export const actions = {
                 return fail(404, response.error('La asistencia ya tiene un registro de entrada.'))
             }
             return fail(404, response.error('La asistencia ya existe.'))
+        }
+
+        let justificacionesEmpleado = await async(
+            db
+            .selectFrom('justificaciones')
+            .innerJoin('empleados', 'justificaciones.empleado', 'empleados.cedula')
+            .selectAll()
+            .where('justificaciones.empleado', '=', entrada.empleado)
+            .execute()
+        ,log)
+
+        let empleado = await async(empleadosRepository.getById(entrada.empleado), log)
+
+        if (!empleado){ 
+            return response.error('No se pudo obtener empleado')
+        }
+
+        if (empleado.estado !== 'Activo') {
+            return response.error('El empleado debe de poseer el estado "Activo" para registrar asistencias.')
+        }
+
+        if (justificacionesEmpleado) {
+            for (let j of justificacionesEmpleado) {
+                if (new Date(j.fecha_finalizacion) < new Date(entrada.fecha)) {
+                    return response.error('Existe una justificacion bloqueando la asistencia')
+                }
+            }
         }
 
         await async(

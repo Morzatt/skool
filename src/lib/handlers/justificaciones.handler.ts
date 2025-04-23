@@ -1,11 +1,12 @@
 import { db } from "$lib/database";
 import { comprobantesRepository, justificacionesRepository, type JustificacionesRepositoryInterface } from "$lib/database/repositories/justificaciones.repository";
-import type { ComprobanteInsertable, JustificacionInsertable } from "$lib/database/types";
+import type { ComprobanteInsertable, EstadosEmpleado, JustificacionInsertable } from "$lib/database/types";
 import async, { handleError } from "$lib/utils/asyncHandler";
 import { writeFile, writeFileSync } from 'fs';
 import { fail, type RequestEvent } from "@sveltejs/kit";
-import { hashSync } from "bcrypt";
+import { genSaltSync, hashSync } from "bcrypt";
 import { randomUUID } from "crypto";
+import { empleadosRepository } from "$lib/database/repositories/empleados.repository";
 
 export async function createJustificacionHandler(
     { request, locals }: RequestEvent,
@@ -45,7 +46,8 @@ export async function createJustificacionHandler(
     for (let i of comprobantes) {
         let arrayBuffer = await i.arrayBuffer()
         let data = Buffer.from(arrayBuffer)
-        let id = `${justificacion.empleado}-${btoa(i.name).slice(0, 8)}`
+        let salt = genSaltSync(6);
+        let id = `${justificacion.empleado}-${i.name}`
         ids.push(`${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`)
         
         writeFile(`static/comprobantes/${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`, data, (error) => {
@@ -56,7 +58,7 @@ export async function createJustificacionHandler(
     }
 
     let justificacionID = randomUUID()
-    
+
     await async(db.transaction().execute(async (trx) => {
         await justificacionesRepository.create(trx, {
             ...justificacion,
@@ -69,6 +71,16 @@ export async function createJustificacionHandler(
                 id_justificacion: justificacionID,
                 path: `/comprobantes/${i}`
             })
+        }
+
+        if (new Date(justificacion.fecha_finalizacion) > new Date()) {
+            if (justificacion.tipo === "Reposo") {
+                await async(trx.updateTable('empleados').set({estado: 'Reposo'}).where('empleados.cedula', '=', justificacion.empleado).execute(), log)
+            }
+
+            if (justificacion.tipo === "Permiso") {
+                await async(trx.updateTable('empleados').set({ estado: 'De Permiso' }).where('empleados.cedula', '=', justificacion.empleado).execute(), log)
+            }
         }
     }), log) 
 

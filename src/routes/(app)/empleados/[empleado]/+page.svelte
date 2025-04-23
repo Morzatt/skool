@@ -41,14 +41,12 @@
     type Content = 'General' | 'Asistencias' | 'Justificaciones';
     let content: Content = $state('General');
 
-    function asignColor(status: string): string {
+    function asignColor(status: EstadosEmpleado): string {
         switch (status) {
             case "Activo": 
                 return "text-green-900 bg-success/50"
             case "Inhabilitado":
                 return "text-error-content/50 bg-error/50"
-            case "Despedido":
-                return "text-red-900 bg-error/50"
             default: 
                 return "text-yellow-900 bg-warning/50"
         }

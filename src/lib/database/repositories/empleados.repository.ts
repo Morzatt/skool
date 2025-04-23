@@ -1,11 +1,12 @@
+import type { Transaction } from "kysely";
 import { db } from "../";
-import type { Departamento, DepartamentoInsertable, Empleado, EmpleadoInsertable, EmpleadoUpdateable, InsertPregSeg, PregSeg, UpdatePregSeg } from "../types";
+import type { Database, Departamento, DepartamentoInsertable, Empleado, EmpleadoInsertable, EmpleadoUpdateable, InsertPregSeg, PregSeg, UpdatePregSeg } from "../types";
 
 export interface EmpleadosRepositoryInterface {
     create(empleado: EmpleadoInsertable): Promise<void>
     getById(id: string): Promise<Empleado | undefined>
     delete(id: string) : Promise<void>
-    update(data: EmpleadoUpdateable, id: string): Promise<void>
+    update(data: EmpleadoUpdateable, id: string, trx?: Transaction<Database>): Promise<void>
 }
 
 export let empleadosRepository: EmpleadosRepositoryInterface = {
@@ -32,13 +33,21 @@ export let empleadosRepository: EmpleadosRepositoryInterface = {
         }
     },
 
-    update: async (data, id) => {
+    update: async (data, id, trx) => {
         try {
-            await db
-                .updateTable("empleados")
-                .set(data)
-                .where("empleados.cedula", "=", id)
-                .execute()
+            if (trx) {
+                await trx
+                    .updateTable("empleados")
+                    .set(data)
+                    .where("empleados.cedula", "=", id)
+                    .execute()
+            } else {
+                await db
+                    .updateTable("empleados")
+                    .set(data)
+                    .where("empleados.cedula", "=", id)
+                    .execute()
+            }
         } catch (error) {
             throw error
         }

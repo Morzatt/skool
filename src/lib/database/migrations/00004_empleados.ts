@@ -16,7 +16,7 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('departamento', 'varchar(40)', (col) => col.defaultTo('No Asignado'))
     .addColumn('cargo', 'varchar(100)', (col) => col.notNull())
     .addColumn('turno', 'varchar(20)', (col) => col.notNull().check(sql`turno IN  ('Mañana', 'Tarde')`))
-    .addColumn('estado', 'varchar(25)', (col) => col.notNull().defaultTo("Por Asignar").check(sql`estado IN ('Activo', 'Reposo', 'Inhabilitado', 'Retirado', 'No Asignado')`))
+    .addColumn('estado', 'varchar(25)', (col) => col.notNull().defaultTo("Por Asignar").check(sql`estado IN ('Activo', 'Por Asignar', 'Reposo', 'Inhabilitado', 'Retirado', 'Permiso')`))
 
     .addColumn('created_at', 'timestamp', (col) =>
       col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),

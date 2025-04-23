@@ -370,7 +370,7 @@
                 w-fit 
                 flex items-center justify-between" onclick="{() => { document.getElementById('delete_empleado_modal').showModal() }}">
         <img src="{delete_icon}" alt="" class="red-filter group-hover:invert">
-        <p class="group-hover:text-white">Eliminar Cuenta</p>
+        <p class="group-hover:text-white">Eliminar Empleado</p>
     </button> 
 </div>
 

@@ -65,7 +65,8 @@ export type SessionInsertable = Insertable<SessionsTable>
 export type SessionUpdateable = Updateable<SessionsTable>
 
 
-export type EstadosEmpleado ='Activo'| 'Reposo'| 'Inhabilitado'| 'Despedido' | "Por Asignar" 
+export type EstadosEmpleado = 'Activo' | 'Por Asignar' | 'Reposo' | 'Inhabilitado' | 'Retirado' | 'Permiso'
+ 
 // Empleados
 export type EmpleadosTable = {
     cedula: ColumnType<string, string, never>,

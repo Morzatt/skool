@@ -2,10 +2,25 @@
     import { basePath } from '$lib';
     import chevron from "$lib/images/icons/chevron_left.svg"
     import type { ActionData, PageData } from './$types';
+    import delete_icon from "$lib/images/icons/borrar_icon.svg"
     import Alert from '$lib/components/Messages/Alert.svelte';
+    import { enhance } from '$app/forms';
+    import type { EstadosEmpleado } from '$lib/database/types';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
     let { justificacion, comprobantes, encargado } = $derived(data)
+
+    const vigencia = $derived(new Date() < new Date(justificacion.fecha_finalizacion))
+    function asignColor(status: EstadosEmpleado): string {
+        switch (status) {
+            case "Activo": 
+                return "text-green-900 bg-success/50"
+            case "Inhabilitado":
+                return "text-error-content/50 bg-error/50"
+            default: 
+                return "text-yellow-900 bg-warning/50"
+        }
+    }
 </script>
 
 <div class="size-full relative">
@@ -33,10 +48,22 @@
                         <div class="w-full bg-base-200 rounded-md p-4">
                             <div class="flex flex-col items-center justify-center relative">
                                 <i class="text-xs absolute top-0 right-0">{new Date(justificacion.created_at).toLocaleDateString()}</i>
+
+                                <button class="rounded-md
+                                            px-4 py-1 group
+                                            btn-sm
+                                            btn btn-error btn-outline 
+                                            w-fit 
+                                            absolute top-0 left-0
+                                            flex items-center justify-between" onclick="{() => { document.getElementById('delete_justificacion_modal').showModal() }}">
+                                    <img src="{delete_icon}" alt="" class="red-filter group-hover:invert">
+                                    <p class="group-hover:text-white">Eliminar</p>
+                                </button> 
+
                                 <i class="fa-regular fa-file-lines text-5xl"></i>
                                 <b class="text-xl">Razon: Enfermedad</b>
                                 <p class="text-xs">Tipo: {justificacion.tipo}</p>
-                                <p>Estado: <b>{new Date() > new Date(justificacion.fecha_finalizacion) ? "Expirado" : "Vigente"}</b> </p>
+                                <p>Estado: <b class="{vigencia ? 'text-success' : 'text-error'}">{!vigencia ? "Expirado" : "Vigente"}</b> </p>                                   
                             </div>
 
                             <div class="flex items-center justify-between text-sm mt-1">
@@ -98,6 +125,10 @@
                                 <b>Turno</b>
                                 <p>{justificacion.turno} </p>
                             </div>                           
+                             <div>
+                                <b>Estado</b>
+                                <p class="info-info {asignColor(justificacion.estado)} px-3 rounded-xl font-bold">{justificacion.estado} </p>
+                            </div>  
                         </div>
 
                         <div class="pb-12"></div>
@@ -165,6 +196,37 @@
     </div>
 </div>
 
+<dialog id="delete_justificacion_modal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-md overflow-hidden">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-16 shrink-0 stroke-current red-filter"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <h3 class="text-lg mt-3 text-center">¿Seguro que desea eliminar este Justificativo?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Esta acción es irreversible; se eliminarán completamente todos los datos del justificativo, al igual que sus registros asociados como: comprobantes, fechas, imágenes</p>
+        <p class="text-xs mt-2 text-base-content/70 text-wrap text-center leading-tight">En caso de ser una justificacion vigente, el estado del empleado será cambiado automaticamente en espera de asignacion.</p>
+
+        <div class="w-fit gap-3 mt-4 flex">
+            <form method="dialog">
+                <button type="submit" class="btn btn-sm">Volver</button>
+            </form>
+            
+            <form action="?/delete" method="POST" use:enhance>
+                <input type="hidden" name="id_justificacion" value="{justificacion.id}">
+                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 
 <style lang="postcss">
     .modal-box .button-container {

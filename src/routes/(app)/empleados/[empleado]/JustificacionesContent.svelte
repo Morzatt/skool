@@ -45,6 +45,8 @@
 <div class="w-full mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
     {#if justificaciones}
         {#each justificaciones as justificacion, i}
+            {@const vigencia = new Date() < new Date(justificacion.fecha_finalizacion)}
+
             <div class="border border-base-content/40 rounded-md
                 shadow-md bg-base-200 animate-pop-delayed *:px-4"
                 style="--delay: {i * 100}ms">
@@ -85,6 +87,7 @@
                         <div class="w-full">
                             <h3 class="text-lg font-semibold">Razon: {justificacion.razon}</h3> 
                             <p class="text-xs">Tipo: {justificacion.tipo}</p>
+                            <p class="font-bold {vigencia ? "text-success" : "text-error"}">{vigencia ? "Vigente" : "Expirado"}</p>
                             <p class="text-sm">{justificacion.detalles}</p>
                             <div class="form-control text-xs mt-2">
                                 <div class="label p-0 m-0">
