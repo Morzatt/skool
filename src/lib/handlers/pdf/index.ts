@@ -4,6 +4,8 @@ import path from "path";
 import type { AsistenciaDepartamento } from "../print.handlers";
 import type { TDocumentDefinitions } from "pdfmake/interfaces";
 import { createAsistenciaDocDefinition } from "./asistenciasDocuments";
+import type { Empleado } from "$lib/database/types";
+import { createListaEmpleadosDocument } from "./empleadosDocuments";
 
 let fontPath = path.join(process.cwd(), `/src/lib/handlers/pdf/fonts`)
 
@@ -44,4 +46,9 @@ function print(docDef: TDocumentDefinitions, path: string) {
 export function printListadeAsistencias(asistencias: AsistenciaDepartamento[], path: string) {
     const asistenciasDocDefinition = createAsistenciaDocDefinition(asistencias)
     print(asistenciasDocDefinition, path)
+}
+
+export function printListadeEmpleados(empleados: Empleado[], path: string) {
+    const empleadosDocDefinition = createListaEmpleadosDocument(empleados)
+    print(empleadosDocDefinition, path)
 }

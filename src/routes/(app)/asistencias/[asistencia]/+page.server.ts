@@ -35,7 +35,7 @@ export const load = (async ({ url, locals }) => {
 
     let empleado = await async(
         db.selectFrom('empleados')
-        .innerJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
+        .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
         .where('empleados.cedula', "=", asistencia.empleado)
         .selectAll()
         .executeTakeFirst()

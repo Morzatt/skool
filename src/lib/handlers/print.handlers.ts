@@ -2,7 +2,7 @@ import { db } from "$lib/database";
 import async from "$lib/utils/asyncHandler";
 import type { RequestEvent } from "@sveltejs/kit";
 import path from "path"
-import { printListadeAsistencias } from "./pdf";
+import { printListadeAsistencias, printListadeEmpleados } from "./pdf";
 import { unlinkSync } from "fs";
 
 export type AsistenciaEmpleado = {
@@ -53,6 +53,33 @@ export async function printAsistenciasHandler({ locals, request, url }: RequestE
     setTimeout(() => unlinkSync(pdfPath), 10000);
     
     return response.success("Horario impreso correctamente", { documentId: timeId });
+}
+
+
+export async function printListaEmpleadosHandler({ request, locals }: RequestEvent) {
+    let { log, response } = locals;
+
+    let empleados = await async(
+        db
+        .selectFrom('empleados')
+        .selectAll()
+        .select(eb => 
+            eb.selectFrom('departamentos').select('departamentos.nombre_departamento')
+            .whereRef('departamentos.id_departamento', '=', 'empleados.departamento').as('departamento')
+        )
+        .execute()
+    , log)
+
+    if (!empleados || empleados.length < 1) {
+        return response.error('No existen empleados en la base de datos.')
+    }
+
+    const timeId = generateTimeId();
+    const temporalPath = path.join(process.cwd(), `/static/temporal/lista_empleados_${timeId}.pdf`);
+    printListadeEmpleados(empleados, temporalPath)
+    setTimeout(() => unlinkSync(temporalPath), 10000);
+
+    return response.success('Empleados obtenidos correctamente.', { fileId: timeId })
 }
 
 /**

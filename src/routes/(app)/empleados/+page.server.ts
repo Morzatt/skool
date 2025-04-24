@@ -2,7 +2,9 @@ import { db } from '$lib/database';
 import type { Empleado, EstadosEmpleado } from '$lib/database/types';
 import async from '$lib/utils/asyncHandler';
 import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
+import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { printListaEmpleadosHandler } from '$lib/handlers/print.handlers';
 
 export const load = (async ({ url, locals }) => {
     let { response, log } = locals
@@ -72,3 +74,7 @@ export const load = (async ({ url, locals }) => {
 
     return { empleados, departamentos, records, total };
 }) satisfies PageServerLoad;
+
+export const actions = {
+    printListaEmpleados: printListaEmpleadosHandler
+} satisfies Actions

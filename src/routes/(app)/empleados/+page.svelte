@@ -5,8 +5,10 @@
     import type { PageData } from './$types';
     import FilterSelect from './FilterSelect.svelte';
     import no_result from "$lib/images/3e01667b4c12daee9ea2a1cfabe58e2d.png"
+    import { enhance } from '$app/forms';
+    import { downloadFile } from '$lib/utils/downloadFile';
 
-    let { data }: { data: PageData } = $props();
+    let { data, form }: { data: PageData, form: ActionData & { fileId: string } } = $props();
     let { empleados, records, total } = $derived(data)
 
     let index = $state(0)
@@ -74,7 +76,12 @@
         handleSearch()
     }
 
-let animate: 'animate-x' | 'animate--x'= $state('animate-x')
+    let animate: 'animate-x' | 'animate--x'= $state('animate-x')
+    $effect(() => {
+        if (form && form.success && form.form === "printListaEmpleados") {
+            downloadFile(`/downloads/${form.fileId}?type=listaEmpleados`, `lista_empleados_${form.fileId}.pdf`)
+        }
+    })
 </script>
 
 <div class="*: w-full min-h-full lg:h-full">
@@ -208,9 +215,11 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <b class="label-text">Imprimir Lista</b>
             </div>
 
-            <button class="btn btn-sm bg-base-content text-base-100 px-6 rounded-xl" aria-label="print-list">
-                <i class="fa-solid fa-print"></i>
-            </button>
+            <form method="post" action='?/printListaEmpleados' use:enhance>
+                <button class="btn btn-sm bg-base-content text-base-100 px-6 rounded-xl" aria-label="print-list">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+            </form>
         </div>
 
         <div class="form-control">

@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     let empleado = await async(
         db
         .selectFrom('empleados')
-        .innerJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
+        .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
         .leftJoin('info_personal', 'info_personal.id_empleado', 'empleados.cedula')
         .leftJoin("info_contacto", 'info_contacto.id_empleado', 'empleados.cedula')
         .leftJoin('info_laboral',  'info_laboral.id_empleado', 'empleados.cedula')

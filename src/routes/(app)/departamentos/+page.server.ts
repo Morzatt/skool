@@ -72,4 +72,44 @@ export const actions = {
 
         return response.success('Departamento eliminado correctamente')
     },
+
+    addEmpleado: async ({locals, request}) => {
+        let { log, response } = locals
+        let data = await request.formData()
+        let id_departamento = data.get('id_departamento') as string
+        let cedula_empleado = data.get('cedula_empleado') as string
+
+        await async(empleadosRepository.update({ departamento: id_departamento }, cedula_empleado), log)
+        return response.success('Departamento eliminado correctamente')
+    },
+
+    edit: async ({locals, request}) => {
+        let { log, response } = locals
+        let data = await request.formData()
+        let id = data.get('id_departamento') as string
+        let nombre = data.get('nombre_departamento') as string
+        let descripcion = data.get('descripcion') as string
+
+        if (nombre) {
+            await async(
+                db
+                .updateTable('departamentos')
+                .set({nombre_departamento: nombre})
+                .where('departamentos.id_departamento', "=", id)
+                .execute()
+            ,log)
+            return response.success('Nombre del departamento cambiado correctamente')
+        }
+
+        if (descripcion) {
+            await async(
+                db
+                .updateTable('departamentos')
+                .set({ descripcion: descripcion })
+                .where('departamentos.id_departamento', "=", id)
+                .execute()
+            ,log)
+            return response.success('Descripcion del departamento cambiada correctamente')
+        }
+    },
 } satisfies Actions

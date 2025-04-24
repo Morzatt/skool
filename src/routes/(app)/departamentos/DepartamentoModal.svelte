@@ -57,11 +57,12 @@
 
                     <div class="w-full mt-5 flex flex-col sm:flex-row items-start justify-between gap-5">
                         <div class="w-full flex flex-col gap-4 *:shadow-md">
-                            <div class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
+                            <form action="?/edit" method="post" use:enhance class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
+                                <input type="hidden" name="id_departamento" value={departamento.id_departamento}>
                                 <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Nombre del Departamento</b>
-                                    <button id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
-                                    onclick={()=>{ editNombre = !editNombre }}>
+                                    <button type={editNombre ? "submit" : "button"} id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
+                                    onclick={()=>{ setTimeout(() => { editNombre = !editNombre }, 200) }}>
                                         <i class="fa-solid fa-pencil"></i>
                                     </button>
                                 </div>
@@ -73,13 +74,14 @@
                                 {:else}
                                     <p class="mt-2 text-base-content/80 animate-pop">{departamento.nombre_departamento}</p> 
                                 {/if}
-                            </div>
+                            </form>
 
-                            <div class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
+                            <form method="post" use:enhance action="?/edit" class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
+                                <input type="hidden" name="id_departamento" value={departamento.id_departamento}>
                                 <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Descripción del Departamento</b>
-                                    <button id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
-                                    onclick={()=>{ editDescripcion = !editDescripcion }}>
+                                    <button type={editDescripcion ? "submit" : "button"} id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
+                                    onclick={()=>{ setTimeout(() => { editDescripcion = !editDescripcion }, 200)}}>
                                         <i class="fa-solid fa-pencil"></i>
                                     </button>
                                 </div>
@@ -91,7 +93,7 @@
                                 {:else}
                                     <p class="mt-2 text-base-content/80 animate-pop">{departamento.descripcion}</p> 
                                 {/if}
-                            </div>
+                            </form>
                         </div>
 
 
@@ -99,7 +101,7 @@
                             <div class="font-semibold flex items-center justify-between w-full">
                                 <span class="text-base"><i class="fa-solid fa-person"></i> Empleados del Departamento</span>
                                 <button id="laboral_close" class="btn btn-sm btn-circle bg-success text-success-content hover:bg-success-focus transition-colors duration-200" aria-label="edit-button"
-                                onclick={()=>{}}>
+                                onclick={()=>{ document.getElementById(`add_empleado_${departamento.id_departamento}`).showModal() }}>
                                     <i class="fa-solid fa-user-plus"></i>
                                 </button>
                             </div> 
@@ -139,10 +141,6 @@
                         </div>
                     </div>
                 </div>
-
-            <button type="submit" class="btn btn-success text-success-content px-12 mt-2 mb-2 hover:scale-105 transition-transform duration-200">
-                <span>Crear</span>
-            </button>   
         </div>     
     </div>
     <div class="modal-backdrop bg-neutral opacity-30"></div>
@@ -175,6 +173,37 @@
             <form action="?/deleteDepartamento" method="POST" use:enhance>
                 <input type="hidden" name="id_departamento" value="{departamento.id_departamento}">
                 <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<dialog id="add_empleado_{departamento.id_departamento}" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-md overflow-hidden">
+        <form method="dialog">
+            <button type="submit" id="departamento_{departamento.id_departamento}_close" aria-label="close-modal" 
+            class="hover:text-error transition-all duration-300 absolute top-4 right-4 hover:rotate-90 hover:scale-110">
+                <i class="fa-solid fa-circle-xmark text-3xl"></i>
+            </button>
+        </form>
+
+        <h3 class="text-lg mt-3 text-center">Añadir Empleado al Departamento</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Indique la cédula de identidad del empleado para añadirlo al departamento.</p>
+
+        <div class="w-fit gap-3 mt-4 flex">
+            <form action="?/addEmpleado" method="POST">
+                <div class="form-control">
+                    <div class="label">
+                        <div class="label-text">Cédula de Identidad del Empleado</div>
+                    </div>
+                    <input type="number" name="cedula_empleado" placeholder="Ej. 9999999" class="input mt-2 input-sm input-bordered">
+                </div>
+                <input type="hidden" name="id_departamento" value="{departamento.id_departamento}">
+
+                <div class="flex items-center justify-center w-full">
+                    <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-success px-6 mt-4 text-base-100">Añadir Empleado</button> 
+                </div>
             </form>
         </div>
     </div>
