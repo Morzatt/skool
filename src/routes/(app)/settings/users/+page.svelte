@@ -72,107 +72,114 @@
 
         <div class="h-[1px] w-full bg-base-content/30 mt-12"></div>
 
-        <div class="w-full lg:w-5/6 min-h-full flex flex-col p-2 gap-2 overflow-x-auto overflow-y-visible">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Usuario</th>
-                        <th>Cambiar Rol</th>
-                        <th>Acceso</th>
-                        <th>Eliminar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {#if usuarios}
-                        {#each usuarios as usuario, i}
-                            {#if usuario.usuario !== data.usuario.usuario} <!-- if user is not the same -->
-                                {#if usuario.role.toLocaleLowerCase() !== "superadmin"} <!-- if user is not super admin-->
-                                    {#if usuarioRange > usuario.range}
-                                        <tr class="animate-pop-delayed" style="--delay: {i * 100}ms">
-                                            <td>
-                                                <p>{capitalizeFirstLetter(usuario.nombre)} {capitalizeFirstLetter(usuario.apellido)}</p>
-                                                <p class="text-xs text-base-content/70">{capitalizeFirstLetter(usuario.role)}</p> 
-                                            </td>
-                                            <td>
-                                                <b class="text-md">{usuario.usuario}</b>
-                                                <p class="text-sm {usuario.estado === "Activo" ? "text-green-700" : "text-red-700"}">{usuario.estado}</p>
-                                            </td>
-                                            <td class="z-40">
-                                                <form action="?/role" method="post" use:enhance class="flex items-center justify-center gap-3 max-w-fit z-40">
-                                                    <input type="hidden" name="usuario" value="{usuario.usuario}">
-
-                                                    <div class="relative dropdown dropdown-bottom z-40">
-                                                        <div tabindex="0" role="button" class="btn z-50 btn-sm w-max justify-between border border-base-content/60">
-                                                            {capitalizeFirstLetter(usuario.role)}
-                                                            <img src="{chevron}" alt="" class="rotate-[-90deg]">
+        <div class="w-full flex flex-col">
+            <div class="p-6 px-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Cambiar Rol</th>
+                            <th>Acceso</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#if usuarios}
+                            {#each usuarios as usuario}
+                                {#if usuario.usuario !== data.usuario.usuario} <!-- if user is not the same -->
+                                    {#if !usuario.role.includes('superadmin')} <!-- if user is not super admin-->
+                                        {#if usuarioRange > usuario.range}
+                                            <tr>
+                                                <td>
+                                                    <p>{capitalizeFirstLetter(usuario.nombre)} {capitalizeFirstLetter(usuario.apellido)}</p>
+                                                    <p class="text-xs text-base-content/70">{capitalizeFirstLetter(usuario.role)}</p> 
+                                                </td>
+                                                <td>
+                                                    <b class="text-md">{usuario.usuario}</b>
+                                                    <p class="text-sm {usuario.estado === "Activo" ? "text-green-700" : "text-red-700"}">{usuario.estado}</p>
+                                                </td>
+                                                <td>
+                                                    <form action="?/role" method="post" use:enhance class="flex items-center justify-center gap-3 max-w-fit">
+                                                        <input type="hidden" name="usuario" value="{usuario.usuario}">
+                                                        <div class="dropdown dropdown-bottom">
+                                                            <div tabindex="0" role="button" class="btn btn-sm w-max justify-between border border-base-content/60">
+                                                                {capitalizeFirstLetter(usuario.role)}
+                                                                <img src="{chevron}" alt="" class="rotate-[-90deg]">
+                                                            </div>
+                                                            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                                                                <!-- {#if data.usuario.role === "superadmin"} -->
+                                                                    <li><input type="submit" name="role" value="Administrador"></li>                                                           
+                                                                <!-- {/if} -->
+                                                                <li><input type="submit" name="role" value="Editor"></li>
+                                                                <li><input type="submit" name="role" value="Usuario"></li>
+                                                            </ul>
                                                         </div>
-                                                        <ul class="dropdown-content menu bg-base-100 z-40 rounded-box w-52 p-2 shadow">
-                                                            {#if data.usuario.role.toLocaleLowerCase().includes('superadmin')}
-                                                                <li><input type="submit" name="role" value="Administrador"></li>                                                           
-                                                            {/if}
-                                                            <li><input type="submit" name="role" value="Editor"></li>
-                                                            <li><input type="submit" name="role" value="Usuario"></li>
-                                                        </ul>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <form action="?/status" method="post" use:enhance class="flex flex-col items-center justify-center gap-2 max-w-fit">
+                                                        <input type="hidden" name="usuario" value="{usuario.usuario}">
+                                                        <input type="hidden" name="estado" value={usuario.estado === "Activo" ? "Bloqueado" : "Activo"}>
+                                                        <button type="submit" class="{asignColorInverted(usuario.estado)} px-4 py-1 rounded-md font-bold btn-xs">{usuario.estado === "Activo" ? "Bloquear":"Desbloquear"}</button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <button onclick="{() => {document.getElementById(`delete_${usuario.usuario}_modal`).showModal()}}" 
+                                                        class="hover:bg-red-500 transition-all ease-in-out group rounded-md p-0.5">
+                                                        <img src="{eliminar_icon}" alt="" class="group-hover:invert filter">
+                                                    </button>
+                                                    <div>
+                                                        <dialog class="modal modal-bottom sm:modal-middle" id="delete_{usuario.usuario}_modal">
+                                                            <div class="modal-box border border-base-content/60
+                                                                        relative
+                                                                        sm:w-10/12 sm:max-w-md overflow-hidden
+                                                                        flex flex-col items-center justify-center">
+
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    class="size-16 shrink-0 stroke-current red-filter"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24">
+                                                                    <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+
+                                                                <h3 class="text-lg">¿Desea eliminar este usuario?</h3>
+                                                                <p class="text-sm text-base-content/70 text-wrap text-center">Esta acción es irreversible; no se guardaran datos de los usuarios eliminados y sus tramites en curso serán cancelados inmediatamente.</p>
+
+
+                                                                <div class="flex items-center justify-between gap-6 mt-5">
+                                                                    <form method="dialog">
+                                                                        <button class="btn btn-sm btn-neutral">Volver</button>
+                                                                    </form>
+
+                                                                    <form action="?/delete" method="POST" use:enhance class="h-auto w-full">
+                                                                        <input type="hidden" name="usuario" value="{usuario.usuario}">
+                                                                        <button class="btn btn-error btn-sm text-base-100">Aceptar</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </dialog>
                                                     </div>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form action="?/status" method="post" use:enhance class="flex flex-col items-center justify-center gap-2 max-w-fit">
-                                                    <input type="hidden" name="usuario" value="{usuario.usuario}">
-                                                    <input type="hidden" name="estado" value={usuario.estado === "Activo" ? "Bloqueado" : "Activo"}>
-                                                    <button type="submit" class="{asignColorInverted(usuario.estado)} px-4 py-1 rounded-md font-bold btn-xs">{usuario.estado === "Activo" ? "Bloquear":"Desbloquear"}</button>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <button onclick="{() => {document.getElementById(`delete_user_${usuario.usuario}_modal`)!.showModal()}}" 
-                                                    class="hover:bg-red-500 transition-all ease-in-out group rounded-md p-0.5">
-                                                    <img src="{eliminar_icon}" alt="" class="group-hover:invert filter">
-                                                </button>
-
-                                                <dialog id="delete_user_{usuario.usuario}_modal" class="modal modal-bottom sm:modal-middle">
-                                                    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
-                                                                sm:w-10/12 sm:max-w-md overflow-hidden">
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            class="size-16 shrink-0 stroke-current red-filter"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24">
-                                                            <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-
-                                                        <h3 class="text-lg mt-3">¿Desea eliminar este usuario?</h3>
-                                                        <p class="text-sm text-base-content/70 text-wrap text-center mt-1">Esta acción es irreversible; no se guardaran datos de los usuarios eliminados y sus tramites en curso serán cancelados inmediatamente.</p>
-
-                                                        <div class="w-fit gap-3 mt-4 flex">
-
-                                                            <form method="dialog">
-                                                                <button type="submit" class="btn btn-sm">Volver</button>
-                                                            </form>
-                                                            
-                                                            <form action="?/delete" method="POST" use:enhance>
-                                                                <input type="hidden" id="delete_user_{usuario.usuario}_close" name="usuario" value="{usuario.usuario}">
-                                                                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </dialog>
-                                            </td>
-                                        </tr> 
+                                                </td> 
+                                            </tr> 
+                                        {/if}
                                     {/if}
                                 {/if}
-                            {/if}
-                        {/each}       
-                    {/if}
-                </tbody>
-            </table>
+                            {/each}       
+                        {/if}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </main>
+
+
 
 <style lang="postcss">
     .modal-container {
