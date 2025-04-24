@@ -5,7 +5,7 @@ import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { comprobantesRepository, justificacionesRepository } from '$lib/database/repositories/justificaciones.repository';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
-import { unlink } from "fs/promises"
+import { access, unlink, constants } from "fs/promises"
 import path from 'path';
 import { fail } from '@sveltejs/kit';
 import { writeFile } from 'fs';
@@ -59,30 +59,37 @@ export const actions = {
             return response.error('No se encontro la justificacion')
         }
 
+        let comprobantes = await db 
+            .selectFrom('comprobantes')
+            .selectAll()
+            .where('comprobantes.id_justificacion', '=', justificacion.id)
+            .execute()
+
+        if (comprobantes) {
+            for (let c of comprobantes) {
+                let p = path.join(process.cwd(), `static`, c.path)
+                try {
+                    await access(p, constants.F_OK)
+                    await unlink(p)
+                } catch (error) {
+                }
+            }
+        }
+
         await async(
             db.transaction().execute(async (trx) => {
                 if (new Date(justificacion.fecha_finalizacion) > new Date()) {
                     await empleadosRepository.update({ estado: 'Por Asignar' }, justificacion.empleado, trx)
                 }
 
-                let comprobantes = await trx
-                    .selectFrom('comprobantes')
-                    .selectAll()
-                    .where('comprobantes.id_justificacion', '=', justificacion.id)
-                    .execute()
-
-                for (let c of comprobantes) {
-                    let p = path.join(process.cwd(), `static`, c.path)
-                    await unlink(p)
-                }
-
                 await trx.deleteFrom('comprobantes').where("comprobantes.id_justificacion", '=', id_justificacion).execute()
                 await trx.deleteFrom('justificaciones').where('id', "=", id_justificacion).execute()
             })
-            , log)
+        , log)
 
-        redirect(303, '/empleados')
+        redirect(303, '/justificaciones')
     },
+
     addComprobantes: async ({ request, locals }) => {
         let { log, response } = locals
 

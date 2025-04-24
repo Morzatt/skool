@@ -26,8 +26,6 @@ export const handle = (async ({ resolve, event }) => {
             redirect(307, "/auth")
         }
 
-        checkRoute('/admin', url, session.data?.role)
-        
         if (session.data) {
             const requestMethod = event.request.method;
             const contentType = event.request.headers.get('content-type');
@@ -36,13 +34,13 @@ export const handle = (async ({ resolve, event }) => {
                 (contentType?.includes('application/x-www-form-urlencoded') ||
                     contentType?.includes('multipart/form-data'));
 
-            if (isFormSubmission && url.pathname !== '/settings/account') {
-                if (session.data.role === "Usuario") {
+            if (isFormSubmission && !url.pathname.includes('/account')) {
+                if (session.data.role === "usuario") {
                     event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
                     return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
                 }
 
-                if (session.data.role === "Editor" && !url.pathname.includes('asistencias')) {
+                if (session.data.role === "editor" && !url.pathname.includes('/asistencias')) {
                     event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
                     return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
                 }

@@ -189,10 +189,11 @@
                     </div>
                 </div>
 
-                <form class="w-2/5 h-full border border-base-content/30 rounded-md p-2">
+                <div class="w-2/5 h-full border border-base-content/30 rounded-md p-2">
                     <input type="hidden" name="id_justificacion" value="{justificacion.id}">
 
                     <h3 class="font-semibold"> <i class="fa-solid fa-file-contract"></i> Comprobantes Físicos</h3>
+
                     <!-- <div class="flex w-full mt-2 justify-end">
                         <button class="btn bg-base-content text-base-100 gap-2 btn-sm">
                             <i class="fa-solid fa-file-arrow-up"></i>
@@ -249,8 +250,8 @@
                                     </dialog>
                                 {/each}
                             {/if}
-<!-- 
-                            {#each images as img, i(img)}
+
+                            <!-- {#each images as img, i(img)}
                                 {@render FileInput(img)}                           
                             {/each}
                             
@@ -260,7 +261,7 @@
                             </button> -->
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

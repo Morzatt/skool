@@ -4,6 +4,7 @@
     import delete_icon from "$lib/images/icons/borrar_icon.svg"
     import type { Departamento, Empleado } from "$lib/database/types";
     import { capitalizeFirstLetter } from "$lib/utils/capitlizeFirstLetter";
+    import { formatStringWithDots } from "$lib";
 
     let { form, departamento }: { form: any, departamento: Departamento & { empleados: number, listaEmpleados: Empleado[] } } = $props()
 
@@ -112,7 +113,8 @@
                                         <div class="w-fit h-full flex items-center justify-between gap-4">
                                             <i class="fa-solid fa-user text-xl px-2.5 p-1 text-center rounded-full"></i>
                                             <div>
-                                                <p class="font-medium">{capitalizeFirstLetter(empleado.primer_nombre)} {capitalizeFirstLetter(empleado.primer_apellido)}</p>
+                                                <b>{capitalizeFirstLetter(empleado.primer_nombre)} {capitalizeFirstLetter(empleado.primer_apellido)}</b>
+                                                <p class="font-medium">{empleado.nacionalidad == "Venezolano" ? "V-" : "E-"}{formatStringWithDots(empleado.cedula)}</p>
                                                 <p class="text-sm text-base-content/70">{empleado.cargo}</p>
                                             </div>
                                         </div>
@@ -192,7 +194,7 @@
         <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Indique la cédula de identidad del empleado para añadirlo al departamento.</p>
 
         <div class="w-fit gap-3 mt-4 flex">
-            <form action="?/addEmpleado" method="POST">
+            <form action="?/addEmpleado" method="POST" use:enhance>
                 <div class="form-control">
                     <div class="label">
                         <div class="label-text">Cédula de Identidad del Empleado</div>

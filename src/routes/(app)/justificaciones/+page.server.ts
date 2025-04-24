@@ -34,7 +34,17 @@ export const load = (async ({locals, url}) => {
     let justificaciones;
 
     if (filter && search) {
-        query = query.where(`${filter}`, 'like', `%${search}%`)
+        if (filter === "primer_nombre" || filter === "primer_apellido") {
+            query = query.where(`empleados.${filter}`, 'like', `%${search}%`)
+        }
+
+        if (filter === 'empleado') {
+            query = query.where(`justificaciones.${filter}`, 'like', `%${search}%`)
+        }
+
+        if (filter === "nombre" || filter === "apellido" || filter === "usuario") { 
+            query = query.where(`usuarios.${filter}`, 'like', `%${search}%`)
+        }
     }
 
     justificaciones = await async(query.execute(), log)

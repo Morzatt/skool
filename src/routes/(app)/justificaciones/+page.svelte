@@ -119,11 +119,23 @@
                 },
                 {
                     name: "Nombre del Empleado",
-                    value: "nombre_empleado"
+                    value: "primer_nombre"
                 },
                 {
                     name: "Apellido del Empleado",
-                    value: "apellido_empleado"
+                    value: "primer_apellido"
+                },
+                {
+                    name: "Usuario del Encargado",
+                    value: "usuario"
+                },
+                {
+                    name: "Nombre del encargado",
+                    value: "nombre"
+                },
+                {
+                    name: "Apellido del encargado",
+                    value: "apellido"
                 }
             ]}/>
         </div>
