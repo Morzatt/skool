@@ -1,5 +1,5 @@
 import { db } from '$lib/database';
-import type { Empleado, EstadosEmpleado } from '$lib/database/types';
+import type { Empleado, EstadosEmpleado, Justificacion } from '$lib/database/types';
 import async from '$lib/utils/asyncHandler';
 import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
 import type { PageServerLoad } from './$types';
@@ -10,52 +10,43 @@ export const load = (async ({locals, url}) => {
     let filter = url.searchParams.get('filter') as string;
     let search = url.searchParams.get('search') as string;
 
-    let estado = capitalizeFirstLetter(url.searchParams.get('estado') as string) as EstadosEmpleado;
-    let turno = capitalizeFirstLetter(url.searchParams.get('turno') as string) as 'Mañana' | 'Tarde';
-    let departamento = url.searchParams.get('departamento') as string;
+    // let cedula: 'asc' | 'desc' = url.searchParams.get('cOrder') as "asc" | 'desc';
 
-
-    let cedula: 'asc' | 'desc' = url.searchParams.get('cOrder') as "asc" | 'desc';
-    let nombre: 'asc' | 'desc' = url.searchParams.get('nOrder') as "asc" | 'desc';
-    let apellido: 'asc' | 'desc' = url.searchParams.get('aOrder') as "asc" | 'desc';
-    let fecha: 'asc' | 'desc' = url.searchParams.get('fOrder') as "asc" | 'desc';
 
     let query = db
-        .selectFrom('empleados')
+        .selectFrom('justificaciones')
+        .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
+        .leftJoin('empleados', 'empleados.cedula', 'justificaciones.empleado')
+        .select((eb) => [
+            'justificaciones.detalles', 'justificaciones.empleado',
+            'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
+            'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
+            'usuarios.nombre as nombre_encargado',
+            'empleados.primer_nombre as nombre_empleado', 'empleados.primer_apellido as apellido_empleado',
+             'usuarios.apellido as apellido_encargado',
+                eb.selectFrom('comprobantes')
+                .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
+                .select(['comprobantes.path'])
+                .limit(1)
+                .as('path')
+        ])
         .limit(10)
         .offset(index ? index : 0)
-        .orderBy("empleados.created_at desc")
+        .orderBy("justificaciones.created_at")
     
-    switch (true) {
-        case cedula !== "asc":
-            query = query.orderBy(`empleados.cedula ${cedula ? cedula : "desc"}`);
-        case nombre !== "asc":
-            query = query.orderBy(`empleados.primer_nombre ${nombre ? nombre : "asc"}`)
-        case apellido !== "asc":
-            query = query.orderBy(`empleados.primer_apellido ${apellido ? apellido : "desc"}`)
-        case fecha !== "asc":
-            query = query.orderBy(`empleados.fecha_nacimiento ${fecha ? fecha : "desc"}`)
-    }
+    // switch (true) {
+    //     case cedula !== "asc":
+    //         query = query.orderBy(`empleados.cedula ${cedula ? cedula : "desc"}`);
+    // }
 
-    let empleados: Empleado[] | undefined;
-    let records: number;
+    let justificaciones;
 
-    if (estado) {
-        query = query.where(`empleados.estado`, '=', estado)
-    }
+    // if (filter && search) {
+    //     query = query.where(`justificaciones.${filter}`, 'like', `%${search}%`)
+    // }
 
-    if (turno) {
-        query = query.where('empleados.turno', "=", turno)
-    }
+    justificaciones = await async(query.execute(), log)
+    console.log(justificaciones)
 
-    if (departamento) {
-        query = query.where('empleados.departamento', "=", departamento)
-    }
-
-    if (filter && search) {
-        query = query.where(`empleados.${filter}`, 'like', `%${search}%`)
-    }
-
-    empleados = await async(query.selectAll().execute(), log)
-    return {};
+    return {justificaciones};
 }) satisfies PageServerLoad;

@@ -2,7 +2,7 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath, formatStringWithDots } from '$lib';
     import type { EstadosEmpleado } from '$lib/database/types';
-    import type { PageData } from './$types';
+    import type { ActionData, PageData } from './$types';
     import FilterSelect from './FilterSelect.svelte';
     import no_result from "$lib/images/3e01667b4c12daee9ea2a1cfabe58e2d.png"
     import { enhance } from '$app/forms';
@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <div class="w-full h-max mt-4 bg-primary/20 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
+    <div class="w-full h-max mt-4 bg-primary/10 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
         <div class="flex items-center justify-start w-max h-full">
             <div class="form-control">
                 <div class="label">

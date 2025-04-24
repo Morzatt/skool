@@ -60,7 +60,30 @@
 
     <Alert form={form} styles="absolute max-w-sm top-4 left-4"/>
 
-    <div class="w-full h-max mt-4 bg-primary/20 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
+    <div class="w-full flex mt-5 flex-wrap items-center justify-between mb-4">
+        <div class="flex items-center gap-2 *:bg-base-content *:text-accent">
+            <button class="btn btn-sm" aria-label="all">
+                <i class="fa-solid fa-globe"></i>
+                <span>Todas</span>
+            </button>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <span class="text-sm">Recientes</span>
+            <i class="fa-solid fa-angle-down"></i>
+            
+            <div class="flex border border-base-300 rounded-md overflow-hidden ml-4">
+                <button class="btn btn-sm btn-ghost btn-square">
+                    <i class="fa-solid fa-table-cells"></i>
+                </button>
+                <button class="btn btn-sm bg-base-200 btn-square">
+                    <i class="fa-solid fa-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full h-max mt-4 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
         <div class="flex items-center justify-start w-max h-full">
             <div class="form-control">
                 <div class="label">
@@ -73,23 +96,6 @@
                     <i class="fa-solid fa-hammer"></i>
                     <span>Nuevo</span>
                 </button>
-            </div>
-        </div>
-        <div class="flex items-center justify-start gap-2 flex-wrap">
-            <div class="form-control">
-                <div class="label">
-                    <b class="label-text">Turnos</b>
-                </div>
-                <FilterSelect bind:value={turno} name="Turno" type="dropdown-bottom" styles="" icon="fa-solid fa-cloud-sun" options={[
-                    {
-                        name: "Mañana",
-                        value: "mañana"
-                    },
-                    {
-                        name: "Tarde",
-                        value: "tarde"
-                    },
-                ]}/>
             </div>
         </div>
     </div>

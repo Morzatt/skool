@@ -28,7 +28,7 @@
 <div class="size-full relative">
     <Alert form={ form } styles="absolute top-4 left-4 max-w-sm"/>
     <div class="h-fit w-full mb-4 relative flex items-center justify-between">
-        <a href="{basePath}/empleados" class="btn btn-accent btn-sm btn-circle flex items-center justify-center tooltip tooltip-right"
+        <a href="{basePath}/justificaciones" class="btn btn-accent btn-sm btn-circle flex items-center justify-center tooltip tooltip-right"
         data-tip="Administrar Empleados">
             <img src="{chevron}" alt="">
         </a>
