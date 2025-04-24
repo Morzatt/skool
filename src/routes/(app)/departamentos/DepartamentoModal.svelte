@@ -6,6 +6,9 @@
     import { capitalizeFirstLetter } from "$lib/utils/capitlizeFirstLetter";
 
     let { form, departamento }: { form: any, departamento: Departamento & { empleados: number, listaEmpleados: Empleado[] } } = $props()
+
+    let editNombre: boolean = $state(false)
+    let editDescripcion: boolean = $state(false)
 </script>
 
 <dialog id="departameno_{departamento.id_departamento}_modal" class="modal modal- modal-bottom sm:modal-middle">
@@ -24,8 +27,8 @@
             <div class="flex items-center justify-start w-fit gap-4 bg-base-200 p-4 rounded-lg shadow-sm">
                 <i class="fa-solid {departamento.icon} mr-4 text-4xl"></i> 
                 <div>
-                    <p class="text-2xl font-bold text-base-content">Administrar Departamento</p>
-                    <p class="text-lg">{departamento.nombre_departamento}</p>               
+                    <p class="text-lg font-bold text-base-content">Administrar Departamento</p>
+                    <p class="text-2xl">{departamento.nombre_departamento}</p>               
                 </div>
             </div>
 
@@ -36,7 +39,7 @@
                 w-fit 
                 flex items-center justify-between gap-2 
                 hover:shadow-md transition-all duration-300 ease-in-out" 
-                onclick="{() => { document.getElementById('delete_justificacion_modal').showModal() }}">
+                onclick="{() => { document.getElementById(`delete_departamento_${departamento.id_departamento}`).showModal() }}">
 
                 <img src="{delete_icon}" alt="" class="red-filter group-hover:invert transition-all duration-300">
                 <p class="group-hover:text-white">Eliminar</p>
@@ -58,22 +61,36 @@
                                 <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Nombre del Departamento</b>
                                     <button id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
-                                    onclick={()=>{}}>
+                                    onclick={()=>{ editNombre = !editNombre }}>
                                         <i class="fa-solid fa-pencil"></i>
                                     </button>
                                 </div>
-                                <p class="mt-2 text-base-content/80">{departamento.nombre_departamento}</p> 
+                                {#if editNombre}
+                                    <label class="input input-bordered animate-pop mt-4 flex items-center justify-start gap-3">
+                                        <i class="fa-regular fa-square-plus text-2xl"></i>
+                                        <input type="text" name="nombre_departamento" class="grow" placeholder='Ej. "Docentes", "Administración", etc...' />
+                                    </label>
+                                {:else}
+                                    <p class="mt-2 text-base-content/80 animate-pop">{departamento.nombre_departamento}</p> 
+                                {/if}
                             </div>
 
                             <div class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
                                 <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Descripción del Departamento</b>
                                     <button id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
-                                    onclick={()=>{}}>
+                                    onclick={()=>{ editDescripcion = !editDescripcion }}>
                                         <i class="fa-solid fa-pencil"></i>
                                     </button>
                                 </div>
-                                <p class="mt-2 text-base-content/80">{departamento.descripcion}</p> 
+                                {#if editDescripcion}
+                                    <fieldset class="fieldset w-full mt-4 animate-pop">
+                                        <legend class="fieldset-legend font-bold text-sm mb-1">Descripcion del Departamento</legend>
+                                        <textarea class="textarea textarea-bordered w-full min-h-24" name="descripcion" placeholder="Descripcion..."></textarea>
+                                    </fieldset>
+                                {:else}
+                                    <p class="mt-2 text-base-content/80 animate-pop">{departamento.descripcion}</p> 
+                                {/if}
                             </div>
                         </div>
 
@@ -129,6 +146,38 @@
         </div>     
     </div>
     <div class="modal-backdrop bg-neutral opacity-30"></div>
+</dialog>
+
+
+<dialog id="delete_departamento_{departamento.id_departamento}" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box relative bg-base-100 flex flex-col items-center justify-center
+                sm:w-10/12 sm:max-w-md overflow-hidden">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-16 shrink-0 stroke-current red-filter"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <h3 class="text-lg mt-3 text-center">¿Seguro que desea eliminar este Departamento?</h3>
+        <p class="text-sm text-base-content/70 text-wrap text-center leading-tight">Esta acción es irreversible; se eliminarán completamente todos los datos del del departamento, mientras su personal quedara con el estado 'Departamento no Asignado'</p>
+
+        <div class="w-fit gap-3 mt-4 flex">
+            <form method="dialog">
+                <button type="submit" class="btn btn-sm">Volver</button>
+            </form>
+            
+            <form action="?/deleteDepartamento" method="POST" use:enhance>
+                <input type="hidden" name="id_departamento" value="{departamento.id_departamento}">
+                <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-error">Eliminar</button>
+            </form>
+        </div>
+    </div>
 </dialog>
 
 <style lang="postcss">

@@ -63,5 +63,13 @@ export const actions = {
         let cedula = (await request.formData()).get('cedula') as string
         await async(empleadosRepository.update({ departamento: null }, cedula), log)
         return response.success('Empleado eliminado del departamento correctamente')
-    }
+    },
+
+    deleteDepartamento: async ({locals, request}) => {
+        let { log, response } = locals
+        let id_departamento = (await request.formData()).get('id_departamento') as string
+        await async(departamentosRepository.delete(id_departamento), log)
+
+        return response.success('Departamento eliminado correctamente')
+    },
 } satisfies Actions

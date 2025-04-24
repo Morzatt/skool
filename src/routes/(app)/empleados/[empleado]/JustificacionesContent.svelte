@@ -89,7 +89,7 @@
                             <h3 class="text-lg font-semibold">Razon: {justificacion.razon}</h3> 
                             <p class="text-xs">Tipo: {justificacion.tipo}</p>
                             <p><b class="{vigencia === "Vigente" ? "text-success" : vigencia === "Expirado" ? "text-error" : "text-warning"}">{vigencia}</b> </p>                                   
-                            <p class="text-sm">{justificacion.detalles}</p>
+                            <!-- <p class="text-sm">{justificacion.detalles}</p> -->
                             <div class="form-control text-xs mt-2">
                                 <div class="label p-0 m-0">
                                     <b class="label-text">Fecha:</b>

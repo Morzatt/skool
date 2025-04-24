@@ -2,6 +2,7 @@
     import { enhance } from '$app/forms';
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath } from '$lib';
+    import Alert from '$lib/components/Messages/Alert.svelte';
     import type { EstadosEmpleado } from '$lib/database/types';
     import type { ActionData, PageData } from './$types';
     import DepartamentoModal from './DepartamentoModal.svelte';
@@ -51,11 +52,13 @@
     ]
 </script>
 
-<div class="*: w-full min-h-full lg:h-full">
+<div class="*: w-full min-h-full lg:h-full relative">
     <div class="w-full h-12
         flex items-center justify-between flex-wrap">
         <h1 class="text-2xl font-semibold">Departamentos</h1>
     </div>
+
+    <Alert form={form} styles="absolute max-w-sm top-4 left-4"/>
 
     <div class="w-full h-max mt-4 bg-primary/20 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
         <div class="flex items-center justify-start w-max h-full">
@@ -97,7 +100,7 @@
 
     <div class="w-full h-max mt-4 p-4 pb-8 bg-base-300 rounded-md grid grid-cols-3 items-start gap-2 gap-y-6">
         {#if departamentos}
-            {#each departamentos as departamento, i}
+            {#each departamentos as departamento, i(departamento)}
                 <DepartamentoModal form={ form } departamento={departamento}/>
 
                 <div class="stack h-full *:h-full animate-pop" style="--delay: {i*100}ms">
@@ -148,7 +151,7 @@
         <h3 class="text-lg mt-3">Crear Nuevo Departamento</h3>
         <p class="text-xs text-base-content/60">Introduzca el nombre del departamento a crear para comenzar a añadir empleados a ésta nueva área de trabajo</p>
 
-        <form action="?/create" method="post" use:enhance class="w-full gap-3 mt-4 flex flex-col items-center overflow-y-auto thin">
+        <form action="?/create" method="post" use:enhance={() => { document.getElementById('create_departamento_close').click() }} class="w-full gap-3 mt-4 flex flex-col items-center overflow-y-auto thin">
             <div class="form-control w-fit">
                 <div class="label">
                     <b class="label-text">Nombre del Nuevo Departamento</b>
