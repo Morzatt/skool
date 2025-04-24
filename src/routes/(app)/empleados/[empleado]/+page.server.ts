@@ -9,7 +9,11 @@ import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handle
 import type { InfoContactoInsertable } from '$lib/database/types';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
-    const { log, response } = locals;
+    const { log, response, usuario } = locals;
+
+    if (!usuario.role.includes('admin')) {
+        redirect(308, '/empleados')
+    }
 
     let cedula_empleado = getId(url.pathname)
 
@@ -180,6 +184,7 @@ export const actions = {
             .selectFrom('empleados')
             .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
             .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo'])
+            .where('empleados.cedula', '=', cedula_empleado)
             .executeTakeFirst()
         , log)
 

@@ -6,10 +6,11 @@
     type Locations = 'top' | 'right' |'bottom'|'left'
     type DropDownTypes = `dropdown-${Locations}`
 
-    let { value = $bindable(), options, styles, icon, type, name }:
+    let { value = $bindable(), options, styles, icon, type, name, inputfn }:
     { 
         value: string,
         options: Option[], 
+        inputfn?: any | undefined,
         styles?: string,
         icon?: string,
         type?: DropDownTypes,
@@ -21,6 +22,11 @@
     function changeValue(option: Option) {
         value = option.value;
         title = option.name;
+
+        if (inputfn !== undefined) {
+            inputfn()
+        }
+
         setTimeout(() => { document.getElementById(`dd_${name}`)!.attributes.removeNamedItem('open') }, 100)
     }
 </script>

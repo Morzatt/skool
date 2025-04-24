@@ -36,7 +36,7 @@
                         <div class="label">
                             <span class="label-text">Cédula</span>
                         </div>
-                        <input type="number" name="cedula" class="input" placeholder="Cédula del Empleado...">
+                        <input max="8" type="number" name="cedula" class="input" placeholder="Cédula del Empleado...">
                     </label>   
 
                     <!-- NACIONALIDAD -->

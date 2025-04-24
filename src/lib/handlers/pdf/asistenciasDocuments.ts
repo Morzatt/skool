@@ -60,17 +60,17 @@ function createHeader(logoPath: string) {
                 height: 60,
                 margin: [0, 0, 0, 0], 
                 alignment: "left",
-            },
-            {
-                text: `República Bolivariana de Venezuela
-                        Ministerio del Poder Popular para la Educación
+                    },
+                    {
+                        text: `República Bolivariana de Venezuela
+                                Ministerio del Poder Popular para la Educación
                         U.E.N Colegio de Alexis`,
-                width: "auto",
-                bold: true,
-                fontSize: 10,
-                alignment: "center"
-            },
-        ]
+                        width: "auto",
+                        bold: true,
+                        fontSize: 10,
+                        alignment: "center"
+                    },
+                ]
     };
 }
 
@@ -95,7 +95,7 @@ function createDepartmentSections(asistencias: AsistenciaDepartamento[]) {
  */
 function createTableHeader(text: string, margin: [number, number, number, number]) {
     return {
-        table: {
+                        table: {
             widths: ['*'],
             body: [
                 [{ text, alignment: 'center', fillColor: '#f4a460', color: 'white', bold: true }]

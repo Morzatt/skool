@@ -65,9 +65,9 @@ function getDateRange(formData: FormData) {
         search: formData.get('search') || '' as string,
         departamento: formData.get('departamento') || 'all' as string,
     };
-    
+
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Set default dates if not provided
     const endDate = params.endDate 
         ? new Date(params.endDate.replaceAll('-', '/')) 
@@ -76,7 +76,7 @@ function getDateRange(formData: FormData) {
     const startDate = params.startDate
         ? new Date(params.startDate.replaceAll('-', '/'))
         : new Date(new Date(today).getFullYear(), new Date(today).getMonth(), 1);
-    
+
     // Format for query and display
     const startDateStr = startDate.toISOString().split('T')[0];
     const endDateStr = endDate.toISOString().split('T')[0];
@@ -102,9 +102,9 @@ function generateTimeId() {
 async function fetchAttendanceRecords(startDate: string, endDate: string, log: any) {
     return await async(
         db.selectFrom('asistencias')
-          .innerJoin('empleados', 'empleados.cedula', 'asistencias.empleado')
+        .innerJoin('empleados', 'empleados.cedula', 'asistencias.empleado')
           .innerJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
-          .selectAll()
+        .selectAll()
           .where('asistencias.fecha', '>=', startDate)
           .where('asistencias.fecha', '<=', endDate)
           .orderBy('asistencias.fecha desc')

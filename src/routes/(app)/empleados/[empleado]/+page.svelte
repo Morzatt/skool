@@ -7,6 +7,7 @@
     import AsistenciasContent from './AsistenciasContent.svelte';
     import type { EstadosEmpleado } from '$lib/database/types';
     import { enhance } from '$app/forms';
+    import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
     let { empleado, laboral, contacto, personal, departamentos, usuario } = $derived(data)
@@ -101,7 +102,7 @@
             <!-- NOMBRE, CARGO, CONTACTO -->
             <div class="w-2/3 h-full p-1">
                 <!-- NOMBRE -->
-                <h3 class="text-xl font-bold">{empleado.primer_nombre} {empleado.segundo_nombre} {empleado.primer_apellido} {empleado.segundo_apellido}</h3>
+                <h3 class="text-xl font-bold">{capitalizeFirstLetter(empleado.primer_nombre)} {capitalizeFirstLetter(empleado.segundo_nombre)} {capitalizeFirstLetter(empleado.primer_apellido)} {capitalizeFirstLetter(empleado.segundo_apellido)}</h3>
                 <!-- CEDULA - DEPARTAMENTO - CARGO -->
                 <div>
                     <p class="text-sm mb-2">{`${empleado.nacionalidad === "Venezolano" ? "V-" : "E-"}${formatStringWithDots(empleado.cedula)}`}</p>

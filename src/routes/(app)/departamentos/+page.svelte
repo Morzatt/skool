@@ -3,10 +3,11 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath } from '$lib';
     import type { EstadosEmpleado } from '$lib/database/types';
-    import type { PageData } from './$types';
+    import type { ActionData, PageData } from './$types';
+    import DepartamentoModal from './DepartamentoModal.svelte';
     import FilterSelect from './FilterSelect.svelte';
 
-    let { data }: { data: PageData } = $props();
+    let { data, form }: { data: PageData, form: ActionData } = $props();
     let { departamentos } = $derived(data)
 
     let turno = $state("")
@@ -97,6 +98,8 @@
     <div class="w-full h-max mt-4 p-4 pb-8 bg-base-300 rounded-md grid grid-cols-3 items-start gap-2 gap-y-6">
         {#if departamentos}
             {#each departamentos as departamento, i}
+                <DepartamentoModal form={ form } departamento={departamento}/>
+
                 <div class="stack h-full *:h-full animate-pop" style="--delay: {i*100}ms">
                     <div class="card shadow-md bg-base-100">
                         <div class="card-body">
@@ -106,7 +109,8 @@
                                 <div class="text-sm">
                                     <span><b>Personal:</b> {departamento.empleados}</span>
                                 </div>
-                                <button class="btn bg-base-content text-base-100">
+                                <button class="btn bg-base-content text-base-100" 
+                                onclick={() => { document.getElementById(`departameno_${departamento.id_departamento}_modal`).showModal() }}>
                                     Administrar
                                 </button>
                             </div>

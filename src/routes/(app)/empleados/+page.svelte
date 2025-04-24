@@ -87,7 +87,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <label class="input join-item flex items-center justify-start gap-2 focus:outline-0 outline-0">
                     <i class="fa-solid fa-user-tie"></i>
                     <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."
-                    oninput="{handleSearch()}"/>
+                    oninput="{handleSearch}"/>
 
                     <kbd class="kbd kbd-sm">ctrl</kbd>
                     <kbd class="kbd kbd-sm">K</kbd>
@@ -101,7 +101,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 </button>
             </div>
 
-            <FilterSelect bind:value={filter} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
+            <FilterSelect bind:value={filter} inputfn={handleSearch} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
                 {
                     name: "Cedula",
                     value: "cedula"
@@ -138,7 +138,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <div class="label">
                     <b class="label-text">Estado</b>
                 </div>
-                <FilterSelect bind:value={estado} name="Estado" type="dropdown-bottom" styles="" icon="fa-solid fa-user-check" options={[
+                <FilterSelect inputfn={handleSearch} bind:value={estado} name="Estado" type="dropdown-bottom" styles="" icon="fa-solid fa-user-check" options={[
                     {
                         name: "Activo",
                         value: "activo"
@@ -161,7 +161,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <div class="label">
                     <b class="label-text">Turnos</b>
                 </div>
-                <FilterSelect bind:value={turno} name="Turno" type="dropdown-bottom" styles="" icon="fa-solid fa-cloud-sun" options={[
+                <FilterSelect inputfn={handleSearch} bind:value={turno} name="Turno" type="dropdown-bottom" styles="" icon="fa-solid fa-cloud-sun" options={[
                     {
                         name: "Mañana",
                         value: "mañana"
@@ -176,7 +176,7 @@ let animate: 'animate-x' | 'animate--x'= $state('animate-x')
                 <div class="label">
                     <b class="label-text">Departamentos</b>
                 </div>
-                <FilterSelect bind:value={departamento} name="Departamento" type="dropdown-bottom" styles="" icon="fa-solid fa-briefcase" 
+                <FilterSelect inputfn={handleSearch} bind:value={departamento} name="Departamento" type="dropdown-bottom" styles="" icon="fa-solid fa-briefcase" 
                 options={
                     data.departamentos !== undefined ? 
                         data.departamentos.map((i) => {

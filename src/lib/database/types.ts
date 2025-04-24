@@ -78,7 +78,7 @@ export type EmpleadosTable = {
     edad: string
     nacionalidad: "Extranjero" | "Venezolano"
     fecha_nacimiento: ColumnType<Date, string, never>,
-    departamento: string,
+    departamento: string | null,
     cargo: string,
     turno: "Mañana" | "Tarde"
     estado: ColumnType<EstadosEmpleado, never, EstadosEmpleado>,

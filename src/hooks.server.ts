@@ -2,7 +2,7 @@ import { FormResponse } from "$lib/classes/responses.classes";
 import { checkSession, clearSession } from "$lib/handlers/login.handler";
 import logger from "$lib/utils/logger";
 import type { Handle } from "@sveltejs/kit";
-import { redirect } from "@sveltejs/kit";
+import { json, redirect } from "@sveltejs/kit";
 
 export const handle = (async ({ resolve, event }) => {
     // Logger Setting
@@ -15,6 +15,7 @@ export const handle = (async ({ resolve, event }) => {
     event.locals.response = new FormResponse(formatHref(event.url.href))
 
     if (!event.url.pathname.startsWith("/auth")) {
+        let { locals, url } = event;
         let cookie = event.cookies.get("sessionId")
         if (!cookie) redirect(307, "/auth");
 
@@ -25,13 +26,28 @@ export const handle = (async ({ resolve, event }) => {
             redirect(307, "/auth")
         }
 
-        if (event.url.pathname.startsWith("/admin")) {
-            if (session.data?.role !== "Administrador") {
-                redirect(301, "/")
-            }
-        }
+        checkRoute('/admin', url, session.data?.role)
         
         if (session.data) {
+            const requestMethod = event.request.method;
+            const contentType = event.request.headers.get('content-type');
+
+            const isFormSubmission = requestMethod === 'POST' &&
+                (contentType?.includes('application/x-www-form-urlencoded') ||
+                    contentType?.includes('multipart/form-data'));
+
+            if (isFormSubmission && url.pathname !== '/settings/account') {
+                if (session.data.role === "Usuario") {
+                    event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
+                    return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
+                }
+
+                if (session.data.role === "Editor" && !url.pathname.includes('asistencias')) {
+                    event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
+                    return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
+                }
+            }
+
             Reflect.deleteProperty(session.data, "contraseña")
             event.locals.usuario = session.data
             event.locals.log = event.locals.log.child({
@@ -44,6 +60,14 @@ export const handle = (async ({ resolve, event }) => {
     const response = await resolve(event);
     return response;
 }) satisfies Handle;
+
+function checkRoute(path: string, url: URL, role: string | undefined) {
+    if (url.pathname.startsWith(path)) {
+        if (role !== "Administrador") {
+            redirect(301, "/")
+        }
+    }
+}
 
 function formatHref(url: string): string {
     let lastIndex = url.lastIndexOf("/")

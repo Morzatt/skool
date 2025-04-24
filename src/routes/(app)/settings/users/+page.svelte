@@ -98,16 +98,16 @@
                                                 <b class="text-md">{usuario.usuario}</b>
                                                 <p class="text-sm {usuario.estado === "Activo" ? "text-green-700" : "text-red-700"}">{usuario.estado}</p>
                                             </td>
-                                            <td>
-                                                <form action="?/role" method="post" use:enhance class="flex items-center justify-center gap-3 max-w-fit">
+                                            <td class="z-40">
+                                                <form action="?/role" method="post" use:enhance class="flex items-center justify-center gap-3 max-w-fit z-40">
                                                     <input type="hidden" name="usuario" value="{usuario.usuario}">
 
-                                                    <div class="dropdown dropdown-bottom">
-                                                        <div tabindex="0" role="button" class="btn btn-sm w-max justify-between border border-base-content/60">
+                                                    <div class="relative dropdown dropdown-bottom z-40">
+                                                        <div tabindex="0" role="button" class="btn z-50 btn-sm w-max justify-between border border-base-content/60">
                                                             {capitalizeFirstLetter(usuario.role)}
                                                             <img src="{chevron}" alt="" class="rotate-[-90deg]">
                                                         </div>
-                                                        <ul class="dropdown-content menu bg-base-100 rounded-box w-52 p-2 shadow">
+                                                        <ul class="dropdown-content menu bg-base-100 z-40 rounded-box w-52 p-2 shadow">
                                                             {#if data.usuario.role.toLocaleLowerCase().includes('superadmin')}
                                                                 <li><input type="submit" name="role" value="Administrador"></li>                                                           
                                                             {/if}
