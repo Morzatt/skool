@@ -6,7 +6,6 @@
     import Alert from "$lib/components/Messages/Alert.svelte";
     import type { ActionData } from "./$types";
 
-
     let { empleado, form, encargado }: { encargado: {nombre: string, id: string}, empleado: any, form: ActionData } = $props()
 
     function add(node: HTMLElement, c: string[]) {

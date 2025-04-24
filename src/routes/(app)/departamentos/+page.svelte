@@ -53,16 +53,29 @@
 </script>
 
 <div class="*: w-full min-h-full lg:h-full relative">
-    <div class="w-full h-12
-        flex items-center justify-between flex-wrap">
+    <div class="w-full h-12">
         <h1 class="text-2xl font-semibold">Departamentos</h1>
+        <p>Cree y administre los distintos departamentos laborales de la institución.</p>
     </div>
 
     <Alert form={form} styles="absolute max-w-sm top-4 left-4"/>
 
-    <div class="w-full flex mt-5 flex-wrap items-center justify-between mb-4">
-        <div class="flex items-center gap-2 *:bg-base-content *:text-accent">
-            <button class="btn btn-sm" aria-label="all">
+    <div class="w-full flex mt-8 flex-wrap items-center justify-between mb-4">
+        <div class="flex items-end gap-12">
+            <div class="form-control">
+                <div class="label">
+                    <b class="label-text">Crear Departamento</b>
+                </div>
+                <button class="btn btn-sm btn-success mt-2
+                flex items-center justify-center
+                text-base-100"
+                onclick="{() => {document.getElementById('create_departamento_modal').showModal()}}">
+                    <i class="fa-solid fa-hammer"></i>
+                    <span>Nuevo</span>
+                </button>
+            </div>
+
+            <button class="btn btn-sm bg-base-content text-accent" aria-label="all">
                 <i class="fa-solid fa-globe"></i>
                 <span>Todas</span>
             </button>
@@ -85,18 +98,7 @@
 
     <div class="w-full h-max mt-4 rounded-md px-4 pb-3 flex items-end justify-between flex-wrap">
         <div class="flex items-center justify-start w-max h-full">
-            <div class="form-control">
-                <div class="label">
-                    <b class="label-text">Crear Departamento</b>
-                </div>
-                <button class="btn btn-sm btn-success mt-2
-                flex items-center justify-center
-                text-base-100"
-                onclick="{() => {document.getElementById('create_departamento_modal').showModal()}}">
-                    <i class="fa-solid fa-hammer"></i>
-                    <span>Nuevo</span>
-                </button>
-            </div>
+
         </div>
     </div>
 

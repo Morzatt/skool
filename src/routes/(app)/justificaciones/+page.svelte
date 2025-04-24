@@ -1,5 +1,5 @@
 <script lang="ts">
-    import FilterSelect from '../departamentos/FilterSelect.svelte';
+    import FilterSelect from '../empleados/FilterSelect.svelte';
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath, formatStringWithDots } from '$lib';
     import type { EstadosEmpleado } from '$lib/database/types';
@@ -10,7 +10,7 @@
     import { checkVigencia } from '$lib/utils/vigencia';
 
     let { data, form }: { data: PageData, form: ActionData & { fileId: string } } = $props();
-    let { justificaciones } = $state(data)
+    let { justificaciones } = $derived(data)
 
     let index = $state(0)
     let filter = $state("")
@@ -24,7 +24,7 @@
     let apellido: 'asc'|'desc' = $state('desc')
     let fecha: 'asc'|'desc' = $state('desc')
 
-    let url = $derived(`${basePath}/empleados?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
+    let url = $derived(`${basePath}/justificaciones?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -97,7 +97,7 @@
             <div class="join border border-base-content/60">
                 <label class="input join-item flex items-center justify-start gap-2 focus:outline-0 outline-0">
                     <i class="fa-solid fa-user-tie"></i>
-                    <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar empleados..."
+                    <input bind:value={search} type="search" class="outline-0 focus:outline-0" placeholder="Buscar justificaciones..."
                     oninput="{handleSearch}"/>
 
                     <kbd class="kbd kbd-sm">ctrl</kbd>
@@ -112,18 +112,18 @@
                 </button>
             </div>
 
-            <FilterSelect bind:value={filter} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
+            <FilterSelect inputfn={handleSearch} bind:value={filter} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
                 {
-                    name: "Cedula",
-                    value: "cedula"
+                    name: "Cédula del Empleado",
+                    value: "empleado"
                 },
                 {
-                    name: "Nombre",
-                    value: "primer_nombre"
+                    name: "Nombre del Empleado",
+                    value: "nombre_empleado"
                 },
                 {
-                    name: "Apellido",
-                    value: "primer_apellido"
+                    name: "Apellido del Empleado",
+                    value: "apellido_empleado"
                 }
             ]}/>
         </div>
@@ -201,7 +201,7 @@
             <!-- Tarjetas de Justificaciones -->
             <div class="w-full mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {#if justificaciones}
-                    {#each justificaciones as justificacion, i}
+                    {#each justificaciones as justificacion, i(justificacion)}
                         {@const vigencia = checkVigencia(justificacion.fecha_inicio, justificacion.fecha_finalizacion)}
 
                         <div class="border border-base-content/40 rounded-md

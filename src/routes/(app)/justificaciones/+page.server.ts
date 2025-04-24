@@ -10,9 +10,6 @@ export const load = (async ({locals, url}) => {
     let filter = url.searchParams.get('filter') as string;
     let search = url.searchParams.get('search') as string;
 
-    // let cedula: 'asc' | 'desc' = url.searchParams.get('cOrder') as "asc" | 'desc';
-
-
     let query = db
         .selectFrom('justificaciones')
         .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
@@ -34,19 +31,13 @@ export const load = (async ({locals, url}) => {
         .offset(index ? index : 0)
         .orderBy("justificaciones.created_at")
     
-    // switch (true) {
-    //     case cedula !== "asc":
-    //         query = query.orderBy(`empleados.cedula ${cedula ? cedula : "desc"}`);
-    // }
-
     let justificaciones;
 
-    // if (filter && search) {
-    //     query = query.where(`justificaciones.${filter}`, 'like', `%${search}%`)
-    // }
+    if (filter && search) {
+        query = query.where(`${filter}`, 'like', `%${search}%`)
+    }
 
     justificaciones = await async(query.execute(), log)
-    console.log(justificaciones)
 
     return {justificaciones};
 }) satisfies PageServerLoad;
