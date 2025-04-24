@@ -179,7 +179,7 @@
         {:else if content === "Justificaciones"} 
             <JustificacionesContent encargado={{nombre: `${usuario.nombre} ${usuario.apellido}`, id: usuario.usuario}} empleado={ empleado } justificaciones={ data.justificaciones } form={ form }/>
         {:else if content === "Asistencias"}
-            <AsistenciasContent empleado={ empleado }/>
+            <AsistenciasContent empleado={ empleado } asistencias={ data.asistencias || [] }/>
         {/if}
     </div>
 </div>

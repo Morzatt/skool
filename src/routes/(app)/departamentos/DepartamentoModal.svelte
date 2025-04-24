@@ -59,13 +59,13 @@
                         <div class="w-full flex flex-col gap-4 *:shadow-md">
                             <form action="?/edit" method="post" use:enhance class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
                                 <input type="hidden" name="id_departamento" value={departamento.id_departamento}>
-                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Nombre del Departamento</b>
                                     <button type={editNombre ? "submit" : "button"} id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
                                     onclick={()=>{ setTimeout(() => { editNombre = !editNombre }, 200) }}>
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </button>
-                                </div>
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </button>
+                                    </div>
                                 {#if editNombre}
                                     <label class="input input-bordered animate-pop mt-4 flex items-center justify-start gap-3">
                                         <i class="fa-regular fa-square-plus text-2xl"></i>
@@ -78,13 +78,13 @@
 
                             <form method="post" use:enhance action="?/edit" class="w-full h-full bg-base-100 rounded-lg p-3 hover:shadow-lg transition-all duration-200">
                                 <input type="hidden" name="id_departamento" value={departamento.id_departamento}>
-                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between">
                                     <b class="label-text text-base">Descripción del Departamento</b>
                                     <button type={editDescripcion ? "submit" : "button"} id="laboral_close" class="btn btn-sm btn-circle transition-colors duration-200" aria-label="edit-button"
                                     onclick={()=>{ setTimeout(() => { editDescripcion = !editDescripcion }, 200)}}>
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </button>
-                                </div>
+                                            <i class="fa-solid fa-pencil"></i>
+                                        </button>
+                                    </div>
                                 {#if editDescripcion}
                                     <fieldset class="fieldset w-full mt-4 animate-pop">
                                         <legend class="fieldset-legend font-bold text-sm mb-1">Descripcion del Departamento</legend>
@@ -205,7 +205,7 @@
                     <button onclick="{() => {setTimeout(()=>{}, 50)}}" type="submit" class="btn btn-sm btn-success px-6 mt-4 text-base-100">Añadir Empleado</button> 
                 </div>
             </form>
-        </div>
+        </div>     
     </div>
 </dialog>
 

@@ -76,7 +76,14 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 
     let departamentos = await async(db.selectFrom('departamentos').selectAll().execute(), log)
 
-    return { empleado, qr, justificaciones, personal, contacto, laboral, departamentos}
+    const asistencias = await async(
+        db.selectFrom('asistencias')
+        .selectAll()
+        .where('empleado', "=", cedula_empleado)
+        .execute()
+    , log)
+
+    return { empleado, qr, justificaciones, personal, contacto, laboral, departamentos, asistencias }
 });
 
 export const actions = {

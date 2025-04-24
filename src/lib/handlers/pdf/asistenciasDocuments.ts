@@ -32,8 +32,25 @@ const styles: StyleDictionary = {
  */
 export function createAsistenciaDocDefinition(asistencias: AsistenciaDepartamento[]): TDocumentDefinitions {
     // Path to logo image
-    const logoPath = path.join(process.cwd(), 'src/lib/handlers/pdf/images/logoColegio.jpg');
-    
+    // const logoPath = path.join(process.cwd(), 'src/lib/handlers/pdf/images/logoColegio.jpg');
+
+    let bannerGobernacionPath = path.join(process.cwd(), '/src/lib/handlers/pdf/images/bannerGobernacion.jpeg')
+    let logoPath = path.join(process.cwd(), '/src/lib/images/logo.jpg')
+
+
+    const header = [
+        {
+            columns: [
+                {
+                    image: bannerGobernacionPath,
+                    alignment: 'center',
+                    width: 600,
+                    margin: [0,0,0,20]
+                },
+            ]
+        }
+    ]
+
     // Build document content
     const content: any[] = [
         createHeader(logoPath),
@@ -43,6 +60,7 @@ export function createAsistenciaDocDefinition(asistencias: AsistenciaDepartament
     // Return document definition
     return {
         pageSize: "A4",
+        header: header,
         content,
         styles
     };
@@ -52,26 +70,32 @@ export function createAsistenciaDocDefinition(asistencias: AsistenciaDepartament
  * Creates the document header with logo and school information
  */
 function createHeader(logoPath: string) {
-    return {
-        columns: [
-            {
-                image: logoPath,
-                width: 100,
-                height: 60,
-                margin: [0, 0, 0, 0], 
-                alignment: "left",
-                    },
-                    {
-                        text: `República Bolivariana de Venezuela
-                                Ministerio del Poder Popular para la Educación
-                        U.E.N Colegio de Alexis`,
-                        width: "auto",
-                        bold: true,
-                        fontSize: 10,
-                        alignment: "center"
-                    },
-                ]
-    };
+    return [
+        {
+            image: logoPath,
+            alignment: 'center',
+            width: 100,
+            margin: [0, 20, 0, 0]
+        },
+        {
+            text: `REPUBLICA BOLIVARIANA DE VENEZUELA
+                        MINISTERIO DEL PODER POPULAR PARA LA EDUCACIÓN
+                        UNIDAD EDUCATIVA ESTADAL BOLIVARIANA “ANDRÉS BELLO”`,
+            bold: true,
+            alignment: "center",
+            margin: [0, 20, 0, 0],
+            lineHeight: 1.5
+        },
+
+        {
+            text: "LISTA DE ASISTENCIAS",
+            bold: true,
+            margin: [0, 30, 0, 0],
+            alignment: 'center',
+            decoration: 'underline'
+        },
+    ]
+
 }
 
 /**
@@ -98,7 +122,7 @@ function createTableHeader(text: string, margin: [number, number, number, number
                         table: {
             widths: ['*'],
             body: [
-                [{ text, alignment: 'center', fillColor: '#f4a460', color: 'white', bold: true }]
+                [{ text, alignment: 'center', fillColor: '#999999', color: 'white', bold: true }]
             ]
         },
         margin
@@ -114,11 +138,11 @@ function createDepartmentInfoTable(departamento: AsistenciaDepartamento) {
             widths: ['30%', '*'],
             body: [
                 [
-                    { text: 'Departamento', fillColor: '#f4a460', color: 'white', bold: true },
+                    { text: 'Departamento', fillColor: '#999999', color: 'white', bold: true },
                     { text: departamento.departamento }
                 ],
                 [
-                    { text: 'Lapso de Tiempo', fillColor: '#f4a460', color: 'white', bold: true },
+                    { text: 'Lapso de Tiempo', fillColor: '#999999', color: 'white', bold: true },
                     { text: departamento.lapso }
                 ]
             ]
