@@ -11,7 +11,7 @@
     import { checkVigencia } from '$lib/utils/vigencia';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
-    let { justificacion, comprobantes, encargado } = $derived(data)
+    let { justificacion, comprobantes, encargado, empleado } = $derived(data)
 
     const vigencia = $derived(checkVigencia(justificacion.fecha_inicio, justificacion.fecha_finalizacion))
 
@@ -101,7 +101,7 @@
                     <div class="w-full h-[calc(100%-(0.75rem+0.5rem+1rem))]">
                         <div class="w-full bg-base-200 rounded-md p-4">
                             <div class="flex flex-col items-center justify-center relative">
-                                <i class="text-xs absolute top-0 right-0">{new Date(justificacion.created_at).toLocaleDateString()}</i>
+                                <i class="text-xs absolute top-0 right-0">{new Date(justificacion.created_at).toLocaleDateString('es')}</i>
 
                                 <button class="rounded-md
                                             px-4 py-1 group
@@ -169,19 +169,19 @@
                                 flex items-center justify-start gap-8">
                             <div>
                                 <b>Cedula</b>
-                                <p>{justificacion.nacionalidad == "Extranjero" ? "E-" : "V-"}{justificacion.cedula} </p>
+                                <p>{empleado.nacionalidad == "Extranjero" ? "E-" : "V-"}{empleado.cedula} </p>
                             </div>
                             <div>
                                 <b>Empleado</b>
-                                <p>{justificacion.primer_nombre} {justificacion.primer_apellido}</p>
+                                <p>{empleado.primer_nombre} {empleado.primer_apellido}</p>
                             </div>
                              <div>
                                 <b>Turno</b>
-                                <p>{justificacion.turno} </p>
+                                <p>{empleado.turno} </p>
                             </div>                           
                              <div>
                                 <b>Estado</b>
-                                <p class="info-info {asignColor(justificacion.estado)} px-3 rounded-xl font-bold">{justificacion.estado} </p>
+                                <p class="info-info {asignColor(empleado.estado)} px-3 rounded-xl font-bold">{empleado.estado} </p>
                             </div>  
                         </div>
 

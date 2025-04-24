@@ -20,7 +20,6 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     let justificacion = await async(
         db
             .selectFrom('justificaciones')
-            .innerJoin('empleados', 'empleados.cedula', 'justificaciones.empleado')
             .selectAll()
             .where("justificaciones.id", "=", id_justificacion)
             .executeTakeFirst()
@@ -29,6 +28,8 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
     if (!justificacion) {
         error(404, 'La justificacion no existe')
     }
+
+    let empleado = await async(empleadosRepository.getById(justificacion.empleado), log)
 
     let encargado = await async(
         db.selectFrom('usuarios')
@@ -45,7 +46,7 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
             .execute()
         , log)
 
-    return { justificacion, comprobantes, encargado }
+    return { justificacion, comprobantes, encargado, empleado }
 });
 
 export const actions = {

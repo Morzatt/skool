@@ -29,7 +29,7 @@
 </script>
 
 {#snippet card()}
-    <div class="card relative bg-white w-[22rem] shadow-sm border border-base-content">
+    <div class="card relative bg-white w-[22rem] border border-base-content">
         <div class="p-4 bg-[--color] absolute top-2 left-[50%] translate-x-[-50%] rounded-full" style="--color: {bgColor}"></div>
 
         <div class="p-1 bg-[--color] absolute top-2 left-2 rounded-full" style="--color: {bgColor}">
@@ -91,7 +91,10 @@
                 </div>
             </div>
 
-            {@render card()}
+            <div id="IDCard">
+                {@render card()}
+            </div>
+
 
 
             <button onclick="{downloadId}" type="submit" 

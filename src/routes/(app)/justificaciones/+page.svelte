@@ -142,74 +142,74 @@
     </div>
 
     <div class="w-full min-h-[30rem] mt-10 pb-12">
-        {#if justificaciones && justificaciones.length > 0}
-            <!-- Filtros y vista -->
-            <div class="w-full flex flex-wrap items-center justify-between mb-4">
-                <div class="flex items-center gap-2 *:bg-base-content *:text-accent">
-                    <button class="btn btn-sm" aria-label="all">
-                        <i class="fa-solid fa-globe"></i>
-                        <span>Todas</span>
-                    </button>
-                    <button class="btn btn-sm btn-ghost" aria-label="vigente">
-                        <i class="fa-solid fa-stopwatch"></i>
-                        <span>Vigentes</span>
-                    </button>
-                    <button class="btn btn-sm btn-ghost" aria-label="pendiente">
-                        <i class="fa-solid fa-clock"></i>
-                        <span>Pendientes</span>
-                    </button>
-                    <button class="btn btn-sm btn-ghost" aria-label="expirado">
-                        <i class="fa-solid fa-calendar-xmark"></i>
-                        <span>Expiradas</span>
-                    </button>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <span class="text-sm">Recientes</span>
-                    <i class="fa-solid fa-angle-down"></i>
-                    
-                    <div class="flex border border-base-300 rounded-md overflow-hidden ml-4">
-                        <button class="btn btn-sm btn-ghost btn-square">
-                            <i class="fa-solid fa-table-cells"></i>
-                        </button>
-                        <button class="btn btn-sm bg-base-200 btn-square">
-                            <i class="fa-solid fa-list"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="w-full h-max rounded-md px-4 flex items-end justify-between flex-wrap">
-                <div class="form-control ">
-                    <div class="label">
-                        <b class="label-text">Imprimir Lista</b>
-                    </div>
-
-                    <form method="post" action='?/printListaEmpleados' use:enhance>
-                        <button class="btn btn-sm bg-base-content text-base-100 px-6 rounded-xl" aria-label="print-list">
-                            <i class="fa-solid fa-print"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="form-control">
-                    <div class="label justify-end px-4">
-                        <!-- <b class="label-text">Pág. {index/10 === 0 ? 1 : index/10} de {Math.round(total/10)}</b> -->
-                    </div>
-                    <div class="join *:btn-sm *:border *:border-base-content">
-                        <button onclick={indexHandler.decrementIndex} class="join-item btn rounded-md" aria-label="decrement-index">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-
-                        <button onclick={() => { setIndex(1) }} class="join-item btn-disabled">...</button>
-
-                        <button onclick={indexHandler.incrementIndex} class="join-item btn rounded-md" aria-label="increment-index">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
+        <!-- Filtros y vista -->
+        <div class="w-full flex flex-wrap items-center justify-between mb-4">
+            <div class="flex items-center gap-2 *:bg-base-content *:text-accent">
+                <button class="btn btn-sm" aria-label="all">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>Todas</span>
+                </button>
+                <button class="btn btn-sm btn-ghost" aria-label="vigente">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span>Vigentes</span>
+                </button>
+                <button class="btn btn-sm btn-ghost" aria-label="pendiente">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Pendientes</span>
+                </button>
+                <button class="btn btn-sm btn-ghost" aria-label="expirado">
+                    <i class="fa-solid fa-calendar-xmark"></i>
+                    <span>Expiradas</span>
+                </button>
             </div>
             
+            <div class="flex items-center gap-2">
+                <span class="text-sm">Recientes</span>
+                <i class="fa-solid fa-angle-down"></i>
+                
+                <div class="flex border border-base-300 rounded-md overflow-hidden ml-4">
+                    <button class="btn btn-sm btn-ghost btn-square">
+                        <i class="fa-solid fa-table-cells"></i>
+                    </button>
+                    <button class="btn btn-sm bg-base-200 btn-square">
+                        <i class="fa-solid fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full h-max rounded-md px-4 flex items-end justify-between flex-wrap">
+            <div class="form-control ">
+                <div class="label">
+                    <b class="label-text">Imprimir Lista</b>
+                </div>
+
+                <form method="post" action='?/printListaEmpleados' use:enhance>
+                    <button class="btn btn-sm bg-base-content text-base-100 px-6 rounded-xl" aria-label="print-list">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="form-control">
+                <div class="label justify-end px-4">
+                    <!-- <b class="label-text">Pág. {index/10 === 0 ? 1 : index/10} de {Math.round(total/10)}</b> -->
+                </div>
+                <div class="join *:btn-sm *:border *:border-base-content">
+                    <button onclick={indexHandler.decrementIndex} class="join-item btn rounded-md" aria-label="decrement-index">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <button onclick={() => { setIndex(1) }} class="join-item btn-disabled">...</button>
+
+                    <button onclick={indexHandler.incrementIndex} class="join-item btn rounded-md" aria-label="increment-index">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {#if justificaciones && justificaciones.length > 0}            
             <!-- Tarjetas de Justificaciones -->
             <div class="w-full mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {#if justificaciones}
