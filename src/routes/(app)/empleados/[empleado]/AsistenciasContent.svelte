@@ -219,22 +219,10 @@
 </script>
 
 <div class="w-full animate-pop-delayed">
-    <!-- Profile and Stats Section -->
+    <!-- ESTADISTICAS -->
     <div class="w-full flex flex-col sm:flex-row gap-5 items-start mb-6">
-        <!-- Profile Card -->
-        <div class="bg-base-200 rounded-lg shadow-md p-4 flex items-center gap-4 w-full sm:w-auto border border-base-content/10">
-            <div class="avatar">
-                <i class="fa-solid fa-face-smile text-6xl"></i>
-            </div>
-            <div>
-                <h3 class="font-bold">{empleado.primer_nombre} {empleado.primer_apellido}</h3>
-                <p class="text-sm text-base-content/70">{empleado.cargo || 'Sin cargo'}</p>
-                <p class="text-xs text-base-content/50">{empleado.nacionalidad === "Venezolano" ? "V" : "E"}-{formatStringWithDots(empleado.cedula)}</p>
-            </div>
-        </div>
-        
         <!-- Stats Cards -->
-        <div class="stats stats-vertical lg:stats-horizontal shadow bg-base-100 border border-base-content/10 w-full">
+        <div class="stats stats-vertical lg:stats-horizontal shadow bg-base-100 border border-base-content/30 w-full">
             <div class="stat">
                 <div class="stat-title">Total Días</div>
                 <div class="stat-value text-primary">{attendanceStats.totalDays}</div>
@@ -260,101 +248,103 @@
             </div>
         </div>
     </div>
-    
-    <!-- Attendance Calendar Section -->
-    <div class="w-full border border-base-content/10 rounded-lg p-4 bg-base-100 shadow-md mb-6">
-        <h3 class="font-bold text-lg mb-4"><i class="fa-solid fa-calendar-days"></i> Asistencia de {months[currentMonth]} {currentYear}</h3>
-        
-        <div class="grid grid-cols-7 gap-1 mb-4">
-            <div class="text-center font-medium text-sm text-base-content/70">Dom</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Lun</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Mar</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Mié</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Jue</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Vie</div>
-            <div class="text-center font-medium text-sm text-base-content/70">Sáb</div>
+
+    <div class="flex gap-2 items-start justify-between">
+        <!-- ASISTENCIA DEL MES-->
+        <div class="w-2/5 border border-base-content/30 rounded-lg p-4 bg-base-100 shadow-md mb-6">
+            <h3 class="font-bold text-lg mb-4"><i class="fa-solid fa-calendar-days"></i> Asistencia de {months[currentMonth]} {currentYear}</h3>
+            
+            <div class="grid grid-cols-7 gap-1 mb-4">
+                <div class="text-center font-medium text-sm text-base-content/70">Dom</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Lun</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Mar</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Mié</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Jue</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Vie</div>
+                <div class="text-center font-medium text-sm text-base-content/70">Sáb</div>
+            </div>
+            
+            {#each calendarGrid as week}
+                <div class="grid grid-cols-7 gap-1 mb-1">
+                    {#each week as day}
+                        <div class="aspect-square flex items-center justify-center rounded-lg text-sm relative
+                            {day.status === 'empty' ? 'bg-transparent' :
+                            day.status === 'present' ? 'bg-success/20 text-success-content' :
+                            day.status === 'absent' ? 'bg-error/20 text-error-content' :
+                            day.status === 'late' ? 'bg-warning/20 text-warning-content' :
+                            day.status === 'halfday' ? 'bg-info/20 text-info-content' :
+                            'bg-base-200/50 text-base-content/50'}">
+                            {day.day}
+                            {#if day.record}
+                                <div class="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-primary"></div>
+                            {/if}
+                        </div>
+                    {/each}
+                </div>
+            {/each}
+            
+            <!-- Calendar Legend -->
+            <div class="flex flex-wrap gap-3 mt-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-success/50"></div>
+                    <span class="text-xs">Presente</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-error/50"></div>
+                    <span class="text-xs">Ausente</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-warning/50"></div>
+                    <span class="text-xs">Tardanza</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-info/50"></div>
+                    <span class="text-xs">Medio Día</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-base-200"></div>
+                    <span class="text-xs">Fin de Semana</span>
+                </div>
+            </div>
         </div>
         
-        {#each calendarGrid as week}
-            <div class="grid grid-cols-7 gap-1 mb-1">
-                {#each week as day}
-                    <div class="aspect-square flex items-center justify-center rounded-lg text-sm relative
-                        {day.status === 'empty' ? 'bg-transparent' :
-                        day.status === 'present' ? 'bg-success/20 text-success-content' :
-                        day.status === 'absent' ? 'bg-error/20 text-error-content' :
-                        day.status === 'late' ? 'bg-warning/20 text-warning-content' :
-                        day.status === 'halfday' ? 'bg-info/20 text-info-content' :
-                        'bg-base-200/50 text-base-content/50'}">
-                        {day.day}
-                        {#if day.record}
-                            <div class="absolute bottom-1 right-1 w-1 h-1 rounded-full bg-primary"></div>
-                        {/if}
+        <!-- ASISTENCIAS DE TODOS LOS MESES -->
+        <div class="w-3/5 border border-base-content/30 rounded-lg p-4 bg-base-100 shadow-md mb-6">
+            <h3 class="font-bold text-lg mb-4"><i class="fa-solid fa-calendar-week"></i> Vista Anual de Asistencia</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {#each months as month, index}
+                    <div class="p-3 border border-base-content/30 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors duration-200 cursor-pointer">
+                        <h4 class="font-medium mb-2">{month}</h4>
+                        <div class="grid grid-cols-7 gap-[2px]">
+                            {#each Array(21) as _, i}
+                                {@const day = i + 1}
+                                {@const date = new Date(currentYear, index, day)}
+                                {@const hasRecord = asistencias.some(a => {
+                                    const aDate = new Date(a.fecha);
+                                    return aDate.getDate() === day && 
+                                        aDate.getMonth() === index && 
+                                        aDate.getFullYear() === currentYear;
+                                })}
+                                {@const isValidDay = day <= new Date(currentYear, index + 1, 0).getDate()}
+                                {@const isPastDate = date <= new Date()}
+                                
+                                <div class="aspect-square w-full rounded-sm
+                                    {!isValidDay ? 'bg-transparent' :
+                                    hasRecord ? 'bg-success/30' : 
+                                    !isPastDate ? 'bg-base-300/50' :
+                                    'bg-error/30'}">
+                                </div>
+                            {/each}
+                        </div>
                     </div>
                 {/each}
             </div>
-        {/each}
-        
-        <!-- Calendar Legend -->
-        <div class="flex flex-wrap gap-3 mt-4">
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-success/50"></div>
-                <span class="text-xs">Presente</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-error/50"></div>
-                <span class="text-xs">Ausente</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-warning/50"></div>
-                <span class="text-xs">Tardanza</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-info/50"></div>
-                <span class="text-xs">Medio Día</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-base-200"></div>
-                <span class="text-xs">Fin de Semana</span>
-            </div>
         </div>
     </div>
-    
-    <!-- Monthly Grid View for All Months -->
-    <div class="w-full border border-base-content/10 rounded-lg p-4 bg-base-100 shadow-md mb-6">
-        <h3 class="font-bold text-lg mb-4"><i class="fa-solid fa-calendar-week"></i> Vista Anual de Asistencia</h3>
-        
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {#each months as month, index}
-                <div class="p-3 border border-base-content/10 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors duration-200 cursor-pointer">
-                    <h4 class="font-medium mb-2">{month}</h4>
-                    <div class="grid grid-cols-7 gap-[2px]">
-                        {#each Array(21) as _, i}
-                            {@const day = i + 1}
-                            {@const date = new Date(currentYear, index, day)}
-                            {@const hasRecord = asistencias.some(a => {
-                                const aDate = new Date(a.fecha);
-                                return aDate.getDate() === day && 
-                                       aDate.getMonth() === index && 
-                                       aDate.getFullYear() === currentYear;
-                            })}
-                            {@const isValidDay = day <= new Date(currentYear, index + 1, 0).getDate()}
-                            {@const isPastDate = date <= new Date()}
-                            
-                            <div class="aspect-square w-full rounded-sm
-                                {!isValidDay ? 'bg-transparent' :
-                                hasRecord ? 'bg-success/30' : 
-                                !isPastDate ? 'bg-base-300/50' :
-                                'bg-error/30'}">
-                            </div>
-                        {/each}
-                    </div>
-                </div>
-            {/each}
-        </div>
-    </div>
-    
-    <!-- Recent Attendance Records -->
-    <div class="w-full border border-base-content/10 rounded-lg p-4 bg-base-100 shadow-md">
+
+    <!-- ASISTENCIAS RECIENTES -->
+    <div class="w-full border border-base-content/30 rounded-lg p-4 bg-base-100 shadow-md mb-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="font-bold text-lg"><i class="fa-solid fa-clock-rotate-left"></i> Registro de Asistencias Recientes</h3>
             
@@ -368,7 +358,7 @@
             </div>
         </div>
         
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto max-h-[30rem] overflow-y-auto">
             <table class="table table-zebra table-sm">
                 <thead>
                     <tr>
@@ -410,6 +400,8 @@
             </table>
         </div>
     </div>
+
+
 </div>
 
 <style lang="postcss">

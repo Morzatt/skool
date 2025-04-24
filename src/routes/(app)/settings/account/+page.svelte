@@ -53,7 +53,7 @@
         <Alert form={form} styles="absolute right-4 top-4 max-w-sm"/>
 
         <div class="w-full mb-4"><h3 class="text-3xl font-bold">Mi Perfil</h3></div>
-        <div class="w-full h-full p-2
+        <div class="w-full h-full p-2 animate-pop
                     flex items-center justify-between
                     bg-base-300 rounded-md">
 
@@ -117,7 +117,7 @@
             </div>
         </div>
 
-        <div class="w-full h-full bg-base-300 rounded-md p-6">
+        <div class="w-full h-full bg-base-300 rounded-md p-6 animate-pop-delayed" style="--delay: 100ms;">
             <h3 class="text-xl font-bold">Configurar Perfil</h3>
 
             <!-- <form action="?/editUser" method="POST" use:enhance class="w-full px-3 mt-4">
