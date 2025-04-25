@@ -5,6 +5,7 @@ import type { PageServerLoad } from './$types';
 import { departamentosRepository, empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { generateUUID } from '$lib/utils/generateUUID';
 import type { Departamento, Empleado } from '$lib/database/types';
+import { departamentosSchema, newValidationFailObject, validateObject } from '$lib/utils/validators';
 
 export const load = (async ({ url, locals }) => {
     let { log, response } = locals
@@ -45,16 +46,20 @@ export const actions = {
     create: async ({ locals, request }) => {
         let { log, response } = locals
         let data = await request.formData()
-        let nombre_departamento = data.get("nombre_departamento") as string
-        let descripcion = data.get('descripcion') as string
-        let icon = data.get('departamento_icon') as string
+
+        let dep = {
+            nombre_departamento: data.get("nombre_departamento") as string,
+            descripcion: data.get('descripcion') as string,
+            icon: data.get('departamento_icon') as string,
+        }
+
+        const validationResult = validateObject(dep, departamentosSchema)
+        if (!validationResult.success) return newValidationFailObject(validationResult.error, log);
 
         await async(
             departamentosRepository.create({
-                nombre_departamento: nombre_departamento,
+                ...dep,
                 id_departamento: generateUUID(),
-                descripcion: descripcion,
-                icon: icon
         }), log)
     },
 
@@ -79,8 +84,19 @@ export const actions = {
         let id_departamento = data.get('id_departamento') as string
         let cedula_empleado = data.get('cedula_empleado') as string
 
+        let empleado = await async(empleadosRepository.getById(cedula_empleado), log)
+
+        if (!empleado) {
+            return response.error('El empleado no existe.')
+        }
+
+        if (empleado.departamento) {
+            let departamento = await async(departamentosRepository.getById(empleado.departamento), log)
+            return response.error(`El empleado ya se encuentra añadido al departamento ${departamento!.nombre_departamento}`)
+        }
+
         await async(empleadosRepository.update({ departamento: id_departamento }, cedula_empleado), log)
-        return response.success('Departamento eliminado correctamente')
+        return response.success('Departamento añadido correctamente')
     },
 
     edit: async ({locals, request}) => {
@@ -89,6 +105,10 @@ export const actions = {
         let id = data.get('id_departamento') as string
         let nombre = data.get('nombre_departamento') as string
         let descripcion = data.get('descripcion') as string
+
+        if (!nombre || !descripcion) {
+            return 
+        }
 
         if (nombre) {
             await async(

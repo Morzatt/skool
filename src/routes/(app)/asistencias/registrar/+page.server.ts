@@ -63,7 +63,7 @@ export const actions = {
             for (let j of justificacionesEmpleado) {
                 let vigencia = checkVigencia(j.fecha_inicio, j.fecha_inicio)
                 if (vigencia === "Vigente") {
-                    return response.error('Existe una justificacion bloqueando la asistencia')
+                    return response.error('El empleado posee una justificacion vigente.')
                 }
             }
         }

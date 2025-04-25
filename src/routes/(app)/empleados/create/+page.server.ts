@@ -5,6 +5,9 @@ import { db } from '$lib/database';
 import type { EmpleadoInsertable, EstadosEmpleado } from '$lib/database/types';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { calculateTime, getAge } from '$lib/utils/getAge';
+import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
+import { empleadoSchema, validateObject } from '$lib/utils/validators';
+import { newValidationFailObject } from '$lib/utils/validators';
 
 export const load = (async ({locals, url}) => {
     let { log } = locals
@@ -34,9 +37,20 @@ export const actions = {
         let fecha_ingreso = data.get('fecha_ingreso') as string
         let tiempo_servicio = calculateTime(fecha_ingreso)
 
+        const validationResult = validateObject(empleado, empleadoSchema)
+        
+        if (!validationResult.success) {
+            // Return validation errors
+            return newValidationFailObject(validationResult.error, log)
+        }
+
 
         await async(empleadosRepository.create({
             ...empleado,
+            primer_nombre: capitalizeFirstLetter(empleado.primer_nombre),
+            segundo_nombre: capitalizeFirstLetter(empleado.segundo_nombre),
+            primer_apellido: capitalizeFirstLetter(empleado.primer_apellido),
+            segundo_apellido: capitalizeFirstLetter(empleado.segundo_apellido),
             edad: getAge(empleado.fecha_nacimiento),
         }) ,log)
 

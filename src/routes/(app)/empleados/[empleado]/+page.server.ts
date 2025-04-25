@@ -4,9 +4,16 @@ import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/database';
 import QRCode from "qrcode"
-import { departamentosRepository, empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
-import type { InfoContactoInsertable } from '$lib/database/types';
+
+import { 
+    validateObject, 
+    newValidationFailObject, 
+    personalInfoSchema,
+    contactoInfoSchema,
+    laboralInfoSchema,
+    justificacionSchema
+} from '$lib/utils/validators';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response, usuario } = locals;
@@ -118,155 +125,209 @@ export const actions = {
 
     personal: async ({ request, locals }) => {
         let { log, response } = locals;
-        let data = await request.formData()
+        let data = await request.formData();
 
-        let personal = await async(db.selectFrom('info_personal').selectAll().where('info_personal.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+        // Create object for validation
+        const personalData = {
+            id_empleado: data.get('id_empleado') as string,
+            estado_civil: data.get('estado_civil') as string,
+            nivel_academico: data.get('nivel_academico') as string,
+        };
+
+        // Validate data
+        const validationResult = validateObject(personalData, personalInfoSchema);
+        
+        if (!validationResult.success) {
+            return newValidationFailObject(validationResult.error, log);
+        }
+
+        // Proceed with database operations
+        let personal = await async(db.selectFrom('info_personal').selectAll().where('info_personal.id_empleado', "=", personalData.id_empleado).executeTakeFirst(), log);
 
         if (!personal) {
             await async(
                 db
                 .insertInto('info_personal')
-                .values({
-                    id_empleado: data.get("id_empleado") as string,
-                    estado_civil: data.get('estado_civil') as string,
-                    nivel_academico: data.get('nivel_academico') as string,
-                })
+                .values(personalData)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información personal registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_personal')
                 .set({
-                    estado_civil: data.get('estado_civil') as string,
-                    nivel_academico: data.get('nivel_academico') as string,
+                    estado_civil: personalData.estado_civil,
+                    nivel_academico: personalData.nivel_academico,
                 })
-                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .where("id_empleado", '=', personalData.id_empleado)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información personal actualizada correctamente');
         }
     },
 
     contacto: async ({ request, locals }) => {
         let { log, response } = locals;
-        let data = await request.formData()
+        let data = await request.formData();
 
-        let contacto = await async(db.selectFrom('info_contacto').selectAll().where('info_contacto.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+        // Create object for validation
+        const contactoData = {
+            id_empleado: data.get('id_empleado') as string,
+            direccion_habitacion: data.get('direccion_habitacion') as string,
+            telefono_habitacion: data.get('telefono_habitacion') as string,
+            telefono_personal: data.get('telefono_personal') as string,
+            correo_electronico: data.get('correo_electronico') as string,
+        };
+
+        // Validate data
+        const validationResult = validateObject(contactoData, contactoInfoSchema);
+        
+        if (!validationResult.success) {
+            return newValidationFailObject(validationResult.error, log);
+        }
+
+        // Proceed with database operations
+        let contacto = await async(db.selectFrom('info_contacto').selectAll().where('info_contacto.id_empleado', "=", contactoData.id_empleado).executeTakeFirst(), log);
 
         if (!contacto) {
             await async(
                 db
                 .insertInto('info_contacto')
-                .values({
-                    id_empleado: data.get("id_empleado") as string,
-                    direccion_habitacion: data.get('direccion_habitacion') as string,
-                    telefono_habitacion: data.get('telefono_habitacion') as string,
-                    telefono_personal: data.get('telefono_personal') as string,
-                    correo_electronico: data.get('correo_electronico') as string,
-                })
+                .values(contactoData)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información de contacto registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_contacto')
                 .set({
-                    direccion_habitacion: data.get('direccion_habitacion') as string,
-                    telefono_habitacion: data.get('telefono_habitacion') as string,
-                    telefono_personal: data.get('telefono_personal') as string,
-                    correo_electronico: data.get('correo_electronico') as string,
+                    direccion_habitacion: contactoData.direccion_habitacion,
+                    telefono_habitacion: contactoData.telefono_habitacion,
+                    telefono_personal: contactoData.telefono_personal,
+                    correo_electronico: contactoData.correo_electronico,
                 })
-                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .where("id_empleado", '=', contactoData.id_empleado)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información de contacto actualizada correctamente');
         }
     },
 
     laboral: async ({ request, locals }) => {
         let { log, response } = locals;
-        let data = await request.formData()
-        let cedula_empleado = data.get('id_empleado') as string
+        let data = await request.formData();
+        
+        // Create object for validation
+        const laboralData = {
+            id_empleado: data.get('id_empleado') as string,
+            departamento: data.get('departamento') as string,
+            cargo: data.get('cargo') as string,
+            hora_entrada: data.get('hora_entrada') as string,
+            hora_salida: data.get('hora_salida') as string,
+            turno: data.get('turno') as "Mañana" | "Tarde",
+        };
 
-        let laboral = await async(db.selectFrom('info_laboral').selectAll().where('info_laboral.id_empleado', "=", data.get('id_empleado') as string).executeTakeFirst(), log)
+        // Validate data
+        const validationResult = validateObject(laboralData, laboralInfoSchema);
+        
+        if (!validationResult.success) {
+            return newValidationFailObject(validationResult.error, log);
+        }
+
+        // Additional validation for time
+        if (!laboralData.hora_entrada || !laboralData.hora_salida) {
+            return response.error('No se han especificado horas de entrada/salida');
+        }
+
+        if (parseInt(laboralData.hora_entrada.replaceAll(":", "")) > parseInt(laboralData.hora_salida.replaceAll(":", ""))) {
+            return response.error('La hora de entrada es superior a la hora de salida.');
+        }
+
+        // Check if employee exists
         let empleado = await async(
             db
             .selectFrom('empleados')
             .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
             .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo'])
-            .where('empleados.cedula', '=', cedula_empleado)
+            .where('empleados.cedula', '=', laboralData.id_empleado)
             .executeTakeFirst()
-        , log)
+        , log);
 
         if (!empleado) {
-            return response.error('El empleado no existe')
+            return response.error('El empleado no existe');
         }
 
-        if (data.get('departamento') !== empleado.departamento) { 
+        // Update department and position if needed
+        if (laboralData.departamento !== empleado.departamento) { 
             await async(
                 db.updateTable('empleados')
-                .set({departamento: data.get('departamento') as string})
-                .where('empleados.cedula', '=', cedula_empleado)
+                .set({departamento: laboralData.departamento})
+                .where('empleados.cedula', '=', laboralData.id_empleado)
                 .execute()
-            , log)
+            , log);
         }
 
-        if (data.get('cargo') !== empleado.cargo) {
+        if (laboralData.cargo !== empleado.cargo) {
             await async(
                 db.updateTable('empleados')
-                .set({cargo: data.get('cargo') as string})
-                .where('empleados.cedula', '=', cedula_empleado)
+                .set({cargo: laboralData.cargo})
+                .where('empleados.cedula', '=', laboralData.id_empleado)
                 .execute()
-            , log)
+            , log);
         }
         
-        let hora_entrada = data.get('hora_entrada') as string
-        let hora_salida = data.get('hora_salida') as string
-
-        if (!hora_entrada || !hora_salida) {
-            return response.error('No se han especificado horas de entrada/salida')
-        }
-
-        if (parseInt(hora_entrada.replaceAll(":", "")) > parseInt(hora_salida.replaceAll(":", ""))) {
-            return response.error('La hora de entrada es superior a la hora de salida.')
-        }
+        // Update or insert labor info
+        let laboral = await async(db.selectFrom('info_laboral').selectAll().where('info_laboral.id_empleado', "=", laboralData.id_empleado).executeTakeFirst(), log);
 
         if (!laboral) {
             await async(
                 db
                 .insertInto('info_laboral')
                 .values({
-                    id_empleado: data.get("id_empleado") as string,
-                    hora_entrada: hora_entrada,
-                    hora_salida: hora_salida
+                    id_empleado: laboralData.id_empleado,
+                    hora_entrada: laboralData.hora_entrada,
+                    hora_salida: laboralData.hora_salida
                 })
                 .execute()
-            , log)
+            , log);
+            
             await async(
                 db
                 .updateTable('empleados')
                 .set({
-                    turno: data.get('turno') as "Mañana" | "Tarde"
+                    turno: laboralData.turno
                 })
-                .where('empleados.cedula', '=', data.get("id_empleado") as string)
+                .where('empleados.cedula', '=', laboralData.id_empleado)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información laboral registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_laboral')
                 .set({
-                    hora_entrada: data.get('hora_entrada') as string,
-                    hora_salida: data.get('hora_salida') as string,
+                    hora_entrada: laboralData.hora_entrada,
+                    hora_salida: laboralData.hora_salida,
                 })
-                .where("id_empleado", '=', data.get("id_empleado") as string)
+                .where("id_empleado", '=', laboralData.id_empleado)
                 .execute()
-            , log)
+            , log);
+            
             await async(
                 db
                 .updateTable('empleados')
                 .set({
-                    turno: data.get('turno') as "Mañana" | "Tarde"
+                    turno: laboralData.turno
                 })
-                .where('empleados.cedula', '=', data.get("id_empleado") as string)
+                .where('empleados.cedula', '=', laboralData.id_empleado)
                 .execute()
-            , log)
+            , log);
+            
+            return response.success('Información laboral actualizada correctamente');
         }
     },
 

@@ -1,12 +1,17 @@
 import { db } from "$lib/database";
-import { comprobantesRepository, justificacionesRepository, type JustificacionesRepositoryInterface } from "$lib/database/repositories/justificaciones.repository";
-import type { ComprobanteInsertable, EstadosEmpleado, JustificacionInsertable } from "$lib/database/types";
+import { comprobantesRepository, justificacionesRepository } from "$lib/database/repositories/justificaciones.repository";
+import type { JustificacionInsertable } from "$lib/database/types";
 import async, { handleError } from "$lib/utils/asyncHandler";
-import { writeFile, writeFileSync } from 'fs';
+import { writeFile } from 'fs';
 import { fail, type RequestEvent } from "@sveltejs/kit";
-import { genSaltSync, hashSync } from "bcrypt";
+import { genSaltSync } from "bcrypt";
 import { randomUUID } from "crypto";
 import { empleadosRepository } from "$lib/database/repositories/empleados.repository";
+import { 
+    validateObject, 
+    newValidationFailObject,
+    justificacionSchema 
+} from '$lib/utils/validators';
 
 export async function createJustificacionHandler(
     { request, locals }: RequestEvent,
@@ -27,18 +32,29 @@ export async function createJustificacionHandler(
         created_by: data.get('created_by') as string
     } satisfies Omit<JustificacionInsertable, "id">
 
-    let empleado = await async(empleadosRepository.getById(justificacion.empleado), log)
+    // Validate the justificacion object
+    const validationResult = validateObject(justificacion, justificacionSchema);
+    
+    if (!validationResult.success) {
+        return newValidationFailObject(validationResult.error, log);
+    }
 
+    // Additional business logic validation
+    const fechaInicio = new Date(justificacion.fecha_inicio);
+    const fechaFin = new Date(justificacion.fecha_finalizacion);
+    
+    if (fechaInicio > fechaFin) {
+        return response.error('La fecha de inicio debe ser anterior a la fecha de finalización.');
+    }
+
+    const empleado = await async(empleadosRepository.getById(justificacion.empleado), log);
+    
     if (!empleado) {
-        return response.error('El empleado no existe')
+        return response.error('El empleado no existe.');
     }
 
     if (empleado.estado === "Inhabilitado" || empleado.estado === "Retirado") {
         return response.error('El empleado se encuentra inhabilitado dentro del sistema')
-    }
-
-    if (justificacion.fecha_inicio > justificacion.fecha_finalizacion) {
-        return fail(401, response.error('Malformación de Datos: la fecha de inicio es mayor que la de finalizacion'))       
     }
 
     for (let i of comprobantes) {

@@ -2,6 +2,7 @@
     import { basePath, formatStringWithDots } from '$lib';
     import type { ActionData, PageData } from './$types';
     import chevron from "$lib/images/icons/chevron_left.svg"
+    import Alert from '$lib/components/Messages/Alert.svelte';
     import GeneralContent from './GeneralContent.svelte';
     import JustificacionesContent from './JustificacionesContent.svelte';
     import AsistenciasContent from './AsistenciasContent.svelte';
@@ -60,7 +61,8 @@
     })
 </script>
 
-<div class="">
+<div class="relative">
+    <Alert form={form} styles="fixed top-12 left-12 max-w-sm"/>
     <div class="h-fit w-full mb-4 relative flex items-center justify-between">
         <a href="{basePath}/empleados" class="btn btn-accent btn-sm btn-circle flex items-center justify-center tooltip tooltip-right"
         data-tip="Administrar Empleados">

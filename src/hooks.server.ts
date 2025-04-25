@@ -14,10 +14,6 @@ export const handle = (async ({ resolve, event }) => {
     // Response Setting
     event.locals.response = new FormResponse(formatHref(event.url.href))
 
-    if (event.url.pathname.includes('/_app/')) {
-      console.log(`HANDLE HOOK REACHED FOR ASSET PATH: ${event.url.pathname}`);
-    }
-
     if (!event.url.pathname.startsWith("/auth")) {
         let { locals, url } = event;
         let cookie = event.cookies.get("sessionId")
