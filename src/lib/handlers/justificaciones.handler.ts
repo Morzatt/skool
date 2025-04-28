@@ -33,7 +33,7 @@ export async function createJustificacionHandler(
     } satisfies Omit<JustificacionInsertable, "id">
 
     // Validate the justificacion object
-    const validationResult = validateObject(justificacion, justificacionSchema);
+    const validationResult = validateObject(justificacion, justificacionSchema.omit({ detalles: true }));
     
     if (!validationResult.success) {
         return newValidationFailObject(validationResult.error, log);

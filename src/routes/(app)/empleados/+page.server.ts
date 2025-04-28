@@ -13,7 +13,8 @@ export const load = (async ({ url, locals }) => {
     let filter = url.searchParams.get('filter') as string;
     let search = url.searchParams.get('search') as string;
 
-    let estado = capitalizeFirstLetter(url.searchParams.get('estado') as string) as EstadosEmpleado;
+    let estado = capitalizeFirstLetter(url.searchParams.get('estado') as string) as EstadosEmpleado | 'Permiso';
+
     let turno = capitalizeFirstLetter(url.searchParams.get('turno') as string) as 'Mañana' | 'Tarde';
     let departamento = url.searchParams.get('departamento') as string;
 

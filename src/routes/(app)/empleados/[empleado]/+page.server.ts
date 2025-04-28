@@ -9,11 +9,11 @@ import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handle
 import { 
     validateObject, 
     newValidationFailObject, 
-    personalInfoSchema,
     contactoInfoSchema,
     laboralInfoSchema,
     justificacionSchema
 } from '$lib/utils/validators';
+import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response, usuario } = locals;
@@ -134,13 +134,6 @@ export const actions = {
             nivel_academico: data.get('nivel_academico') as string,
         };
 
-        // Validate data
-        const validationResult = validateObject(personalData, personalInfoSchema);
-        
-        if (!validationResult.success) {
-            return newValidationFailObject(validationResult.error, log);
-        }
-
         // Proceed with database operations
         let personal = await async(db.selectFrom('info_personal').selectAll().where('info_personal.id_empleado', "=", personalData.id_empleado).executeTakeFirst(), log);
 
@@ -182,11 +175,11 @@ export const actions = {
         };
 
         // Validate data
-        const validationResult = validateObject(contactoData, contactoInfoSchema);
+        // const validationResult = validateObject(contactoData, contactoInfoSchema.optional());
         
-        if (!validationResult.success) {
-            return newValidationFailObject(validationResult.error, log);
-        }
+        // if (!validationResult.success) {
+        //     return newValidationFailObject(validationResult.error, log);
+        // }
 
         // Proceed with database operations
         let contacto = await async(db.selectFrom('info_contacto').selectAll().where('info_contacto.id_empleado', "=", contactoData.id_empleado).executeTakeFirst(), log);
@@ -232,11 +225,11 @@ export const actions = {
         };
 
         // Validate data
-        const validationResult = validateObject(laboralData, laboralInfoSchema);
+        // const validationResult = validateObject(laboralData, laboralInfoSchema.optional());
         
-        if (!validationResult.success) {
-            return newValidationFailObject(validationResult.error, log);
-        }
+        // if (!validationResult.success) {
+        //     return newValidationFailObject(validationResult.error, log);
+        // }
 
         // Additional validation for time
         if (!laboralData.hora_entrada || !laboralData.hora_salida) {

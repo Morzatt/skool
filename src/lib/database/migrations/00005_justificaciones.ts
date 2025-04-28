@@ -8,8 +8,8 @@ export async function up(db: Kysely<any>):  Promise<void> {
     .addColumn('tipo', 'text')
     .addColumn('razon', 'varchar(100)')
     .addColumn('detalles', 'text')
-    .addColumn('fecha_inicio', 'text')
-    .addColumn('fecha_finalizacion', 'text')
+    .addColumn('fecha_inicio', "date")
+    .addColumn('fecha_finalizacion', "date")
 
     .addColumn('created_by', 'varchar(50)')
     .addColumn('created_at', 'timestamp', (col) =>

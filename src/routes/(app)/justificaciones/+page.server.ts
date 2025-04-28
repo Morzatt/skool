@@ -9,6 +9,7 @@ export const load = (async ({locals, url}) => {
     let index = parseInt(url.searchParams.get('index') as string)
     let filter = url.searchParams.get('filter') as string;
     let search = url.searchParams.get('search') as string;
+    let estado = url.searchParams.get('estado') as 'Vigentes' | 'Pendientes' | 'Expiradas' | 'All';
 
     let query = db
         .selectFrom('justificaciones')
@@ -44,6 +45,23 @@ export const load = (async ({locals, url}) => {
 
         if (filter === "nombre" || filter === "apellido" || filter === "usuario") { 
             query = query.where(`usuarios.${filter}`, 'like', `%${search}%`)
+        }
+    }
+
+    if (estado){ 
+        switch (estado) {
+            case "Expiradas": 
+                query = query.where('justificaciones.fecha_finalizacion', "<=", new Date().toLocaleDateString('sv-SE'))
+                return
+            case "Pendientes":
+                query = query.where('justificaciones.fecha_inicio', '>=', new Date().toLocaleDateString('sv-SE'))
+                return
+            case "Vigentes":
+                query = query.where((eb) => eb.and([
+                    eb('justificaciones.fecha_inicio', '>=', new Date().toLocaleDateString('sv-SE')),
+                    eb('justificaciones.fecha_finalizacion', '<=', new Date().toLocaleDateString('sv-SE')),
+                ]))
+                return
         }
     }
 

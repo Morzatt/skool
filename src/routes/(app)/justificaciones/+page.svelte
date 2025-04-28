@@ -2,7 +2,6 @@
     import FilterSelect from '../empleados/FilterSelect.svelte';
     import { goto, invalidateAll } from '$app/navigation';
     import { basePath, formatStringWithDots } from '$lib';
-    import type { EstadosEmpleado } from '$lib/database/types';
     import type { ActionData, PageData } from './$types';
     import no_result from "$lib/images/3e01667b4c12daee9ea2a1cfabe58e2d.png"
     import { enhance } from '$app/forms';
@@ -14,8 +13,8 @@
 
     let index = $state(0)
     let filter = $state("")
+    let estado = $state('')
     let search = $state("")
-    let estado = $state("")
     let turno = $state("")
     let departamento = $state('')
 
@@ -24,7 +23,7 @@
     let apellido: 'asc'|'desc' = $state('desc')
     let fecha: 'asc'|'desc' = $state('desc')
 
-    let url = $derived(`${basePath}/justificaciones?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
+    let url = $derived(`${basePath}/justificaciones?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -45,19 +44,6 @@
     async function handleSearch() {
         await invalidateAll()
         goto(url, { keepFocus: true, replaceState: true })
-    }
-
-    function asignColor(status: EstadosEmpleado): string {
-        switch (status) {
-            case "Activo": 
-                return "text-green-900 bg-success/50"
-            case "Inhabilitado":
-                return "text-error-content/50 bg-error/50"
-            case "Despedido":
-                return "text-red-900 bg-error/50"
-            default: 
-                return "text-yellow-900 bg-warning/50"
-        }
     }
 
     function setIndex(i: number) {
@@ -144,20 +130,21 @@
     <div class="w-full min-h-[30rem] mt-10 pb-12">
         <!-- Filtros y vista -->
         <div class="w-full flex flex-wrap items-center justify-between mb-4">
-            <div class="flex items-center gap-2 *:bg-base-content *:text-accent">
-                <button class="btn btn-sm" aria-label="all">
+
+            <div class="flex items-center gap-2">
+                <button class="btn btn-sm {estado == 'All' ? "bg-base-content text-accent" : "bg-accent text-base-content"}" aria-label="all" onclick={()=>{ estado = 'All'; handleSearch() }}>
                     <i class="fa-solid fa-globe"></i>
                     <span>Todas</span>
                 </button>
-                <button class="btn btn-sm btn-ghost" aria-label="vigente">
+                <button class="btn btn-sm btn-ghost {estado == 'Vigentes' ? "bg-base-content text-accent" : "bg-accent text-base-content"}" aria-label="vigente" onclick={()=>{ estado = 'Vigentes'; handleSearch() }}>
                     <i class="fa-solid fa-stopwatch"></i>
                     <span>Vigentes</span>
                 </button>
-                <button class="btn btn-sm btn-ghost" aria-label="pendiente">
+                <button class="btn btn-sm btn-ghost {estado == 'Pendientes' ? "bg-base-content text-accent" : "bg-accent text-base-content"}" aria-label="pendiente" onclick={()=>{ estado = "Pendientes"; handleSearch() }}>
                     <i class="fa-solid fa-clock"></i>
                     <span>Pendientes</span>
                 </button>
-                <button class="btn btn-sm btn-ghost" aria-label="expirado">
+                <button class="btn btn-sm btn-ghost {estado == 'Expiradas' ? "bg-base-content text-accent" : "bg-accent text-base-content"}" aria-label="expirado" onclick={()=>{ estado = "Expiradas"; handleSearch() }}>
                     <i class="fa-solid fa-calendar-xmark"></i>
                     <span>Expiradas</span>
                 </button>
@@ -299,3 +286,53 @@
         {/if}
     </div>
 </div>
+
+<style lang="postcss">
+    .filter {
+        @apply flex flex-wrap;
+
+        input[type="radio"] {
+            @apply w-auto;
+        }
+
+        input {
+            @apply overflow-hidden opacity-100;
+            scale: 1;
+            transition:
+                margin 0.1s,
+                opacity 0.3s,
+                padding 0.3s,
+                border-width 0.1s;
+
+            &:not(:last-child) {
+                @apply me-1;
+            }
+
+            &.filter-reset {
+                @apply aspect-square;
+
+                &::after {
+                    content: "×";
+                }
+            }
+        }
+
+        &:not(:has(input:checked:not(.filter-reset))) {
+
+            .filter-reset,
+            input[type="reset"] {
+                scale: 0;
+                border-width: 0;
+                @apply mx-0 w-0 px-0 opacity-0;
+            }
+        }
+
+        &:has(input:checked:not(.filter-reset)) {
+            input:not(:checked, .filter-reset, input[type="reset"]) {
+                scale: 0;
+                border-width: 0;
+                @apply mx-0 w-0 px-0 opacity-0;
+            }
+        }
+    }
+</style>

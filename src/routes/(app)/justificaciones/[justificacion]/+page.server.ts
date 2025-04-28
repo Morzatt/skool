@@ -23,7 +23,7 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
             .selectAll()
             .where("justificaciones.id", "=", id_justificacion)
             .executeTakeFirst()
-        , log)
+    , log)
 
     if (!justificacion) {
         error(404, 'La justificacion no existe')

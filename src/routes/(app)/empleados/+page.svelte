@@ -158,10 +158,10 @@
                         name: "Inhabilitado",
                         value: "inhabilitado"
                     },
-                    {
-                        name: "Despedido",
-                        value: "despedido"
-                    },
+                    // {
+                    //     name: "De Permiso",
+                    //     value: "permiso"
+                    // },
                 ]}/>
             </div>
             <div class="form-control">

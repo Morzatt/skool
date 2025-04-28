@@ -180,16 +180,10 @@ export const personalInfoSchema = z.object({
         .regex(/^\d+$/, "La cédula debe contener solo números"),
     
     estado_civil: z.string()
-        .min(1, "Campo vacío.")
-        .refine(val => ["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a", "Unión libre"].includes(val), {
-            message: "Estado civil no válido"
-        }),
+        .min(1, "Campo vacío."),
     
     nivel_academico: z.string()
         .min(1, "Campo vacío.")
-        .refine(val => ["Primaria", "Secundaria", "Bachillerato", "Técnico", "Universitario", "Postgrado", "Maestría", "Doctorado", "Sin estudios"].includes(val), {
-            message: "Nivel académico no válido"
-        })
 });
 
 // CONTACT INFO VALIDATION
@@ -264,9 +258,9 @@ export const justificacionSchema = z.object({
         }),
     
     detalles: z.string()
-        .min(10, "Mínimo de 10 caracteres")
-        .max(500, "Máximo de 500 caracteres")
-        .trim(),
+    .min(10, "Mínimo de 10 caracteres")
+    .max(500, "Máximo de 500 caracteres")
+    .trim(),
     
     fecha_inicio: z.string()
         .min(1, "Campo vacío.")

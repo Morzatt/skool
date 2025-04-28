@@ -49,6 +49,7 @@ html:has(.drawer-toggle:checked) {
 }
 
 @layer components {
+
     .bb {
         @apply border border-black;
     }
