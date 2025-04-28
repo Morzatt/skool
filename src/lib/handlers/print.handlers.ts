@@ -137,7 +137,7 @@ async function fetchAttendanceRecords(startDate: string, endDate: string, log: a
     return await async(
         db.selectFrom('asistencias')
             .innerJoin('empleados', 'empleados.cedula', 'asistencias.empleado')
-            .innerJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
+            .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
             .selectAll()
             .where('asistencias.fecha', '>=', startDate)
             .where('asistencias.fecha', '<=', endDate)
