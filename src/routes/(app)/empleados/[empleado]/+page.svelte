@@ -9,6 +9,7 @@
     import type { EstadosEmpleado } from '$lib/database/types';
     import { enhance } from '$app/forms';
     import { capitalizeFirstLetter } from '$lib/utils/capitlizeFirstLetter';
+    import { downloadFile } from '$lib/utils/downloadFile';
 
     let { data, form }: { data: PageData, form: ActionData } = $props();
     let { empleado, laboral, contacto, personal, departamentos, usuario } = $derived(data)
@@ -58,7 +59,12 @@
         if (form && form.form === "createJustificacion" && form.success) {
             document.getElementById('create_justificacion_close')?.click()
         }
+
+        if (form && form.form === "downloadID" && form.success) {
+            downloadFile(`/downloads/${form.id}?type=card`, `ID_${empleado.cedula}.png`)
+        }
     })
+    $inspect(form)
 </script>
 
 <div class="relative">

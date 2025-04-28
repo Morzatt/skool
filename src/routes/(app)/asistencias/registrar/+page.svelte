@@ -159,10 +159,11 @@
 
                         <div class="w-full h-fit mt-2 
                         flex items-center justify-around">
-                            <button class="control-button btn" onclick="{() => 
+                            <button class="control-button btn" onclick="{() => {
+                                return;
                                 QrScanner
                                 .scanImage(data.qr, {returnDetailedScanResult: true})
-                                .then(data => requestEmpleadoData(data))}"
+                                .then(data => requestEmpleadoData(data))}}"
                             aria-label="control-button">
                                 <i class="fa-solid fa-bolt"></i>
                             </button>

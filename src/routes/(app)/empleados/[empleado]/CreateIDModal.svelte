@@ -1,31 +1,12 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
     import school_logo from "$lib/images/logo.png"
-    import html2canvas from "html2canvas";
 
     let { empleado, qr }: {empleado: any, qr: string} = $props()
 
     let colors = ['#bc9850', '#002232', '#ce5f38', '#8f4927','#f97d1e', '#81a4e0','#2c599d']
 
     let bgColor = $state('')
-
-    function downloadId() {
-      const element = document.getElementById('IDCard') as HTMLElement;
-
-      // Use html2canvas to capture the element
-      html2canvas(element, { useCORS: true, allowTaint: true, scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
-        // Convert the canvas to a data URL
-        const image = canvas.toDataURL('image/png');
-
-        // Create a temporary link element
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = 'element-image.png'; // Set the file name
-
-        // Trigger the download
-        link.click();
-      });
-    }
 </script>
 
 {#snippet card()}
@@ -97,10 +78,15 @@
 
 
 
-            <button onclick="{downloadId}" type="submit" 
-                class="btn btn-sm btn-success text-base-100 px-12">
-                Crear
-            </button>
+            <form action="?/downloadID" method="post" use:enhance>
+                <input type="hidden" name="cedula" value='{empleado.cedula}'>
+                <input type="hidden" name="color" value='{bgColor}'>
+
+                <button type="submit" 
+                    class="btn btn-sm btn-success text-base-100 px-12">
+                    Crear
+                </button>
+            </form>
         </div>
     </div>
 </dialog>

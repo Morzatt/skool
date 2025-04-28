@@ -11,7 +11,13 @@ import { newValidationFailObject } from '$lib/utils/validators';
 
 export const load = (async ({locals, url}) => {
     let { log } = locals
+
+    if (!locals.usuario.role.toLowerCase().includes('admin')) {
+        redirect(302, '/empleados')
+    }
+
     let departamentos = await async(db.selectFrom('departamentos').selectAll().execute(), log)
+
     return { departamentos };
 }) satisfies PageServerLoad;
 

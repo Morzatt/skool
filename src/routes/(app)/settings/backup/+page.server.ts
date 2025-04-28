@@ -20,6 +20,7 @@ export const actions = {
         let { response, log } = locals
         let timestamp = formatDate(new Date())
 
+
         let backupFolderPath = path.join(process.cwd(), `/static/temporal/backup_${timestamp}`)
         let comprobantesFolderPath = path.join(process.cwd(), '/static/comprobantes')
         let backupPath = path.join(backupFolderPath, `/backup_${timestamp}.sql`)

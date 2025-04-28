@@ -6,14 +6,15 @@ import { db } from '$lib/database';
 import QRCode from "qrcode"
 import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
 
-import { 
-    validateObject, 
-    newValidationFailObject, 
+import {
+    validateObject,
+    newValidationFailObject,
     contactoInfoSchema,
     laboralInfoSchema,
     justificacionSchema
 } from '$lib/utils/validators';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
+import { downloadIDHandler } from '$lib/handlers/print.handlers';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response, usuario } = locals;
@@ -26,12 +27,12 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 
     let empleado = await async(
         db
-        .selectFrom('empleados')
-        .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
-        .selectAll()
-        .where('cedula', "=", cedula_empleado)
-        .executeTakeFirst()
-    ,log)
+            .selectFrom('empleados')
+            .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+            .selectAll()
+            .where('cedula', "=", cedula_empleado)
+            .executeTakeFirst()
+        , log)
 
     if (!empleado) {
         error(404, 'El empleado no existe')
@@ -43,52 +44,52 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 
     let justificaciones = await async(
         db
-        .selectFrom('justificaciones')
-        .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
-        .select((eb) => [
-            'justificaciones.detalles', 'justificaciones.empleado',
-            'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
-            'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
-            'usuarios.nombre as nombre_encargado', 'usuarios.apellido as apellido_encargado',
+            .selectFrom('justificaciones')
+            .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
+            .select((eb) => [
+                'justificaciones.detalles', 'justificaciones.empleado',
+                'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
+                'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
+                'usuarios.nombre as nombre_encargado', 'usuarios.apellido as apellido_encargado',
                 eb.selectFrom('comprobantes')
-                .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
-                .select(['comprobantes.path'])
-                .limit(1)
-                .as('path')
-        ])
-        .where('empleado', "=", cedula_empleado)
-        .execute()
-    , log)
+                    .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
+                    .select(['comprobantes.path'])
+                    .limit(1)
+                    .as('path')
+            ])
+            .where('empleado', "=", cedula_empleado)
+            .execute()
+        , log)
 
     let personal = await async(
         db.selectFrom("info_personal")
-        .selectAll()
-        .where('id_empleado', "=", cedula_empleado)
-        .executeTakeFirst()
-    , log)
+            .selectAll()
+            .where('id_empleado', "=", cedula_empleado)
+            .executeTakeFirst()
+        , log)
 
     let contacto = await async(
         db.selectFrom("info_contacto")
-        .selectAll()
-        .where('id_empleado', "=", cedula_empleado)
-        .executeTakeFirst()
-    , log)
+            .selectAll()
+            .where('id_empleado', "=", cedula_empleado)
+            .executeTakeFirst()
+        , log)
 
     let laboral = await async(
         db.selectFrom("info_laboral")
-        .selectAll()
-        .where('id_empleado', "=", cedula_empleado)
-        .executeTakeFirst()
-    , log)
+            .selectAll()
+            .where('id_empleado', "=", cedula_empleado)
+            .executeTakeFirst()
+        , log)
 
     let departamentos = await async(db.selectFrom('departamentos').selectAll().execute(), log)
 
     const asistencias = await async(
         db.selectFrom('asistencias')
-        .selectAll()
-        .where('empleado', "=", cedula_empleado)
-        .execute()
-    , log)
+            .selectAll()
+            .where('empleado', "=", cedula_empleado)
+            .execute()
+        , log)
 
     return { empleado, qr, justificaciones, personal, contacto, laboral, departamentos, asistencias }
 });
@@ -110,7 +111,7 @@ export const actions = {
         redirect(303, "/empleados")
     },
 
-    retirar: async ({request, locals}) => {
+    retirar: async ({ request, locals }) => {
         let { log, response } = locals
         let cedula = (await request.formData()).get("cedula") as string
 
@@ -140,23 +141,23 @@ export const actions = {
         if (!personal) {
             await async(
                 db
-                .insertInto('info_personal')
-                .values(personalData)
-                .execute()
-            , log);
-            
+                    .insertInto('info_personal')
+                    .values(personalData)
+                    .execute()
+                , log);
+
             return response.success('Información personal registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_personal')
-                .set({
-                    estado_civil: personalData.estado_civil,
-                    nivel_academico: personalData.nivel_academico,
-                })
-                .where("id_empleado", '=', personalData.id_empleado)
-                .execute()
-            , log);
-            
+                    .set({
+                        estado_civil: personalData.estado_civil,
+                        nivel_academico: personalData.nivel_academico,
+                    })
+                    .where("id_empleado", '=', personalData.id_empleado)
+                    .execute()
+                , log);
+
             return response.success('Información personal actualizada correctamente');
         }
     },
@@ -176,7 +177,7 @@ export const actions = {
 
         // Validate data
         // const validationResult = validateObject(contactoData, contactoInfoSchema.optional());
-        
+
         // if (!validationResult.success) {
         //     return newValidationFailObject(validationResult.error, log);
         // }
@@ -187,25 +188,25 @@ export const actions = {
         if (!contacto) {
             await async(
                 db
-                .insertInto('info_contacto')
-                .values(contactoData)
-                .execute()
-            , log);
-            
+                    .insertInto('info_contacto')
+                    .values(contactoData)
+                    .execute()
+                , log);
+
             return response.success('Información de contacto registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_contacto')
-                .set({
-                    direccion_habitacion: contactoData.direccion_habitacion,
-                    telefono_habitacion: contactoData.telefono_habitacion,
-                    telefono_personal: contactoData.telefono_personal,
-                    correo_electronico: contactoData.correo_electronico,
-                })
-                .where("id_empleado", '=', contactoData.id_empleado)
-                .execute()
-            , log);
-            
+                    .set({
+                        direccion_habitacion: contactoData.direccion_habitacion,
+                        telefono_habitacion: contactoData.telefono_habitacion,
+                        telefono_personal: contactoData.telefono_personal,
+                        correo_electronico: contactoData.correo_electronico,
+                    })
+                    .where("id_empleado", '=', contactoData.id_empleado)
+                    .execute()
+                , log);
+
             return response.success('Información de contacto actualizada correctamente');
         }
     },
@@ -213,7 +214,7 @@ export const actions = {
     laboral: async ({ request, locals }) => {
         let { log, response } = locals;
         let data = await request.formData();
-        
+
         // Create object for validation
         const laboralData = {
             id_empleado: data.get('id_empleado') as string,
@@ -224,104 +225,89 @@ export const actions = {
             turno: data.get('turno') as "Mañana" | "Tarde",
         };
 
-        // Validate data
-        // const validationResult = validateObject(laboralData, laboralInfoSchema.optional());
-        
-        // if (!validationResult.success) {
-        //     return newValidationFailObject(validationResult.error, log);
-        // }
+        if (laboralData.hora_entrada && laboralData.hora_salida) {
+            if (!laboralData.hora_entrada || !laboralData.hora_salida) {
+                return response.error('No se han especificado horas de entrada/salida');
+            }
 
-        // Additional validation for time
-        if (!laboralData.hora_entrada || !laboralData.hora_salida) {
-            return response.error('No se han especificado horas de entrada/salida');
+            if (parseInt(laboralData.hora_entrada.replaceAll(":", "")) > parseInt(laboralData.hora_salida.replaceAll(":", ""))) {
+                return response.error('La hora de entrada es superior a la hora de salida.');
+            }
         }
 
-        if (parseInt(laboralData.hora_entrada.replaceAll(":", "")) > parseInt(laboralData.hora_salida.replaceAll(":", ""))) {
-            return response.error('La hora de entrada es superior a la hora de salida.');
-        }
-
-        // Check if employee exists
         let empleado = await async(
             db
-            .selectFrom('empleados')
-            .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
-            .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo'])
-            .where('empleados.cedula', '=', laboralData.id_empleado)
-            .executeTakeFirst()
-        , log);
+                .selectFrom('empleados')
+                .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+                .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo', 'empleados.turno'])
+                .where('empleados.cedula', '=', laboralData.id_empleado)
+                .executeTakeFirst()
+            , log);
 
         if (!empleado) {
             return response.error('El empleado no existe');
         }
 
         // Update department and position if needed
-        if (laboralData.departamento !== empleado.departamento) { 
+        if (laboralData.departamento !== empleado.departamento) {
             await async(
                 db.updateTable('empleados')
-                .set({departamento: laboralData.departamento})
-                .where('empleados.cedula', '=', laboralData.id_empleado)
-                .execute()
-            , log);
+                    .set({ departamento: laboralData.departamento })
+                    .where('empleados.cedula', '=', laboralData.id_empleado)
+                    .execute()
+                , log);
         }
 
         if (laboralData.cargo !== empleado.cargo) {
             await async(
                 db.updateTable('empleados')
-                .set({cargo: laboralData.cargo})
-                .where('empleados.cedula', '=', laboralData.id_empleado)
-                .execute()
-            , log);
+                    .set({ cargo: laboralData.cargo })
+                    .where('empleados.cedula', '=', laboralData.id_empleado)
+                    .execute()
+                , log);
         }
-        
+
         // Update or insert labor info
         let laboral = await async(db.selectFrom('info_laboral').selectAll().where('info_laboral.id_empleado', "=", laboralData.id_empleado).executeTakeFirst(), log);
 
         if (!laboral) {
             await async(
                 db
-                .insertInto('info_laboral')
-                .values({
-                    id_empleado: laboralData.id_empleado,
-                    hora_entrada: laboralData.hora_entrada,
-                    hora_salida: laboralData.hora_salida
-                })
-                .execute()
-            , log);
-            
-            await async(
-                db
-                .updateTable('empleados')
-                .set({
-                    turno: laboralData.turno
-                })
-                .where('empleados.cedula', '=', laboralData.id_empleado)
-                .execute()
-            , log);
-            
-            return response.success('Información laboral registrada correctamente');
+                    .insertInto('info_laboral')
+                    .values({
+                        id_empleado: laboralData.id_empleado,
+                        hora_entrada: laboralData.hora_entrada,
+                        hora_salida: laboralData.hora_salida
+                    })
+                    .execute()
+                , log);
         } else {
-            await async(
-                db.updateTable('info_laboral')
-                .set({
-                    hora_entrada: laboralData.hora_entrada,
-                    hora_salida: laboralData.hora_salida,
-                })
-                .where("id_empleado", '=', laboralData.id_empleado)
-                .execute()
-            , log);
-            
+            if (laboralData.hora_entrada && laboralData.hora_salida) {
+                await async(
+                    db.updateTable('info_laboral')
+                        .set({
+                            hora_entrada: laboralData.hora_entrada,
+                            hora_salida: laboralData.hora_salida,
+                        })
+                        .where("id_empleado", '=', laboralData.id_empleado)
+                        .execute()
+                    , log);
+            }
+        }
+
+        if (laboralData.turno !== empleado.turno) {
             await async(
                 db
-                .updateTable('empleados')
-                .set({
-                    turno: laboralData.turno
-                })
-                .where('empleados.cedula', '=', laboralData.id_empleado)
-                .execute()
-            , log);
-            
-            return response.success('Información laboral actualizada correctamente');
+                    .updateTable('empleados')
+                    .set({
+                        turno: laboralData.turno
+                    })
+                    .where('empleados.cedula', '=', laboralData.id_empleado)
+                    .execute()
+                , log);
         }
+
+        return response.success('Información laboral actualizada correctamente');
     },
 
     medic: async ({ request, locals }) => {
@@ -329,4 +315,6 @@ export const actions = {
         let data = await request.formData()
 
     },
+
+    downloadID: downloadIDHandler
 } satisfies Actions

@@ -34,6 +34,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
         const TEMP_DIR = path.join(process.cwd(), '/static/temporal');
         return await downloadListaEmpleados(id, TEMP_DIR, log, response)
     }
+
+    if (type === "card") {
+        const TEMP_DIR = path.join(process.cwd(), '/static/temporal');
+        return await downloadID(id, TEMP_DIR, log, response)
+    }
 };
 
 async function accessReadStream(path: string) {
@@ -73,7 +78,6 @@ let downloadComprobante: DownloadFunction = async (uniqueId, TEMP_DIR, log, resp
 
 let downloadAsistencia: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
     const tempFileName = `asistencias_${uniqueId}.pdf`;
-    console.log(tempFileName)
     const tempFilePath = path.join(TEMP_DIR, tempFileName);
 
     try {
@@ -86,7 +90,19 @@ let downloadAsistencia: DownloadFunction = async (uniqueId, TEMP_DIR, log, respo
 
 let downloadListaEmpleados: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
     const tempFileName = `lista_empleados_${uniqueId}.pdf`;
-    console.log(tempFileName)
+    const tempFilePath = path.join(TEMP_DIR, tempFileName);
+
+    try {
+        let fileStream = await async(accessReadStream(tempFilePath), log)
+        return new Response(fileStream);
+    } catch (e) {
+        handleError(log, e, {})
+    }
+}
+
+
+let downloadID: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
+    const tempFileName = `ID_${uniqueId}.png`;
     const tempFilePath = path.join(TEMP_DIR, tempFileName);
 
     try {

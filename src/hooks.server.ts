@@ -35,12 +35,13 @@ export const handle = (async ({ resolve, event }) => {
                     contentType?.includes('multipart/form-data'));
 
             if (isFormSubmission && !url.pathname.includes('/account')) {
-                if (session.data.role === "usuario") {
+
+                if (session.data.role.toLowerCase() === "usuario") {
                     event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
                     return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
                 }
 
-                if (session.data.role === "editor" && !url.pathname.includes('/asistencias')) {
+                if (session.data.role.toLocaleLowerCase() === "editor" && !url.pathname.includes('/asistencias')) {
                     event.locals.log.error({ msg: 'El usuario no tiene permiso de escritura' })
                     return json(event.locals.response.error('El usuario no tiene permiso de escritura'));
                 }
