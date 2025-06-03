@@ -15,6 +15,7 @@ import {
 } from '$lib/utils/validators';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { downloadIDHandler } from '$lib/handlers/print.handlers';
+import { printEmpleadoHandler } from '$lib/handlers/empleados.handlers';
 
 export const load: PageServerLoad = (async ({ url, locals }) => {
     const { log, response, usuario } = locals;
@@ -316,5 +317,8 @@ export const actions = {
 
     },
 
-    downloadID: downloadIDHandler
+    downloadID: downloadIDHandler,
+
+    printEmpleado: printEmpleadoHandler,
+
 } satisfies Actions

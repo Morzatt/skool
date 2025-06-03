@@ -63,6 +63,10 @@
         if (form && form.form === "downloadID" && form.success) {
             downloadFile(`/downloads/${form.id}?type=card`, `ID_${empleado.cedula}.png`)
         }
+
+        if (form && form.form === "printEmpleado" && form.success) {
+            downloadFile(`/downloads/${form.fileId}?type=empleado`, `empleado_${empleado.cedula}.pdf`)
+        }
     })
 
     $inspect(form)
@@ -125,10 +129,13 @@
                     class="action-button btn btn-sm">
                         <i class="fa-solid fa-heart"></i>
                     </button> 
-                    <button aria-label="action-button" data-tip="Imprimir Planilla del Empleado"
-                    class="action-button btn btn-sm">
-                        <i class="fa-solid fa-print"></i>
-                    </button> 
+                    <form action="?/printEmpleado" method="post" use:enhance>
+                        <input type="hidden" name="cedula" value="{empleado.cedula}">
+                        <button aria-label="action-button" data-tip="Imprimir Planilla del Empleado"
+                        class="action-button btn btn-sm">
+                            <i class="fa-solid fa-print"></i>
+                        </button> 
+                    </form>
                 </div>
             </div>
         </div>

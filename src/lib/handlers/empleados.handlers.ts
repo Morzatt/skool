@@ -1,10 +1,16 @@
-import { empleadosRepository, type EmpleadosRepositoryInterface } from "$lib/database/repositories/profesores.repository";
+import { db } from "$lib/database";
+import path from "path"
+import { empleadosRepository, type EmpleadosRepositoryInterface } from "$lib/database/repositories/empleados.repository";
 import type { EmpleadoInsertable } from "$lib/database/types";
 import async from "$lib/utils/asyncHandler";
 import { getAge } from "$lib/utils/getAge";
 import { getFormData } from "$lib/utils/getFormData";
-import { InsertEmpleadoSchema, newValidationFailObject, validateObject } from "$lib/utils/validators";
+import { newValidationFailObject, validateObject } from "$lib/utils/validators";
 import { fail, type RequestEvent } from "@sveltejs/kit";
+import { print } from "./pdf";
+import { createEmpleadoDocDef } from "./pdf/empleadosDocuments";
+import { unlinkSync } from "fs";
+import { createAsistenciaDocumentDefinition } from "./pdf/constanciasDocument";
 
 export async function createEmpleadoHandler(
     { request, locals }: RequestEvent,
@@ -55,3 +61,49 @@ export async function createEmpleadoHandler(
 
     return response.success('Empleado creado correctamente.')
 }
+
+export async function printEmpleadoHandler({ request, locals }: RequestEvent) {
+    let { log, response } = locals;
+    let cedula = (await request.formData()).get('cedula') as string
+
+    let empleado = await async(
+        db
+        .selectFrom('empleados')
+        .selectAll()
+        .select(eb => 
+            eb.selectFrom('departamentos').select('departamentos.nombre_departamento')
+            .whereRef('departamentos.id_departamento', '=', 'empleados.departamento').as('departamento')
+        )
+        .where('cedula', '=', cedula)
+        .executeTakeFirst()
+    , log)
+
+    if (!empleado) {
+        return response.error('No existe el empleado especificado.')
+    }
+
+    let info_personal = await async(db.selectFrom('info_personal').selectAll().where('id_empleado', '=', empleado.cedula).executeTakeFirst(), log)
+    let info_contacto = await async(db.selectFrom('info_contacto').selectAll().where('id_empleado', '=', empleado.cedula).executeTakeFirst(), log)
+    let info_laboral = await async(db.selectFrom('info_laboral').selectAll().where('id_empleado', '=', empleado.cedula).executeTakeFirst(), log)
+
+    const timeId = generateTimeId()
+    const temporalPath = path.join(process.cwd(), `/static/temporal/empleado_${timeId}.pdf`);
+
+    print (
+        // createEmpleadoDocDef(empleado, info_personal, info_contacto, info_laboral),
+        createAsistenciaDocumentDefinition(),
+        temporalPath
+    )
+    setTimeout(() => unlinkSync(temporalPath), 10000);
+
+    return response.success('Empleados obtenidos correctamente.', { fileId: timeId })
+}
+
+function generateTimeId() {
+    return new Date().toISOString()
+        .replaceAll(' ', '')
+        .replaceAll(':', '')
+        .replaceAll('-', '')
+        .replaceAll('.', '');
+}
+

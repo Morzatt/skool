@@ -6,17 +6,18 @@
     type Locations = 'top' | 'right' |'bottom'|'left'
     type DropDownTypes = `dropdown-${Locations}`
 
-    let { options, styles, icon, type, placeholder, name}:
+    let { options, styles, icon, type, placeholder, name, defaultValue }:
     { 
         options: Option[], 
         styles?: string,
         icon?: string,
         type?: DropDownTypes,
         name: string,
-        placeholder: string
+        placeholder: string,
+        defaultValue: string | undefined
     } = $props()
 
-    let value = $state()
+    let value = $state(defaultValue)
 
     function changeValue(option: Option) {
         placeholder = option.name;

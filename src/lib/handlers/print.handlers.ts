@@ -39,27 +39,58 @@ export async function printAsistenciasHandler({ locals, request, url }: RequestE
     const { startDate, endDate, dateRange } = getDateRange(data);
     
     // Query database for attendance records
-    const records = await fetchAttendanceRecords(startDate, endDate, log);
+    const records = await async(
+        db
+        .selectFrom('empleados')
+        .rightJoin('asistencias', 'asistencias.empleado', 'empleados.cedula')
+        .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
+        .selectAll()
+        .where((eb) => eb.or([
+            eb.and([
+                eb('asistencias.fecha', '>=', startDate),
+                eb('asistencias.fecha', '<=', endDate)
+            ]),
+
+            eb('asistencias.fecha', "is", null)
+        ]))
+        .orderBy('asistencias.fecha desc')
+        .execute()
+    , log
+    );
+
+    console.log(
+        db
+        .selectFrom('empleados')
+        .rightJoin('asistencias', 'asistencias.empleado', 'empleados.cedula')
+        .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
+        .selectAll()
+        .where((eb) => eb.or([
+            eb.and([
+                eb('asistencias.fecha', '>=', startDate),
+                eb('asistencias.fecha', '<=', endDate)
+            ]),
+
+            eb('asistencias.fecha', "is", null)
+        ]))
+        .orderBy('asistencias.fecha desc')
+        .compile()
+    )
     
-    // Generate PDF file name and path
-    const timeId = generateTimeId();
-    const pdfPath = path.join(process.cwd(), `/static/temporal/asistencias_${timeId}.pdf`);
+    // const timeId = generateTimeId();
+    // const pdfPath = path.join(process.cwd(), `/static/temporal/asistencias_${timeId}.pdf`);
     
-    // Group attendance records by department and day
-    const departmentAttendance = processAttendanceRecords(records, dateRange);
+    // const departmentAttendance = processAttendanceRecords(records, dateRange);
     
-    // Check if we found any records
-    if (departmentAttendance.length < 1) {
-        return response.error('No existen asistencias en el tiempo especificado');
-    }
+    // if (departmentAttendance.length < 1) {
+    //     return response.error('No existen asistencias en el tiempo especificado');
+    // }
     
-    // Generate and serve PDF
-    printListadeAsistencias(departmentAttendance, pdfPath);
+    // printListadeAsistencias(departmentAttendance, pdfPath);
     
     // Schedule cleanup
-    setTimeout(() => unlinkSync(pdfPath), 10000);
+    // setTimeout(() => unlinkSync(pdfPath), 10000);
     
-    return response.success("Horario impreso correctamente", { documentId: timeId });
+    // return response.success("Horario impreso correctamente", { documentId: timeId });
 }
 
 
@@ -134,17 +165,7 @@ function generateTimeId() {
  * Query database for attendance records
  */
 async function fetchAttendanceRecords(startDate: string, endDate: string, log: any) {
-    return await async(
-        db.selectFrom('asistencias')
-            .innerJoin('empleados', 'empleados.cedula', 'asistencias.empleado')
-            .leftJoin('departamentos', 'departamentos.id_departamento', 'empleados.departamento')
-            .selectAll()
-            .where('asistencias.fecha', '>=', startDate)
-            .where('asistencias.fecha', '<=', endDate)
-            .orderBy('asistencias.fecha desc')
-            .execute(),
-        log
-    );
+    return 
 }
 
 /**

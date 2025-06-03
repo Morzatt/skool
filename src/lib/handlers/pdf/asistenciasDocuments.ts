@@ -1,7 +1,8 @@
 import type { StyleDictionary, TDocumentDefinitions } from "pdfmake/interfaces";
-import { format } from 'date-fns';
+import { eachDayOfInterval, format } from 'date-fns';
 import path from "path"
 import type { AsistenciaDepartamento } from "../print.handlers";
+import type AsistenciasContent from "../../../routes/(app)/empleados/[empleado]/AsistenciasContent.svelte";
 
 // PDF styles
 const styles: StyleDictionary = {
@@ -37,11 +38,10 @@ export function createAsistenciaDocDefinition(asistencias: AsistenciaDepartament
     let bannerGobernacionPath = path.join(process.cwd(), '/src/lib/handlers/pdf/images/bannerGobernacion.jpeg')
     let logoPath = path.join(process.cwd(), '/src/lib/images/logo.jpg')
 
-
     const header = [
-        {
-            columns: [
-                {
+            {
+                columns: [
+                    {
                     image: bannerGobernacionPath,
                     alignment: 'center',
                     width: 600,
@@ -56,6 +56,8 @@ export function createAsistenciaDocDefinition(asistencias: AsistenciaDepartament
         createHeader(logoPath),
         ...createDepartmentSections(asistencias)
     ];
+
+
     
     // Return document definition
     return {
@@ -89,7 +91,7 @@ function createHeader(logoPath: string) {
 
         {
             text: "LISTA DE ASISTENCIAS",
-            bold: true,
+                        bold: true,
             margin: [0, 30, 0, 0],
             alignment: 'center',
             decoration: 'underline'
@@ -110,7 +112,7 @@ function createDepartmentSections(asistencias: AsistenciaDepartamento[]) {
         createDepartmentInfoTable(departamento),
         
         // Attendance tables for each day
-        ...createDailyAttendanceTables(departamento.asistencias)
+        ...createDailyAttendanceTables(departamento.asistencias, asistencias)
     ]);
 }
 
@@ -154,7 +156,10 @@ function createDepartmentInfoTable(departamento: AsistenciaDepartamento) {
 /**
  * Creates attendance tables for each day
  */
-function createDailyAttendanceTables(asistencias: any[]) {
+
+function createDailyAttendanceTables(asistencias: any[], as: AsistenciaDepartamento[]) {
+    let dias = (obtenerDiasDelMesActual(new Date(as[0].lapso.split(' - ')[0]), new Date(as[0].lapso.split(' - ')[1]), 'yyyy-MM-dd'))
+
     return asistencias.flatMap(asistenciaDia => {
         // Format date for display - use the original date string if available
 
@@ -166,30 +171,16 @@ function createDailyAttendanceTables(asistencias: any[]) {
             createTableHeader(asistenciaDia.dia, [0, 0, 0, 0]),
             
             // Attendance table
-            createEmployeeAttendanceTable(asistenciaDia.empleados)
+            createEmployeeAttendanceTable(asistenciaDia.empleados, as)
         ];
     });
 }
 
 /**
- * Formats a date for display, prioritizing original date string if available
- */
-function formatDateForDisplay(asistenciaDia: any, fechaOriginal: string | undefined) {
-    if (fechaOriginal) {
-        return String(fechaOriginal).split('T')[0].replace(/-/g, '-').substring(2);
-    }
-    
-    if (asistenciaDia.fecha instanceof Date) {
-        return format(asistenciaDia.fecha, 'yy-MM-dd');
-    }
-    
-    return String(asistenciaDia.fecha).split('T')[0].replace(/-/g, '-').substring(2);
-}
-
-/**
  * Creates the employee attendance table for a specific day
  */
-function createEmployeeAttendanceTable(empleados: any[]) {
+function createEmployeeAttendanceTable(empleados: any[], as: AsistenciaDepartamento[]) {
+    let dias = (obtenerDiasDelMesActual(new Date(as[0].lapso.split(' - ')[0]), new Date(as[0].lapso.split(' - ')[1]), 'yyyy-MM-dd'))
     return {
         table: {
             headerRows: 1,
@@ -203,6 +194,19 @@ function createEmployeeAttendanceTable(empleados: any[]) {
                     { text: 'Entrada', fillColor: '#f4a460', color: 'white', bold: true },
                     { text: 'Salida', fillColor: '#f4a460', color: 'white', bold: true }
                 ],
+                // dias.forEach((i) => {
+                //     return empleados.filter((empleado, index) => {
+                //         if (i === empleado.) {
+                //             [
+                //                 { text: (index + 1).toString() },
+                //                 { text: empleado.nombre },
+                //                 { text: empleado.cedula },
+                //                 { text: empleado.hora_entrada },
+                //                 { text: empleado.hora_salida }
+                //             ]
+                //         }
+                //     })[0]
+                // })
                 // Table rows for each employee
                 ...empleados.map((empleado, index) => [
                     { text: (index + 1).toString() },
@@ -215,4 +219,14 @@ function createEmployeeAttendanceTable(empleados: any[]) {
         },
         margin: [0, 0, 0, 20] as [number, number, number, number]
     };
+}
+
+function obtenerDiasDelMesActual(inicio: Date, fin: Date, formatType: string) {
+  const diasDelMes = eachDayOfInterval({
+    start: inicio,
+    end: fin  
+  });
+  
+  // Formatear cada fecha como string (ejemplo: "2023-04-01")
+  return diasDelMes.map(fecha => format(fecha, formatType));
 }

@@ -39,6 +39,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
         const TEMP_DIR = path.join(process.cwd(), '/static/temporal');
         return await downloadID(id, TEMP_DIR, log, response)
     }
+
+    if (type === "empleado") {
+        const TEMP_DIR = path.join(process.cwd(), '/static/temporal');
+        return await downloadFunc(TEMP_DIR, `empleado_${id}.pdf`, log, response)
+    }
 };
 
 async function accessReadStream(path: string) {
@@ -50,6 +55,18 @@ async function accessReadStream(path: string) {
         throw error
     }
 }
+
+let downloadFunc: DownloadFunction = async (TEMP_DIR, fileName, log, response) => {
+    const tempFilePath = path.join(TEMP_DIR, fileName);
+    try {
+        let fileStream = await async(accessReadStream(tempFilePath), log)
+        return new Response(fileStream);
+    } catch (e) {
+        handleError(log, e, {})
+    }
+}
+
+
 
 let downloadBackups: DownloadFunction = async (uniqueId, TEMP_DIR, log, response) => {
     const tempFileName = `backup_${uniqueId}.tar`;

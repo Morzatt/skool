@@ -203,7 +203,7 @@
                                 min="7">                              
                             {:else}
                                 {#if info.options}
-                                    <Select name={info.name} placeholder='Elegir' options={
+                                    <Select name={info.name} placeholder='Elegir' defaultValue={info.value} options={
                                         info.options.map(i => {
                                             return {
                                                 name: i.name,
@@ -286,7 +286,7 @@
                                     min="7">                                    
                                 {:else}
                                     {#if info.options}
-                                        <Select name={info.name} placeholder={info.name === "turno" ? empleado.turno : empleado.nombre_departamento ? empleado.nombre_departamento : "Elegir"} options={
+                                        <Select name={info.name} defaultValue={info.value} placeholder={info.name === "turno" ? empleado.turno : empleado.nombre_departamento ? empleado.nombre_departamento : "Elegir"} options={
                                             info.options.map(i => {
                                                 return {
                                                     name: i.name,

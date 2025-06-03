@@ -20,7 +20,7 @@ let fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-function print(docDef: TDocumentDefinitions, path: string) {
+export function print(docDef: TDocumentDefinitions, path: string) {
     const pdfDoc = printer.createPdfKitDocument(docDef);
     let res = pdfDoc.pipe(fs.createWriteStream(path));
     if (res.errored){
