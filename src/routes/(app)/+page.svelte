@@ -2,9 +2,11 @@
     import { onMount } from "svelte";
     import type { PageData } from "./$types";
     import Chart from "chart.js/auto"
+    import { formatStringWithDots } from "$lib";
+    import formatTime from "$lib/utils/formatTime";
 
     let { data }: {data: PageData} = $props()
-    let { usuario, relacionAsistencias } = $derived(data)
+    let { usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias } = $derived(data)
 
     let asistenciasPctg =   $derived((relacionAsistencias!.total *      100) /relacionAsistencias!.totalDias );
     let ausenciasPctg =     $derived((relacionAsistencias!.ausencias *  100) /relacionAsistencias!.totalDias );
@@ -51,11 +53,6 @@
         <div class="w-full lg:w-[30%] bg-base-300 shadow-md rounded-lg lg:h-full p-3">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg"><b>Actividad</b></h3>
-
-                <button class="btn btn-sm btn-outline hover:text-base-100">
-                    <i class="fa-solid fa-file-export"></i> 
-                    <span>Exportar</span>
-                </button>
             </div>
 
             <div class="border border-base-content/40 rounded-md mt-4 p-2">
@@ -68,38 +65,36 @@
                 </div>
 
                 <div class="flex flex-col gap-1 max-h-40 mt-2 overflow-x-hidden overflow-y-auto">
-                    {#each { length: 6 } as i}
-                        <div class="flex h-24 p-2 items-center justify-between gap-4 bg-base-content/15 w-full rounded-md">
-                            <div class="flex h-full gap-3 items-center">
-                                <i class="fa-solid fa-user text-3xl"></i>
-                                <div>
-                                    <div class="font-bold">Carlos Tineo</div>
-                                    <div class="text-sm text-base-content/70">C.I V-30.451.822</div>
+                    {#if mayoresAsistencias && mayoresAsistencias.length > 0}
+                        {#each mayoresAsistencias as empleado}
+                            <div class="flex h-24 p-2 items-center justify-between gap-4 bg-base-content/15 w-full rounded-md">
+                                <div class="flex h-full gap-3 items-center">
+                                    <i class="fa-solid fa-user text-3xl"></i>
+                                    <div>
+                                        <div class="font-bold">{empleado.primer_nombre} {empleado.primer_apellido}</div>
+                                        <div class="text-sm text-base-content/70">C.I V-{formatStringWithDots(empleado.cedula)}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between gap-2 w-fit">
+                                    <h2 class="text-2xl font-bold">{empleado.total_asistencias}</h2>
+
+                                    <a href="/empleados/{empleado.cedula}" class="text-lg btn bg-base-content text-base-100 btn-sm btn-square p-1" aria-label="button">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-between gap-2 w-fit">
-                                <h2 class="text-2xl font-bold">12</h2>
-
-                                <a href="/empleados/{8933618}" class="text-lg btn bg-base-content text-base-100 btn-sm btn-square p-1" aria-label="button">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
-                            </div>
-                        </div>
-                    {/each}
+                        {/each}           
+                    {/if}
                 </div>
             </div>
         </div>
 
         <div class="max-lg:mt-4 gap-2 flex flex-col w-full lg:w-[70%] bg-base-300 h-full shadow-md rounded-lg p-3">
-            <div class="gap-2 flex flex-col lg:flex-row items-start justify-between w-full">
+            <div class="gap-2 h-full flex flex-col lg:flex-row items-start justify-between w-full">
+                <!-- RELACION DE ASISTENCIAS -->
                 <div class="w-full lg:w-2/4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg"><b>Relacion de Asistencias</b></h3>
-
-                        <button class="btn btn-sm btn-outline hover:text-base-100">
-                            <i class="fa-solid fa-file-export"></i> 
-                            <span>Exportar</span>
-                        </button>
                     </div>
 
                     <div class="border border-base-content/40 rounded-md mt-4 p-2">
@@ -153,9 +148,53 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ATAJOS -->
+                <div class="w-full h-full lg:w-2/4 row-span-2">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg"><b>Ultimas Asistencias</b></h3>
+                        <a href="/asistencias/registrar" class="btn btn-sm btn-outline hover:text-base-100">
+                            <i class="fa-solid fa-file-export"></i> 
+                            <span>Registrar</span>
+                        </a>
+                    </div>
+
+                    <div class="bg-base-content/5 rounded-md mt-4 p-2 h-[90%]">
+                        <div class="flex flex-col gap-1 mt-2 max-h-[95%] overflow-x-hidden overflow-y-auto">
+                            {#if latestAsistencias && latestAsistencias.length > 0}
+                                {#each latestAsistencias as asistencia}
+                                    {@const str = asistencia.id_asistencia.split('_')[1]}
+                                    {@const asistenciaPath = `${asistencia.id_asistencia.split('_')[0]}_${str.slice(0,4)}-${str.slice(4,5)}-${str.slice(5,6)}`}
+
+                                    <div class="flex h-24 p-2 items-center justify-between gap-4 bg-base-content/15 w-full rounded-md">
+                                        <div class="flex h-full gap-5 items-center">
+                                            <i class="fa-solid fa-calendar-days text-5xl"></i>
+                                            <div>
+                                                <div class="font-bold">{asistencia.primer_nombre} {asistencia.primer_apellido}</div>
+                                                <div class="text-sm text-base-content/70">C.I V-{formatStringWithDots(asistencia.cedula)}</div>
+                                                <div class="text-sm font-bold text-base-content/70">Entrada: {formatTime(asistencia.hora_entrada)}</div>
+                                                <div class="font-bold  {asistencia.hora_entrada > asistencia.entrada_estimada ? "text-warning" : "text-success"}">
+                                                    {
+                                                        asistencia.hora_entrada > asistencia.entrada_estimada ? "Tardanza" : "A tiempo"
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between gap-2 w-fit">
+                                            <a href="/asistencias/{asistenciaPath}" class="text-lg btn bg-base-content text-base-100 btn-sm btn-square p-1" aria-label="button">
+                                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {/each}           
+                            {/if}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="gap-2 flex items-start justify-between w-full">
+            <!-- <div class="gap-2 flex items-start justify-between w-full">
                 <div class="w-full ">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg"><b>Relacion de Asistencias</b></h3>
@@ -193,22 +232,11 @@
                         </div>
 
                         <div class="flex mt-6 items-start justify-between gap-2">
-                            {#each { length: 3 } as i}
-                                <div class="w-1/3 min-h-28 bg-base-content h-full rounded-md flex flex-col items-center justify-between p-2 text-base-100">
-                                    <i class="fa-solid fa-stopwatch text-3xl"></i>
-                                    <!-- <i class="fa-solid fa-calendar-xmark"></i>
-                                    <i class="fa-solid fa-clock"></i> -->
 
-                                    <div class="text-center w-full">
-                                        <h3 class="text-sm">Asistencias</h3>
-                                        <h1 class="font-bold text-2xl">32</h1>
-                                    </div>
-                                </div> 
-                            {/each}
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

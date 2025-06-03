@@ -1,17 +1,18 @@
 import { db } from '$lib/database';
 import async from '$lib/utils/asyncHandler';
-import { eachDayOfInterval, format, getDaysInYear, startOfDay, startOfMonth, startOfYear } from 'date-fns';
+import { eachDayOfInterval, endOfDay, format, getDaysInYear, startOfDay, startOfMonth, startOfYear } from 'date-fns';
 import type { LayoutServerLoad } from './$types';
+import { sql } from 'kysely';
 
 export const load = (async ({ locals }) => {
     let { log } = locals
 
     let today = new Date()
+    let primerDiaDelMes = startOfMonth(today)
+    let diasDelMes = obtenerDiferenciaDeDias(primerDiaDelMes, today, 'dd').length
+
     let relacionAsistencias = await async(
         db.transaction().execute(async (trx) => {
-            let primerDiaDelMes = startOfMonth(today)
-            let diasDelMes = obtenerDiferenciaDeDias(primerDiaDelMes, today, 'dd').length
-
             // TOTAL DE ASISTENCIAS 
             let total = 0
 
@@ -169,9 +170,51 @@ export const load = (async ({ locals }) => {
         })
     , log)
 
-    console.log(relacionAsistencias)
+    const mayoresAsistencias = await db
+        .selectFrom('empleados')
+        .leftJoin(
+            (eb) => eb // eb es el ExpressionBuilder para la subconsulta
+                .selectFrom('asistencias')
+                .select([
+                    'asistencias.empleado', // La cédula del empleado para el join
+                    eb.fn.count('asistencias.id_asistencia').as('conteo_asistencias_empleado')
+                ])
+                .groupBy('asistencias.empleado') // Agrupamos por empleado para contar correctamente
+                .as('conteo_sub'), // Alias para la subconsulta completa
+            (join) => join.onRef('conteo_sub.empleado', '=', 'empleados.cedula')
+        )
+        .select((eb) => [
+            'empleados.cedula',
+            'empleados.primer_nombre',
+            'empleados.segundo_nombre',
+            'empleados.primer_apellido',
+            'empleados.segundo_apellido',
+            'empleados.cargo',
+            'empleados.estado',
+            'empleados.departamento', // Este es el ID del departamento (varchar(40))
+            eb.fn.coalesce('conteo_sub.conteo_asistencias_empleado', sql.lit(0)).as('total_asistencias')
+        ])
+        .orderBy('empleados.primer_apellido', 'asc')
+        .orderBy('empleados.primer_nombre', 'asc')
+        .limit(5)
+        .execute()
 
-    return { usuario: locals.usuario, relacionAsistencias };
+    const latestAsistencias = await db
+    .selectFrom('asistencias')
+    .innerJoin('empleados', 'empleados.cedula', 'asistencias.empleado')
+    .leftJoin("info_laboral", 'empleados.cedula', 'info_laboral.id_empleado')
+    .selectAll(['empleados', 'asistencias'])
+    .select(['info_laboral.hora_entrada as entrada_estimada', 'info_laboral.hora_salida as salida_estimada'])
+    .orderBy('asistencias.fecha', 'desc')
+    .orderBy('asistencias.hora_entrada', 'desc')
+    .where((eb) => eb.and([
+        eb('asistencias.fecha', '>=', startOfDay(today).toISOString().split('T')[0]),
+        eb('asistencias.fecha', '<=', endOfDay(today).toISOString().split('T')[0]),
+    ]))
+    .limit(15)
+    .execute();
+
+    return { usuario: locals.usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias };
 }) satisfies LayoutServerLoad;
 
 function obtenerDiferenciaDeDias(inicio: Date, fin: Date, formatType: string) {

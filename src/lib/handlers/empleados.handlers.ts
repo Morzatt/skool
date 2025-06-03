@@ -90,8 +90,8 @@ export async function printEmpleadoHandler({ request, locals }: RequestEvent) {
     const temporalPath = path.join(process.cwd(), `/static/temporal/empleado_${timeId}.pdf`);
 
     print (
-        // createEmpleadoDocDef(empleado, info_personal, info_contacto, info_laboral),
-        createAsistenciaDocumentDefinition(),
+        createEmpleadoDocDef(empleado, info_personal, info_contacto, info_laboral),
+        // createAsistenciaDocumentDefinition(),
         temporalPath
     )
     setTimeout(() => unlinkSync(temporalPath), 10000);
