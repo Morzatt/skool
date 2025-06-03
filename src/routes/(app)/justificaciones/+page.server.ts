@@ -32,39 +32,41 @@ export const load = (async ({ locals, url }) => {
 
     let justificaciones;
 
-    if (filter && search) {
-        if (filter === "primer_nombre" || filter === "primer_apellido") {
-            query = query.where(`empleados.${filter}`, 'like', `%${search}%`)
-        }
+    if (search) {
+        // AÑADIR BUSQUEDA POR FECHA, TODAS LAS JUSTIFICACIONES QUE HAYAN SIDO REALIZADAS DENTRO DE UNAS FECHAS ESPECIFICADAS
+        query = query.where((eb) => eb.or([
+            eb(`empleados.primer_nombre`, 'like', `%${search}%`),
+            eb(`empleados.primer_apellido`, 'like', `%${search}%`),
+            eb(`empleados.segundo_nombre`, 'like', `%${search}%`),
+            eb(`empleados.segundo_apellido`, 'like', `%${search}%`),
+            eb(`justificaciones.empleado`, 'like', `%${search}%`),
 
-        if (filter === 'empleado') {
-            query = query.where(`justificaciones.${filter}`, 'like', `%${search}%`)
-        }
+            eb(`usuarios.nombre`, 'like', `%${search}%`),
+            eb(`usuarios.apellido`, 'like', `%${search}%`),
+            eb(`usuarios.usuario`, 'like', `%${search}%`),
 
-        if (filter === "nombre" || filter === "apellido" || filter === "usuario") {
-            query = query.where(`usuarios.${filter}`, 'like', `%${search}%`)
-        }
+            eb("justificaciones.razon", 'like', `%${search}%`),
+            eb("justificaciones.tipo", 'like', `%${search}%`),
+        ]))       
     }
 
     const today = new Date().toISOString().split('T')[0];
 
+
     if (estado) {
-        switch (estado) {
-            case "Expiradas":
-                query = query.where('justificaciones.fecha_finalizacion', "<", today)
-                return
-            case "Pendientes":
-                query = query.where('justificaciones.fecha_inicio', '>', today)
-                return
-            case "Vigentes":
-                query = query.where('justificaciones.fecha_inicio', '<', today).where('justificaciones.fecha_finalizacion', '>', today)
-                return
-            default:
-                break
+        if (estado === "Expiradas") {
+            query = query.where('justificaciones.fecha_finalizacion', "<", today)
+        }
+
+        if (estado === "Pendientes") {
+            query = query.where('justificaciones.fecha_inicio', '>', today)
+        }
+
+        if (estado === "Vigentes") {
+            query = query.where('justificaciones.fecha_inicio', '<', today).where('justificaciones.fecha_finalizacion', '>', today)
         }
     }
 
     justificaciones = await async(query.execute(), log)
-
     return { justificaciones };
 }) satisfies PageServerLoad;

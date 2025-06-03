@@ -12,7 +12,7 @@
     let { justificaciones } = $derived(data)
 
     let index = $state(0)
-    let filter = $state("")
+    // let filter = $state("")
     let estado = $state('')
     let search = $state("")
     let turno = $state("")
@@ -23,7 +23,7 @@
     let apellido: 'asc'|'desc' = $state('desc')
     let fecha: 'asc'|'desc' = $state('desc')
 
-    let url = $derived(`${basePath}/justificaciones?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)
+    let url = $derived(`${basePath}/justificaciones?index=${index}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -54,7 +54,6 @@
 
     function clearAll() {
         index = 0
-        filter = ''
         search = ''
         estado = ''
         turno = ''
@@ -98,7 +97,7 @@
                 </button>
             </div>
 
-            <FilterSelect inputfn={handleSearch} bind:value={filter} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
+            <!-- <FilterSelect inputfn={handleSearch} bind:value={filter} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
                 {
                     name: "Cédula del Empleado",
                     value: "empleado"
@@ -123,7 +122,7 @@
                     name: "Apellido del encargado",
                     value: "apellido"
                 }
-            ]}/>
+            ]}/> -->
         </div>
     </div>
 

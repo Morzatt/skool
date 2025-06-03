@@ -12,7 +12,7 @@
     let { empleados, records, total } = $derived(data)
 
     let index = $state(0)
-    let filter = $state("")
+    // let filter = $state("")
     let search = $state("")
     let estado = $state("")
     let turno = $state("")
@@ -23,7 +23,7 @@
     let apellido: 'asc'|'desc' = $state('desc')
     let fecha: 'asc'|'desc' = $state('desc')
 
-    let url = $derived(`${basePath}/empleados?index=${index}&filter=${filter === "Filtro"?"":filter}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
+    let url = $derived(`${basePath}/empleados?index=${index}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -67,7 +67,7 @@
 
     function clearAll() {
         index = 0
-        filter = ''
+        // filter = ''
         search = ''
         estado = ''
         turno = ''
@@ -108,7 +108,7 @@
                 </button>
             </div>
 
-            <FilterSelect bind:value={filter} inputfn={handleSearch} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
+            <!-- <FilterSelect bind:value={filter} inputfn={handleSearch} name="Filtro" type="dropdown-left" styles="rounded-md" icon="fa-solid fa-filter" options={[
                 {
                     name: "Cedula",
                     value: "cedula"
@@ -121,7 +121,7 @@
                     name: "Apellido",
                     value: "primer_apellido"
                 }
-            ]}/>
+            ]}/> -->
         </div>
     </div>
 
@@ -162,7 +162,7 @@
                     //     name: "De Permiso",
                     //     value: "permiso"
                     // },
-                ]}/>
+                 ]}/>
             </div>
             <div class="form-control">
                 <div class="label">
@@ -196,7 +196,7 @@
             </div>
 
             <button aria-label="clear-search" 
-            class="{index || filter || search || estado || turno || departamento ? "block" : "hidden"} 
+            class="{index || search || estado || turno || departamento ? "block" : "hidden"} 
             hover:text-error animate--x
             transition-all duration-200 ease-in-out 
             mb-0.5 mx-6 

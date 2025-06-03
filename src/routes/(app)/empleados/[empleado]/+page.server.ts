@@ -27,11 +27,11 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 
     let empleado = await async(
         db
-            .selectFrom('empleados')
-            .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
-            .selectAll()
-            .where('cedula', "=", cedula_empleado)
-            .executeTakeFirst()
+        .selectFrom('empleados')
+        .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+        .selectAll()
+        .where('cedula', "=", cedula_empleado)
+        .executeTakeFirst()
         , log)
 
     if (!empleado) {
@@ -44,43 +44,43 @@ export const load: PageServerLoad = (async ({ url, locals }) => {
 
     let justificaciones = await async(
         db
-            .selectFrom('justificaciones')
-            .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
-            .select((eb) => [
-                'justificaciones.detalles', 'justificaciones.empleado',
-                'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
-                'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
-                'usuarios.nombre as nombre_encargado', 'usuarios.apellido as apellido_encargado',
+        .selectFrom('justificaciones')
+        .leftJoin('usuarios', 'usuarios.usuario', 'justificaciones.created_by')
+        .select((eb) => [
+            'justificaciones.detalles', 'justificaciones.empleado',
+            'justificaciones.fecha_inicio', 'justificaciones.fecha_finalizacion', 'justificaciones.id',
+            'justificaciones.tipo', 'justificaciones.created_by', 'justificaciones.razon', 'justificaciones.created_at',
+            'usuarios.nombre as nombre_encargado', 'usuarios.apellido as apellido_encargado',
                 eb.selectFrom('comprobantes')
-                    .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
-                    .select(['comprobantes.path'])
-                    .limit(1)
-                    .as('path')
-            ])
-            .where('empleado', "=", cedula_empleado)
-            .execute()
-        , log)
+                .whereRef('comprobantes.id_justificacion', '=', 'justificaciones.id')
+                .select(['comprobantes.path'])
+                .limit(1)
+                .as('path')
+        ])
+        .where('empleado', "=", cedula_empleado)
+        .execute()
+    , log)
 
     let personal = await async(
         db.selectFrom("info_personal")
-            .selectAll()
-            .where('id_empleado', "=", cedula_empleado)
-            .executeTakeFirst()
-        , log)
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
 
     let contacto = await async(
         db.selectFrom("info_contacto")
-            .selectAll()
-            .where('id_empleado', "=", cedula_empleado)
-            .executeTakeFirst()
-        , log)
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
 
     let laboral = await async(
         db.selectFrom("info_laboral")
-            .selectAll()
-            .where('id_empleado', "=", cedula_empleado)
-            .executeTakeFirst()
-        , log)
+        .selectAll()
+        .where('id_empleado', "=", cedula_empleado)
+        .executeTakeFirst()
+    , log)
 
     let departamentos = await async(db.selectFrom('departamentos').selectAll().execute(), log)
 
@@ -141,21 +141,21 @@ export const actions = {
         if (!personal) {
             await async(
                 db
-                    .insertInto('info_personal')
+                .insertInto('info_personal')
                     .values(personalData)
-                    .execute()
+                .execute()
                 , log);
 
             return response.success('Información personal registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_personal')
-                    .set({
+                .set({
                         estado_civil: personalData.estado_civil,
                         nivel_academico: personalData.nivel_academico,
-                    })
+                })
                     .where("id_empleado", '=', personalData.id_empleado)
-                    .execute()
+                .execute()
                 , log);
 
             return response.success('Información personal actualizada correctamente');
@@ -188,23 +188,23 @@ export const actions = {
         if (!contacto) {
             await async(
                 db
-                    .insertInto('info_contacto')
+                .insertInto('info_contacto')
                     .values(contactoData)
-                    .execute()
+                .execute()
                 , log);
 
             return response.success('Información de contacto registrada correctamente');
         } else {
             await async(
                 db.updateTable('info_contacto')
-                    .set({
+                .set({
                         direccion_habitacion: contactoData.direccion_habitacion,
                         telefono_habitacion: contactoData.telefono_habitacion,
                         telefono_personal: contactoData.telefono_personal,
                         correo_electronico: contactoData.correo_electronico,
                     })
                     .where("id_empleado", '=', contactoData.id_empleado)
-                    .execute()
+                .execute()
                 , log);
 
             return response.success('Información de contacto actualizada correctamente');
@@ -237,11 +237,11 @@ export const actions = {
 
         let empleado = await async(
             db
-                .selectFrom('empleados')
-                .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
+            .selectFrom('empleados')
+            .leftJoin('departamentos', 'empleados.departamento', 'departamentos.id_departamento')
                 .select(['empleados.cedula', 'empleados.departamento', 'empleados.cargo', 'empleados.turno'])
                 .where('empleados.cedula', '=', laboralData.id_empleado)
-                .executeTakeFirst()
+            .executeTakeFirst()
             , log);
 
         if (!empleado) {
@@ -254,7 +254,7 @@ export const actions = {
                 db.updateTable('empleados')
                     .set({ departamento: laboralData.departamento })
                     .where('empleados.cedula', '=', laboralData.id_empleado)
-                    .execute()
+                .execute()
                 , log);
         }
 
@@ -263,7 +263,7 @@ export const actions = {
                 db.updateTable('empleados')
                     .set({ cargo: laboralData.cargo })
                     .where('empleados.cedula', '=', laboralData.id_empleado)
-                    .execute()
+                .execute()
                 , log);
         }
 
@@ -273,24 +273,24 @@ export const actions = {
         if (!laboral) {
             await async(
                 db
-                    .insertInto('info_laboral')
-                    .values({
+                .insertInto('info_laboral')
+                .values({
                         id_empleado: laboralData.id_empleado,
                         hora_entrada: laboralData.hora_entrada,
                         hora_salida: laboralData.hora_salida
-                    })
-                    .execute()
+                })
+                .execute()
                 , log);
         } else {
             if (laboralData.hora_entrada && laboralData.hora_salida) {
-                await async(
-                    db.updateTable('info_laboral')
-                        .set({
+            await async(
+                db.updateTable('info_laboral')
+                .set({
                             hora_entrada: laboralData.hora_entrada,
                             hora_salida: laboralData.hora_salida,
-                        })
+                })
                         .where("id_empleado", '=', laboralData.id_empleado)
-                        .execute()
+                .execute()
                     , log);
             }
         }
@@ -298,12 +298,12 @@ export const actions = {
         if (laboralData.turno !== empleado.turno) {
             await async(
                 db
-                    .updateTable('empleados')
-                    .set({
+                .updateTable('empleados')
+                .set({
                         turno: laboralData.turno
-                    })
+                })
                     .where('empleados.cedula', '=', laboralData.id_empleado)
-                    .execute()
+                .execute()
                 , log);
         }
 

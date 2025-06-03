@@ -79,11 +79,28 @@
         switch (type) {
             case "start":
                 dateRangeStart = new Date(input.value)
+                updateURL()
                 break
             case "end":
                 dateRangeEnd = new Date(input.value)
+                updateURL()
                 break
         }
+    }
+
+    function formatDate(dateString: Date) {
+        const utcDate = new Date(dateString.toISOString().split('T')[0] + 'T00:00:00Z');
+
+        const year = utcDate.getUTCFullYear();
+        const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(utcDate.getUTCDate()).padStart(2, '0');
+
+        const formattedDate = `${day}/${month}/${year}`; // For 'dd/mm/yyyy' like '10/05/2025'
+        // Or for 'yyyy-mm-dd'
+        // const formattedDate = `${year}-${month}-${day}`;
+
+        console.log(formattedDate); // Output: 10/05/2025
+        return formattedDate
     }
 </script>
 
@@ -118,12 +135,14 @@
         <div class="text-sm w-full max-w-sm">
             <p class="font-semibold">Rango seleccionado:</p>
             <p class="text-primary">
-                {dateRangeStart.toLocaleDateString('es-ES')} - {dateRangeEnd.toLocaleDateString('es-ES')}
+                {formatDate(dateRangeStart)} - {formatDate(dateRangeEnd)}
             </p>
 
             <div class="w-full border border-base-content/30 p-2 rounded-md mt-2 flex items-center justify-between">
-                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('start')}  id="input_start" value={`${dateRangeStart.getFullYear()}-${(dateRangeStart.getMonth()+1) <= 9 ? `0${dateRangeStart.getMonth()+1}` : dateRangeStart.getMonth()+1}-${(dateRangeStart.getDate()) <= 9 ? `0${dateRangeStart.getDate()}` : dateRangeStart.getDate()}`}>
-                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('end')}   id="input_end"    value={`${dateRangeEnd.getFullYear()}-${(dateRangeEnd.getMonth()+1) <= 9 ? `0${dateRangeEnd.getMonth()+1}` : dateRangeEnd.getMonth()+1}-${(dateRangeEnd.getDate()) <= 9 ? `0${dateRangeEnd.getDate()}` : dateRangeEnd.getDate()}`}>
+                <!-- <input type="date" class="input input-bordered input-sm" on:input={() => setDate('start')}  id="input_start" value={`${dateRangeStart.getFullYear()}-${(dateRangeStart.getMonth()+1) <= 9 ? `0${dateRangeStart.getMonth()+1}` : dateRangeStart.getMonth()+1}-${(dateRangeStart.getDate()) <= 9 ? `0${dateRangeStart.getDate()}` : dateRangeStart.getDate()}`}>
+                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('end')}   id="input_end"    value={`${dateRangeEnd.getFullYear()}-${(dateRangeEnd.getMonth()+1) <= 9 ? `0${dateRangeEnd.getMonth()+1}` : dateRangeEnd.getMonth()+1}-${(dateRangeEnd.getDate()) <= 9 ? `0${dateRangeEnd.getDate()}` : dateRangeEnd.getDate()}`}> -->
+                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('start')}  id="input_start" value={`${dateRangeStart.toISOString().split('T')[0]}`}>
+                <input type="date" class="input input-bordered input-sm" on:input={() => setDate('end')}   id="input_end"    value={`${dateRangeEnd.toISOString().split('T')[0]}`}>
             </div>
         </div>
     </div>

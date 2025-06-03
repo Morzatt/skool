@@ -64,6 +64,7 @@
             downloadFile(`/downloads/${form.id}?type=card`, `ID_${empleado.cedula}.png`)
         }
     })
+
     $inspect(form)
 </script>
 

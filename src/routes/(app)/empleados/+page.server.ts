@@ -56,8 +56,14 @@ export const load = (async ({ url, locals }) => {
         query = query.where('empleados.departamento', "=", departamento)
     }
 
-    if (filter && search) {
-        query = query.where(`empleados.${filter}`, 'like', `%${search}%`)
+    if (search) {
+        query = query.where((eb) => eb.or([
+            eb(`empleados.primer_nombre`, 'like', `%${search}%`),
+            eb(`empleados.primer_apellido`, 'like', `%${search}%`),
+            eb(`empleados.segundo_nombre`, 'like', `%${search}%`),
+            eb(`empleados.segundo_apellido`, 'like', `%${search}%`),
+            eb(`empleados.cedula`, 'like', `%${search}%`),
+        ]))
     }
 
     empleados = await async(query.selectAll().execute(), log)
