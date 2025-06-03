@@ -214,7 +214,9 @@ export const load = (async ({ locals }) => {
     .limit(15)
     .execute();
 
-    return { usuario: locals.usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias };
+    let distribucionAsistencias = (await getAsistenciasPorMes())
+
+    return { usuario: locals.usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias };
 }) satisfies LayoutServerLoad;
 
 function obtenerDiferenciaDeDias(inicio: Date, fin: Date, formatType: string) {
@@ -227,3 +229,40 @@ function obtenerDiferenciaDeDias(inicio: Date, fin: Date, formatType: string) {
     // Formatear cada fecha como string (ejemplo: "2023-04-01")
     return diasDelMes.map(fecha => format(fecha, formatType));
 }
+
+async function getAsistenciasPorMes(): Promise<{ labels: string[], datasets: any[] }> {
+    const meses = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    const year = new Date().getFullYear();
+
+    const results = await db
+        .selectFrom('asistencias')
+        .select([
+            sql<number>`EXTRACT(MONTH FROM fecha)`.as('mes'),
+            db.fn.count('asistencias.id_asistencia').as('cantidad')
+        ])
+        .where(sql<number>`EXTRACT(YEAR FROM fecha)`, '=', year)
+        .groupBy('mes')
+        .orderBy('mes')
+        .execute();
+
+    const counts = Array(12).fill(0);
+    for (const row of results) {
+        const mesIdx = (typeof row.mes === 'string' ? parseInt(row.mes) : row.mes) - 1;
+        if (mesIdx >= 0 && mesIdx < 12) {
+            counts[mesIdx] = Number(row.cantidad);
+        }
+    }
+
+    return {
+        labels: meses,
+        datasets: [{
+            label: `Distribución de Asistencias ${year}`,
+            data: counts,
+            borderWidth: 1
+        }]
+    };
+}
+

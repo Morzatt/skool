@@ -6,7 +6,7 @@
     import formatTime from "$lib/utils/formatTime";
 
     let { data }: {data: PageData} = $props()
-    let { usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias } = $derived(data)
+    let { usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias } = $derived(data)
 
     let asistenciasPctg =   $derived((relacionAsistencias!.total *      100) /relacionAsistencias!.totalDias );
     let ausenciasPctg =     $derived((relacionAsistencias!.ausencias *  100) /relacionAsistencias!.totalDias );
@@ -14,21 +14,21 @@
 
     onMount(() => {
         let canva = document.getElementById("canva") as HTMLCanvasElement
-        let donut = document.getElementById("donut") as HTMLCanvasElement
 
         if(canva) {
             new Chart(canva, {
                 type: 'bar',
                 data: {
-                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
-                    datasets: [{
-                        label: `Distribución de Donantes ${new Date().getFullYear()}`,
-                        data: [1, 0, 0, 0, 14, 0],
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        borderColor: '#36A2EB',
-                        backgroundColor: '#9BD0F5',
-                    }]
+                    ...distribucionAsistencias
+                    // labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+                    // datasets: [{
+                    //     label: `Distribución de Asistencias ${new Date().getFullYear()}`,
+                    //     data: [1, 0, 0, 0, 14, 0],
+                    //     borderWidth: 1,
+                    //     borderRadius: 10,
+                    //     borderColor: '#36A2EB',
+                    //     backgroundColor: '#9BD0F5',
+                    // }]
 
                 },
                 options: {
@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="max-lg:mt-4 gap-2 flex flex-col w-full lg:w-[70%] bg-base-300 h-full shadow-md rounded-lg p-3">
+        <div class="max-lg:mt-4 gap-2 flex flex-col w-full lg:w-[70%] bg-base-300 lg:h-full shadow-md rounded-lg p-3">
             <div class="gap-2 h-full flex flex-col lg:flex-row items-start justify-between w-full">
                 <!-- RELACION DE ASISTENCIAS -->
                 <div class="w-full lg:w-2/4">
