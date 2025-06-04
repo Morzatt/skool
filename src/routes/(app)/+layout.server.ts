@@ -5,7 +5,7 @@ import type { LayoutServerLoad } from './$types';
 import { sql } from 'kysely';
 
 export const load = (async ({ locals }) => {
-    let { log } = locals
+    let { log, usuario } = locals
 
     let today = new Date()
     let primerDiaDelMes = startOfMonth(today)
@@ -216,7 +216,25 @@ export const load = (async ({ locals }) => {
 
     let distribucionAsistencias = (await getAsistenciasPorMes())
 
-    return { usuario: locals.usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias };
+    let asistenciasUsuario = await async(
+        db.transaction().execute(async (trx) => {
+            let asistencias = await trx
+            .selectFrom('asistencias')
+            .select("id_asistencia")
+            .where('asistencias.encargado', '=', usuario.usuario)
+            .execute()
+
+            let observaciones = await trx
+            .selectFrom("observaciones_asistencias")
+            .select("id_asistencia")
+            .where("observaciones_asistencias.encargado_observacion", '=', usuario.usuario)
+            .execute()
+
+            return { asistencias: asistencias.length, observaciones: observaciones.length }
+        })
+    ,log)
+
+    return { usuario: locals.usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias, asistenciasUsuario };
 }) satisfies LayoutServerLoad;
 
 function obtenerDiferenciaDeDias(inicio: Date, fin: Date, formatType: string) {
@@ -235,6 +253,7 @@ async function getAsistenciasPorMes(): Promise<{ labels: string[], datasets: any
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
+    
     const year = new Date().getFullYear();
 
     const results = await db
@@ -257,7 +276,7 @@ async function getAsistenciasPorMes(): Promise<{ labels: string[], datasets: any
     }
 
     return {
-        labels: meses,
+        labels: meses.map((i) => { return i.slice(0, 3) }),
         datasets: [{
             label: `Distribución de Asistencias ${year}`,
             data: counts,

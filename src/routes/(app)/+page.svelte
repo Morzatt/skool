@@ -6,7 +6,7 @@
     import formatTime from "$lib/utils/formatTime";
 
     let { data }: {data: PageData} = $props()
-    let { usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias } = $derived(data)
+    let { usuario, relacionAsistencias, mayoresAsistencias, latestAsistencias, distribucionAsistencias, asistenciasUsuario } = $derived(data)
 
     let asistenciasPctg =   $derived((relacionAsistencias!.total *      100) /relacionAsistencias!.totalDias );
     let ausenciasPctg =     $derived((relacionAsistencias!.ausencias *  100) /relacionAsistencias!.totalDias );
@@ -20,21 +20,11 @@
                 type: 'bar',
                 data: {
                     ...distribucionAsistencias
-                    // labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
-                    // datasets: [{
-                    //     label: `Distribución de Asistencias ${new Date().getFullYear()}`,
-                    //     data: [1, 0, 0, 0, 14, 0],
-                    //     borderWidth: 1,
-                    //     borderRadius: 10,
-                    //     borderColor: '#36A2EB',
-                    //     backgroundColor: '#9BD0F5',
-                    // }]
-
                 },
                 options: {
                     scales: {
                         y: {
-                        beginAtZero: true
+                            beginAtZero: true
                         }
                     },
                 }
@@ -50,12 +40,12 @@
     </div>
 
     <div class="w-full flex flex-col lg:flex-row items-start justify-between gap-4 mt-4 h-full">
-        <div class="w-full lg:w-[30%] bg-base-300 shadow-md rounded-lg lg:h-full p-3">
+        <div class="w-full lg:w-[30%] bg-base-300 shadow-md rounded-lg lg:h-full p-3 animate-pop">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg"><b>Actividad</b></h3>
             </div>
 
-            <div class="border border-base-content/40 rounded-md mt-4 p-2">
+            <div class="border border-base-content/40 rounded-md mt-4 p-0.5">
                 <canvas id="canva"></canvas>
             </div>
 
@@ -89,8 +79,8 @@
             </div>
         </div>
 
-        <div class="max-lg:mt-4 gap-2 flex flex-col w-full lg:w-[70%] bg-base-300 lg:h-full shadow-md rounded-lg p-3">
-            <div class="gap-2 h-full flex flex-col lg:flex-row items-start justify-between w-full">
+        <div class="max-lg:mt-4 gap-2 flex flex-col w-full lg:w-[70%] bg-base-300 shadow-md rounded-lg p-3 animate-pop-delayed" style="--delay: 100ms;">
+            <div class="gap-2 flex flex-col lg:flex-row items-start justify-between w-full">
                 <!-- RELACION DE ASISTENCIAS -->
                 <div class="w-full lg:w-2/4">
                     <div class="flex items-center justify-between">
@@ -107,23 +97,30 @@
 
                         <div class="w-full h-3 *:h-full *:relative rounded-md flex items-center gap-1 *:rounded-md">
                             <div class="bg-success " style="width: {asistenciasPctg.toFixed(1)}%">
-                                <div class="text-sm font-bold absolute left-2/4 top-[110%]">
-                                    <span>Asistencias</span>
-                                </div>
                             </div>
                             <div class="bg-error" style="width: {ausenciasPctg.toFixed(1)}%;">  
-                                <div class="text-sm font-bold absolute left-2/4 top-[110%]">
-                                    <span>Ausencias</span>
-                                </div>
                             </div>
                             <div class="bg-warning" style="width: {retardosPctg.toFixed(1)}%;">
-                                <div class="text-sm font-bold absolute right-2/4 top-[110%]">
-                                    <span>Retardos</span>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="flex mt-6 items-start justify-between gap-2">
+                        <div class="w-full mt-2 gap-1 flex items-center justify-start 
+                        *:flex *:gap-1 *:justify-start *:items-center *:text-sm *:border *:border-base-content/30 *:rounded-xl *:py-0.5 *:px-1 ">
+                            <div>
+                                <div class="rounded-full size-4 border border-base-content/50 bg-success"></div>
+                                <span>Asistencias</span>
+                            </div>
+                            <div>
+                                <div class="rounded-full size-4 border border-base-content/50 bg-error"></div>
+                                <span>Ausencias</span>
+                            </div>
+                            <div>
+                                <div class="rounded-full size-4 border border-base-content/50 bg-warning"></div>
+                                <span>Retardos</span>
+                            </div>
+                        </div>
+
+                        <div class="flex mt-2 items-start justify-between gap-2">
                             <div class="w-1/3 min-h-28 bg-base-content h-full rounded-md flex flex-col items-center justify-between p-2 text-base-100">
                                 <i class="fa-solid fa-stopwatch text-3xl"></i>
                                 <div class="text-center w-full">
@@ -149,7 +146,7 @@
                     </div>
                 </div>
 
-                <!-- ATAJOS -->
+                <!-- Ultimas Asistencias-->
                 <div class="w-full h-full lg:w-2/4 row-span-2">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg"><b>Ultimas Asistencias</b></h3>
@@ -159,7 +156,7 @@
                         </a>
                     </div>
 
-                    <div class="bg-base-content/5 rounded-md mt-4 p-2 h-[90%]">
+                    <div class="bg-base-content/5 rounded-md mt-4 p-2 h-[16rem]">
                         <div class="flex flex-col gap-1 mt-2 max-h-[95%] overflow-x-hidden overflow-y-auto">
                             {#if latestAsistencias && latestAsistencias.length > 0}
                                 {#each latestAsistencias as asistencia}
@@ -194,49 +191,32 @@
                 </div>
             </div>
 
-            <!-- <div class="gap-2 flex items-start justify-between w-full">
-                <div class="w-full ">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg"><b>Relacion de Asistencias</b></h3>
+            <div class="gap-2 flex items-start justify-between w-full">
+                <div class="border border-base-content/40 rounded-md mt-4 p-2 w-full flex items-center justify-between gap-2">
+                    <div class="flex justify-between gap-4">
+                        <i class="fa-solid fa-circle-user text-7xl"></i>
 
-                        <button class="btn btn-sm btn-outline hover:text-base-100">
-                            <i class="fa-solid fa-file-export"></i> 
-                            <span>Exportar</span>
-                        </button>
+                        <div>
+                            <b class="text-xl">{usuario.nombre} {usuario.apellido}</b>
+                            <br>
+                            <i>{usuario.usuario}</i>
+                            <br>
+                            <i>{usuario.role}</i>
+                        </div>
                     </div>
 
-                    <div class="border border-base-content/40 rounded-md mt-4 p-2">
-                        <div class="mb-3">
-                            <div class="text-center w-full">
-                                <h3 class="">Total de Asistencias {new Date().getFullYear()}</h3>
-                                <h1 class="font-bold text-4xl">32</h1>
-                            </div>   
+                    <div class="stats w-fit bg-base-200 text-base-content shadow border border-base-content/20">
+                        <div class="stat">
+                            <div class="stat-title text-wrap">Asistencias Registradas</div>
+                            <div class="stat-value text-success">{asistenciasUsuario?.asistencias}</div>
                         </div>
-
-                        <div class="w-full h-3 *:size-full *:relative rounded-md flex items-center gap-1 *:rounded-md">
-                            <div class="bg-success">
-                                <div class="text-sm font-bold absolute left-0 top-[110%]">
-                                    <span>Asistencias</span>
-                                </div>
-                            </div>
-                            <div class="bg-error">  
-                                <div class="text-sm font-bold absolute left-0 top-[110%]">
-                                    <span>Ausencias</span>
-                                </div>
-                            </div>
-                            <div class="bg-warning">
-                                <div class="text-sm font-bold absolute left-0 top-[110%]">
-                                    <span>Retardos</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex mt-6 items-start justify-between gap-2">
-
+                        <div class="stat">
+                            <div class="stat-title text-wrap">Observaciones Realizadas</div>
+                            <div class="stat-value">{asistenciasUsuario?.observaciones}</div>
                         </div>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>

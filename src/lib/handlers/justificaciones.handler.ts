@@ -74,9 +74,9 @@ export async function createJustificacionHandler(
         let data = Buffer.from(arrayBuffer)
         let salt = genSaltSync(6);
         let id = `${justificacion.empleado}-${i.name}`
-        ids.push(`${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`)
+        ids.push(`${id}`)
         
-        writeFile(`static/comprobantes/${id}.${i.name.slice(i.name.lastIndexOf('.') + 1)}`, data, (error) => {
+        writeFile(`static/comprobantes/${id}`, data, (error) => {
             if (error) {
                 handleError(log, error, {})
             }
