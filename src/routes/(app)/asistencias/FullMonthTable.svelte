@@ -75,9 +75,9 @@
             <h3 class="text-xl font-semibold">Reporte de asistencia - {formatDateRange()}</h3>
             
             <div class="flex items-center gap-2">
-                <button class="btn btn-sm btn-outline">
+                <!-- <button class="btn btn-sm btn-outline">
                     <i class="fa-solid fa-file-export"></i> Exportar
-                </button>
+                </button> -->
 
                 <form action="?/printAsistencias" method="post" use:enhance class="">
                     <input type="hidden" name="startDate" value={startDate}>

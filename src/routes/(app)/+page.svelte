@@ -185,6 +185,8 @@
                                         </div>
                                     </div>
                                 {/each}           
+                            {:else}
+                                <h2 class="text-xl text-base-content/70 font-bold mx-2">No hay últimas asistencias</h2>
                             {/if}
                         </div>
                     </div>

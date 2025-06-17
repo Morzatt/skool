@@ -35,7 +35,7 @@
 
 
             <div class="mt-2 leading-tight">
-                <p class="text-sm"><b>Area:</b> {empleado.nombre_departamento}</p>
+                <p class="text-sm"><b>Area:</b> {empleado.nombre_departamento || "Sin Departamento"}</p>
                 <p class="text-sm"> <b>Cargo: </b> {empleado.cargo}</p>
             </div>
         </div>

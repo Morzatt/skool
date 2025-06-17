@@ -18,12 +18,7 @@
     let turno = $state("")
     let departamento = $state('')
 
-    let cedula: 'asc'|'desc' = $state('desc')
-    let nombre: 'asc'|'desc' = $state('desc')
-    let apellido: 'asc'|'desc' = $state('desc')
-    let fecha: 'asc'|'desc' = $state('desc')
-
-    let url = $derived(`${basePath}/empleados?index=${index}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`)//&cOrder=${cedula}&nOrder=${nombre}&aOrder=${apellido}&fOrder=${fecha}`) 
+    let url = $derived(`${basePath}/empleados?index=${index}&search=${search}&estado=${estado}&turno=${turno}&departamento=${departamento}`) 
 
     let indexHandler = {
         incrementIndex: async () => {
@@ -251,51 +246,26 @@
                         <th>
                             <div class="flex items-center justify-center gap-2">
                                 <div class="text-sm text-secondary-content ext-base-100">Cédula</div>
-                                <label class="swap swap-rotate">
-                                    <input type="checkbox" onclick={() => {cedula = cedula == "asc" ? "desc" : "asc"; handleSearch();}}/>
-                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                                </label>
                             </div>
                         </th>
                         <th>
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Nombre</span>
-                                <label class="swap swap-rotate">
-                                    <input type="checkbox" onclick={() => { nombre= nombre == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                                </label>
                             </div>
                         </th>
                         <th>
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Apellido</span>
-                                <label class="swap swap-rotate">
-                                    <input type="checkbox" onclick={() => { apellido = apellido == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                                </label>
                             </div>
                         </th>
                         <th class="hidden lg:table-cell" >
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Sexo</span>
-                                <label class="swap swap-rotate">
-                                    <input type="checkbox"/>
-                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                                </label>
                             </div>
                         </th>
                         <th class="hidden lg:table-cell">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-medium text-secondary-content ext-base-100">Fecha de Nacimiento</span>
-                                <label class="swap swap-rotate">
-                                    <input type="checkbox" onclick={() => { fecha = fecha == "asc" ? "desc" : "asc"; handleSearch(); }}/>
-                                    <i class="text-xl swap-on fa-solid fa-circle-chevron-down"></i>
-                                    <i class="text-xl swap-off fa-solid fa-circle-chevron-up"></i>
-                                </label>
                             </div>
                         </th>
                         <th class="hidden lg:table-cell">

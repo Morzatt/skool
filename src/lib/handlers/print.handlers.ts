@@ -285,7 +285,7 @@ export async function downloadIDHandler({ locals, request }: RequestEvent) {
         textColor: '#000000', // Black text
         cardPadding: 15,
         cornerRadius: 20,
-        logoPath: path.join(process.cwd(), '/static/temporal'), // Replace with your actual logo URL or local path
+        logoPath: path.join(process.cwd(), '/src/lib/images/logo.png'), // Replace with your actual logo URL or local path
         logoSize: 50,
         topCircleSize: 20,
         qrCodeSize: 180,
@@ -297,7 +297,7 @@ export async function downloadIDHandler({ locals, request }: RequestEvent) {
         name: `${empleado.primer_nombre} ${empleado.primer_apellido}`,
         idNumber: `C.I: ${empleado.nacionalidad === "Venezolano" ? "V-" : "E-"} ${formatStringWithDots(empleado.cedula)}`,
         areaLabel: 'Area:',
-        areaValue: empleado.nombre_departamento,
+        areaValue: empleado.nombre_departamento ? empleado.nombre_departamento : "Sin Departamento",
         cargoLabel: 'Cargo:',
         cargoValue: empleado.cargo,
         nameFontSize: 20,

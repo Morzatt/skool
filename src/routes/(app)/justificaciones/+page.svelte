@@ -165,7 +165,8 @@
         </div>
 
         <div class="w-full h-max rounded-md px-4 flex items-end justify-between flex-wrap">
-            <div class="form-control ">
+            <div></div>
+            <!-- <div class="form-control ">
                 <div class="label">
                     <b class="label-text">Imprimir Lista</b>
                 </div>
@@ -175,7 +176,7 @@
                         <i class="fa-solid fa-print"></i>
                     </button>
                 </form>
-            </div>
+            </div> -->
 
             <div class="form-control">
                 <div class="label justify-end px-4">

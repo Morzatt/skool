@@ -6,13 +6,6 @@ import { db } from '$lib/database';
 import QRCode from "qrcode"
 import { createJustificacionHandler } from '$lib/handlers/Justificaciones.handler';
 
-import {
-    validateObject,
-    newValidationFailObject,
-    contactoInfoSchema,
-    laboralInfoSchema,
-    justificacionSchema
-} from '$lib/utils/validators';
 import { empleadosRepository } from '$lib/database/repositories/empleados.repository';
 import { downloadIDHandler } from '$lib/handlers/print.handlers';
 import { printEmpleadoHandler } from '$lib/handlers/empleados.handlers';
@@ -108,6 +101,7 @@ export const actions = {
         let { log } = locals
         let cedula = (await request.formData()).get("cedula") as string
 
+        // AÑADIR ELIMINADO DE COMPROBANTES
         await async(empleadosRepository.delete(cedula), log)
         redirect(303, "/empleados")
     },

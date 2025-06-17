@@ -349,12 +349,16 @@
             <h3 class="font-bold text-lg"><i class="fa-solid fa-clock-rotate-left"></i> Registro de Asistencias Recientes</h3>
             
             <div class="flex gap-2">
-                <button class="btn btn-sm btn-outline">
+                <!-- <button class="btn btn-sm btn-outline">
                     <i class="fa-solid fa-file-export"></i> Exportar
-                </button>
-                <button class="btn btn-sm btn-outline">
-                    <i class="fa-solid fa-print"></i> Imprimir
-                </button>
+                </button> -->
+
+                <!-- <form action="?/printAsistenciaIndividual" method="post" use:enhance>
+                    <input type="hidden" value={empleado.id}>
+                    <button class="btn btn-sm btn-outline">
+                        <i class="fa-solid fa-print"></i> Imprimir
+                    </button>
+                </form> -->
             </div>
         </div>
         

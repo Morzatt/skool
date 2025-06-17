@@ -10,7 +10,6 @@ export const load = (async ({ url, locals }) => {
     let { response, log } = locals
 
     let index = parseInt(url.searchParams.get('index') as string)
-    let filter = url.searchParams.get('filter') as string;
     let search = url.searchParams.get('search') as string;
 
     let estado = capitalizeFirstLetter(url.searchParams.get('estado') as string) as EstadosEmpleado | 'Permiso';
@@ -18,28 +17,11 @@ export const load = (async ({ url, locals }) => {
     let turno = capitalizeFirstLetter(url.searchParams.get('turno') as string) as 'Mañana' | 'Tarde';
     let departamento = url.searchParams.get('departamento') as string;
 
-
-    let cedula: 'asc' | 'desc' = url.searchParams.get('cOrder') as "asc" | 'desc';
-    let nombre: 'asc' | 'desc' = url.searchParams.get('nOrder') as "asc" | 'desc';
-    let apellido: 'asc' | 'desc' = url.searchParams.get('aOrder') as "asc" | 'desc';
-    let fecha: 'asc' | 'desc' = url.searchParams.get('fOrder') as "asc" | 'desc';
-
     let query = db
         .selectFrom('empleados')
         .limit(10)
         .offset(index ? index : 0)
         .orderBy("empleados.created_at desc")
-    
-    switch (true) {
-        case cedula !== "asc":
-            query = query.orderBy(`empleados.cedula ${cedula ? cedula : "desc"}`);
-        case nombre !== "asc":
-            query = query.orderBy(`empleados.primer_nombre ${nombre ? nombre : "asc"}`)
-        case apellido !== "asc":
-            query = query.orderBy(`empleados.primer_apellido ${apellido ? apellido : "desc"}`)
-        case fecha !== "asc":
-            query = query.orderBy(`empleados.fecha_nacimiento ${fecha ? fecha : "desc"}`)
-    }
 
     let empleados: Empleado[] | undefined;
     let records: number;
@@ -65,6 +47,8 @@ export const load = (async ({ url, locals }) => {
             eb(`empleados.cedula`, 'like', `%${search}%`),
         ]))
     }
+
+    console.log(query.compile())
 
     empleados = await async(query.selectAll().execute(), log)
     records = parseInt(

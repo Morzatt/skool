@@ -125,10 +125,10 @@
 
                 <!-- BOTONERA -->
                 <div class="mt-3 h-8 w-full flex items-center justify-start gap-3">
-                    <button aria-label="action-button" data-tip=""
+                    <!-- <button aria-label="action-button" data-tip=""
                     class="action-button btn btn-sm">
                         <i class="fa-solid fa-heart"></i>
-                    </button> 
+                    </button>  -->
                     <form action="?/printEmpleado" method="post" use:enhance>
                         <input type="hidden" name="cedula" value="{empleado.cedula}">
                         <button aria-label="action-button" data-tip="Imprimir Planilla del Empleado"

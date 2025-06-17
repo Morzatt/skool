@@ -72,8 +72,14 @@ export async function createJustificacionHandler(
     for (let i of comprobantes) {
         let arrayBuffer = await i.arrayBuffer()
         let data = Buffer.from(arrayBuffer)
-        let salt = genSaltSync(6);
-        let id = `${justificacion.empleado}-${i.name}`
+
+        if (i.size > 20000000) {
+            return response.error(`El archivo ${i.name.slice(0, 10)}... excede el tamaño límite permitido para comprobantes (20MB).`)
+        }
+
+        let fileExtension = i.name.slice(i.name.lastIndexOf('.'))
+        let fileID = new Date().toISOString().replaceAll(' ', '').replaceAll('.', '').replaceAll('-', '').replaceAll(':', '')
+        let id = `${justificacion.empleado}_comprobante_${fileID}_${fileExtension}`
         ids.push(`${id}`)
         
         writeFile(`static/comprobantes/${id}`, data, (error) => {
