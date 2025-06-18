@@ -70,6 +70,7 @@ export const actions = {
             .execute()
         ,log)
 
-        redirect(302, `/empleados/${empleado.cedula}`)
+        // redirect(302, `/empleados/${empleado.cedula}`)
+        return response.success('Empleado registrado correctamente. Redireccionando...', { cedula_empleado: empleado.cedula })
     }
 } satisfies Actions 

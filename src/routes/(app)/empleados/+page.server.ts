@@ -48,8 +48,6 @@ export const load = (async ({ url, locals }) => {
         ]))
     }
 
-    console.log(query.compile())
-
     empleados = await async(query.selectAll().execute(), log)
     records = parseInt(
         (

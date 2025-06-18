@@ -106,10 +106,6 @@ export const actions = {
         let nombre = data.get('nombre_departamento') as string
         let descripcion = data.get('descripcion') as string
 
-        if (!nombre || !descripcion) {
-            return 
-        }
-
         if (nombre) {
             await async(
                 db

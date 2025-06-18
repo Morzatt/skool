@@ -7,8 +7,17 @@
     import { basePath } from '$lib';
     import chevron from "$lib/images/icons/chevron_left.svg"
     import Select from './Select.svelte';
+    import { goto } from '$app/navigation';
 
-    let { data, form }: { data: PageData, form: ActionData } = $props();
+    let { data, form }: { data: PageData, form: ActionData & { cedula_empleado: string } } = $props();
+
+    $effect(() => {
+        if (form && form.success) {
+            setTimeout(() => {
+                goto(`/empleados/${form.cedula_empleado}`)     
+            }, 6000);
+        }
+    })
 </script>
 
 <div class="lg:py-6 lg:px-[10rem] size-full relative">
@@ -17,7 +26,7 @@
         <img src="{chevron}" alt="">
     </a>
 
-    <Alert form={ form } styles="text-sm max-w-sm fixed lg:absolute top-16 left-4"/>
+    <Alert form={ form } styles="text-sm max-w-sm fixed top-16 right-8"/>
     <form action="?/create" method="POST" use:enhance class="w-full
                            bg-base-100 rounded-md shadow-md border border-base-300
                            p-4 animate-pop">
